@@ -1,17 +1,19 @@
 <template>
-    <div class="w-full flex flex-col">
+    <div class="w-full flex flex-col text-sm">
         <div class="w-full flex flex-row space-y-3">
             <div class="flex flex-row px-2 space-x-2">
                 <div class="flex flex-row space-x-2">
-                    <div>Prefill</div>
-                    <div class="opacity-70">{{ promptProcessingStats.processed }} / {{ promptProcessingStats.total }}
+                    <div class="txt-semilight">Prefill</div>
+                    <div>{{ promptProcessingStats.tps }}</div>
+                    <div class="txt-light">tps</div>
+                    <div class="flex flex-row">
+                        <div class="text-orange-400">{{ promptProcessingStats.total - promptProcessingStats.cache }}
+                        </div>
+                        <div class="txt-light">/</div>
+                        <div class="opacity-75">{{ promptProcessingStats.total }}</div>
                     </div>
-                    <div class="txt-light"> tokens </div>
-                    <div class="text-orange-400">{{ promptProcessingStats.processed }}</div>
-                    <div class="txt-light">/ </div>
-                    <div class="opacity-75">{{ promptProcessingStats.total }}</div>
-                    <div class="txt-semilight">cache </div>
-                    <div class="text-green-500">{{ promptProcessingStats.percent_cache }}% </div>
+                    <div class="txt-semilight"> cache </div>
+                    <div class="text-green-500">{{ promptProcessingStats.percent_cache.toFixed(1) }}% </div>
                     <div class="txt-semilight">{{ promptProcessingStats.cache }}</div>
                     <div class="txt-semilight">{{ promptProcessingStats.time_humanized }}</div>
                 </div>
@@ -31,7 +33,6 @@
 </template>
 <script setup lang="ts">
 import type { PromptProcessingInProgressStats } from '@agent-smith/types';
-import { state } from '../state.js';
 
 const props = defineProps<{
     promptProcessingStats: PromptProcessingInProgressStats

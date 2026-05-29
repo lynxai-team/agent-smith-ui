@@ -4,9 +4,9 @@
       <div class="w-full flex flex-col h-max overflow-y-auto p-3">
         <template v-if="state.uihistory.length > 0">
           <div v-for="(turn, i) in state.uihistory" class="flex flex-col">
+
             <TurnTitle name="user" v-if="i == 0"></TurnTitle>
-            <TurnTitle :name="turn.from" v-else-if="state.uihistory[i - 1].from != turn.from"
-              :class="(i - 1) == 0 ? '' : 'pt-3'"></TurnTitle>
+            <TurnTitle :name="turn.from" v-else-if="state.uihistory[i - 1].from != turn.from" class="pt-3"></TurnTitle>
             <div v-if="turn?.user" class="hover:background rounded-md px-3 flex flex-row items-end w-full"
               :class="confirmRestart !== null ? 'visible' : 'border invisible hover:visible'">
               <template v-if="confirmRestart != i">
@@ -32,7 +32,7 @@
                 </button>
               </template>
             </div>
-            <div v-if="turn?.prefillStats">
+            <div v-if="turn?.prefillStats" class="pl-3">
               <PromptProcessingProgress v-if="turn.prefillStats.total > 0" :prompt-processing-stats="turn.prefillStats">
               </PromptProcessingProgress>
             </div>
@@ -65,7 +65,7 @@
                 </div>
               </div>
             </div>
-            <div v-if="turn?.stats" class="px-6 my-2">
+            <div v-if="turn?.stats" class="px-3 my-2">
               <HistoryTurnStatsBar :stats="turn.stats"></HistoryTurnStatsBar>
             </div>
           </div>

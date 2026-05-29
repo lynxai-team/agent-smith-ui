@@ -46,8 +46,9 @@ const useTaskEvents = (
             percent_progress: 0,
             percent_cache: 0,
             time_humanized: "",
+            tps: 0
         }
-        history.addPrefillStatsToCurrentTurn(progress)
+        //history.addPrefillStatsToCurrentTurn(progress)
     }
 
     const onToolCallInProgress: AgentInferenceOptions["onToolCallInProgress"] = (tcs: Array<ToolCallSpec>, from: string) => {
@@ -241,6 +242,7 @@ const useTaskEvents = (
                 percent_progress: 0,
                 percent_cache: 0,
                 time_humanized: "",
+                tps: 0
             }
         } else {
             state.isProcessingPrompt = true;
@@ -272,6 +274,7 @@ const useTaskEvents = (
             percent_progress: 0,
             percent_cache: 0,
             time_humanized: "",
+            tps: 0
         };
         callerAgents = []
     }
