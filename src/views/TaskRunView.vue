@@ -136,7 +136,7 @@
                   </AgentParamsPicker>
                 </Popover>
                 <button class="btn px-0" @click="modelsPopover.toggle($event);">{{
-                  inferOptions.model != "" ? state.models[inferOptions.model].id :
+                  inferOptions.model != "" ? state.models[inferOptions.backend][inferOptions.model].id :
                     srv.agentSpec.value?.model
                 }}</button>
               </div>
@@ -347,15 +347,18 @@ async function exec() {
 }
 
 async function loadTask() {
-  //console.log("Settings", state.agentsSettings);
+  console.log("Load task", props.name);
   await srv.load(props.name, props.isAgent);
-  //console.log("SAS", srv.agentSpec);
+  //console.log("AS", toRaw(srv.agentSpec.value));
   let hasSettings = props.name in state.agentsSettings;
+  let m = "";
   if (hasSettings) {
     for (const [k, v] of Object.entries(state.agentsSettings[props.name])) {
+      //console.log("S", k, v)
       if (k == "model") {
-        inferOptions.model = state.models[v].id;
-        state.currentModel = state.models[v];
+        //inferOptions.model = state.models[v].id;
+        //state.currentModel = state.models[v];
+        m = v;
       } else if (k == "backend") {
         inferOptions.backend = v
       } else if (k == "props") {
@@ -376,12 +379,17 @@ async function loadTask() {
       inferOptions.params[k] = v
     }
   }
+  const b = inferOptions?.backend ?? uistate.value.backend;
+  if (m.length > 0) {
+    inferOptions.model = state.models[b][m].id;
+    state.currentModel = state.models[b][m];
+  }
   if (state.currentModel?.id == "") {
-    state.currentModel = state.models[srv.agentSpec.value.model];
+    state.currentModel = state.models[b][srv.agentSpec.value.model];
   }
   setCurrentFeature(props.name, "agent");
   //console.log("M", selectedModel.value)
-  console.log("LOADED T", inferOptions);
+  console.log("LOADED T", props.name, inferOptions);
   isReady.value = true;
 };
 
@@ -418,7 +426,7 @@ function useAgentSettings(data: {
   inferOptions.backend = data.backend;
   inferOptions.propagateModel = data.propagateModel;
   inferOptions.propagateInferParams = data.propagateInferParams;
-  state.currentModel = state.models[data.model];
+  state.currentModel = state.models[data.backend][data.model];
   modelsPopover.value.toggle();
 }
 
@@ -474,17 +482,6 @@ function scrollOutput(nosmooth: boolean = true, delay = 0) {
   }
 }
 
-function pickModel(evt?: any) {
-  //console.log("TM", srv.task.value.model)
-  //console.log("Pick model", toRaw(evt));
-  if (evt) {
-    state.currentModel = evt;
-    inferOptions.model = evt.id
-  }
-  //console.log("Pick model => ", selectedModel.value);
-  modelsPopover.value.hide()
-}
-
 function toggleViewToolResult(id: string, turn: UiHistoryTurn) {
   //console.log("TOGGLE TOOL RESULT VIEW", id in turn.state.confirmToolCalls);
   if (id in turn.state.confirmToolCalls) {
@@ -522,10 +519,10 @@ onBeforeUnmount(() => resetCurrentFeature())
 
 watch(props, () => {
   if (props.name != srv.agentSpec.value?.name) {
-    resetCurrentFeature()
+    console.log("W", props.name, srv.agentSpec.value?.name)
+    resetCurrentFeature();
+    taskEvents.resetStream();
     srv.isReady.value = false;
-    state.uihistory = [];
-    stream.value = "";
     load()
   };
 });

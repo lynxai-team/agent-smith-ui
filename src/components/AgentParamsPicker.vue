@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="flex justify-center" v-if="showModelPicker">
-            <Listbox :options="Object.values(state.models)" filter optionLabel="id"
+            <Listbox :options="Object.values(state.models[backend])" filter optionLabel="id"
                 @update:modelValue="$event?.id ? model = $event.id : model = undefined; showModelPicker = false"
                 class="w-56" />
         </div>
@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import type { AgentSettings, AgentSpec, InferenceParams, ModelInfo, SamplingPreset } from '@agent-smith/types';
 import { srv, state, uistate } from '../state.js';
-import { computed, onBeforeMount, reactive, ref, toRaw } from 'vue';
+import { computed, onBeforeMount, reactive, ref, toRaw, watch } from 'vue';
 import InferenceParamsForm from './InferenceParamsForm.vue';
 import { humanizeNumber } from '../services/str.js';
 import SwSwitch from "@snowind/switch";
@@ -81,7 +81,7 @@ const switchPropagateIp = ref(false);
 const enableThinking = ref(false);
 const preserveThinking = ref(false);
 const model = ref<string | undefined>(undefined);
-const backend = ref<string | undefined>(undefined);
+const backend = ref<string>(uistate.value.backend);
 const showModelPicker = ref(false);
 
 const inferenceParams: InferenceParams = reactive({
@@ -177,7 +177,9 @@ function applySamplingPreset(preset: SamplingPreset) {
         enableThinking.value = false
         preserveThinking.value = false
     }
-    backend.value = preset.backend;
+    if (preset?.backend) {
+        backend.value = preset.backend;
+    }
     if (preset?.model) {
         model.value = preset.model;
     }
@@ -191,8 +193,9 @@ function pickLoadedModel() {
     }
 }
 
-function getLoadedModel() {
-    for (const m of Object.values(state.models)) {
+function getLoadedModel(backend: string) {
+    loadedModel.value = null;
+    for (const m of Object.values(state.models[backend])) {
         if (m?.status == "loaded") {
             loadedModel.value = m
             break;
@@ -206,7 +209,7 @@ const isValid = computed(() => {
 
 async function init() {
     state.agentsSettings = await srv.loadAgentSettings();
-    console.log("AS", state.agentsSettings[props.agentSpec.name]);
+    //console.log("AS", state.agentsSettings[props.agentSpec.name]);
     if (Object.keys(state.agentsSettings).includes(props.agentSpec.name)) {
         const agentSettings = state.agentsSettings[props.agentSpec.name];
         //console.log("AS", agentSettings);
@@ -254,8 +257,14 @@ async function init() {
             backend.value = uistate.value.backend
         }
     }
-    getLoadedModel();
+    getLoadedModel(backend.value);
 }
 
-onBeforeMount(() => init())
+onBeforeMount(() => init());
+
+watch(backend, () => {
+    //console.log("B", loadedModel.value, "/", backend.value)
+    srv.loadModels(backend.value).then(() => getLoadedModel(backend.value));
+    //console.log("BE", loadedModel.value)
+})
 </script>

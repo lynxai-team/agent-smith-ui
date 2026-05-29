@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onBeforeMount, toRaw, onBeforeUnmount } from 'vue';
+import { ref, computed, reactive, onBeforeMount, toRaw, onBeforeUnmount, watchEffect, watch } from 'vue';
 import Popover from 'primevue/popover';
 import { state, uistate } from '../state.js';
 import { api } from '../services/api.js';
@@ -109,7 +109,6 @@ const form = ref({
 });
 
 async function addSamplingPreset() {
-    console.log("Add pr")
     const cta: Record<string, any> = {};
     if (enableThinking.value) {
         cta.enable_thinking = true;
@@ -174,7 +173,7 @@ function editPreset(name: string) {
     inferenceParams.repeat_penalty = preset.repeat_penalty;
     inferenceParams.presence_penalty = preset.presence_penalty;
     inferenceParams.frequency_penalty = preset.frequency_penalty;
-    selectedModel.value = preset?.model ? state.models[preset.model] : { id: "", status: "", ctx: 0, hasVision: false };
+    selectedModel.value = preset?.model ? state.models[form.value.backend][preset.model] : { id: "", status: "", ctx: 0, hasVision: false };
     //console.log("P", preset)
     if (preset?.chat_template_kwargs) {
         if (preset.chat_template_kwargs?.enable_thinking) {
@@ -208,13 +207,18 @@ function toggleView(v: 'view' | 'create') {
     }
 }
 
-onBeforeMount(() => {
+function loadModels(backend: string) {
+    //console.log("Load models", backend);
     const md: Array<Record<string, any>> = [];
-    for (const v of Object.values(state.models)) {
+    for (const v of Object.values(state.models[backend])) {
         const n = { ...v, label: `${v.id} - ${humanizeNumber(v.ctx)})` }
         md.push(toRaw(n))
     }
     modelsData.value = md;
-    //console.log("Models data", modelsData.value)
+}
+
+watch(form.value, () => {
+    //selectedModel.value = { id: "", status: "", ctx: 0, hasVision: false };
+    loadModels(form.value.backend)
 });
 </script>

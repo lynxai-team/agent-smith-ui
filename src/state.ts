@@ -1,12 +1,11 @@
+import type { AgentState, ConfigFile, HistoryTurn, SamplingPreset, UiHistoryTurn, Workspace } from "@agent-smith/types";
+import { useClientFeatures } from "@agent-smith/wscli";
 import { User } from "@snowind/state";
+import { useStorage } from '@vueuse/core';
 import { reactive, ref, shallowRef } from "vue";
 import type { SidebarType, UiTaskView } from "./interfaces.js";
-import { useClientFeatures } from "@agent-smith/wscli";
-import { useStorage } from '@vueuse/core';
-import { createAwaiter } from "./utils.js";
-import type { ModelInfo, UiHistoryTurn, ConfigFile, Workspace, HistoryTurn, AgentState, SamplingPreset } from "@agent-smith/types";
-import { msg } from "./services/notify.js";
 import { useUiHistory } from "./services/history.js";
+import { createAwaiter } from "./utils.js";
 
 const debugInference = ref(true);
 const history = useUiHistory();
@@ -50,9 +49,9 @@ const state = reactive<AgentState>({
     hasConfig: false,
     uihistory: new Array<UiHistoryTurn>(),
     history: new Array<HistoryTurn>,
-    models: {} as Record<string, ModelInfo>,
+    models: {},
     agentsSettings: {} as Record<string, Record<string, any>>,
-    backends: {} as Record<string, Record<string, any>>,
+    backends: {},
     currentFeature: reactive<{ name: string, type: string }>({ name: "", type: "none" }),
     currentWorkspace: { name: "", path: "", props: {} },
     currentModel: { id: "", status: "", ctx: 0, hasVision: false },
@@ -69,35 +68,45 @@ async function initState() {
     if (found) {
         conf.value = config
     }
+    const lm = async () => {
+        if (conf.value?.backends) {
+            for (const k of Object.keys(conf.value.backends)) {
+                if (k == "default") {
+                    continue
+                }
+                try {
+                    const bks = await srv.loadModels(k);
+                    state.models[k] = bks;
+                } catch (e) {
+                    console.error(`Can not load models from ${k}`, `Check you backend server`)
+                    //throw new Error("can not load models")
+                }
+            }
+        }
+    }
     //console.log("CONF", conf.value)
     //console.log("SRV STATE", state);
     if (state.hasConfig) {
-        await initTaskData()
+        //console.log("Init td");
+        await initTaskData();
+        //console.log("run lm");
+        state.isReady = true;
+        unblock(true)
+        lm();
+    } else {
+        state.isReady = true;
+        unblock(true)
     }
-    state.isReady = true;
-    //console.log("TS", state.tasksSettings)
-    unblock(true)
 }
 
 async function initTaskData() {
-    const lm = async () => {
-        try {
-            return await srv.loadModels();
-            //console.log("SMOD", state.models)
-        } catch (e) {
-            msg.error("Can not load models", "Check you backend server")
-            //throw new Error("can not load models")
-        }
-    }
     let ts: Record<string, Record<string, any>>;
     let bk: Record<string, any>;
     let ws: Workspace[];
     let st: Record<string, any>;
     let mp: Record<string, SamplingPreset>;
-    let mo: Record<string, ModelInfo> | undefined = {};
     try {
-        [mo, ts, bk, ws, st, mp] = await Promise.all([
-            lm(),
+        [ts, bk, ws, st, mp] = await Promise.all([
             srv.loadAgentSettings(),
             srv.loadBackends(),
             srv.loadWorkspaces(),
@@ -108,7 +117,6 @@ async function initTaskData() {
     } catch (e) {
         throw new Error(`initialization: ${e}`)
     }
-    state.models = mo ?? {};
     const wss: Record<string, Workspace> = {};
     ws.forEach(w => wss[w.name] = w);
     state.workspaces = wss;
@@ -141,17 +149,9 @@ function setCurrentFeature(name: string, type: string) {
 }
 
 export {
-    initState,
+    appSidebar, conf, debugInference, history, initState,
     resetCurrentFeature,
-    setCurrentFeature,
-    history,
-    state,
-    theme,
-    user,
-    uistate,
-    debugInference,
-    conf,
-    appSidebar,
-    srv,
+    setCurrentFeature, srv, state,
+    theme, uistate, user
 };
 
