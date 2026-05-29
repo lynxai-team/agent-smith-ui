@@ -3,11 +3,11 @@
 ## Directory Structure
 
 ```
-/app/src
+/workspace/src
 ├── App.vue
 ├── apps
 │   ├── debate.ORI.js
-│   └── debate.js -> ../../../agent-smith-apps/debate/src/main.ts
+│   └── debate.js
 ├── assets
 │   ├── index.css
 │   ├── logo.png
@@ -15,14 +15,19 @@
 ├── bin
 │   └── index.ts
 ├── components
+│   ├── AgentParamsPicker.vue
+│   ├── FormatedToolCallInProgress.vue
+│   ├── InferenceParamsForm.vue
 │   ├── ManageBackends.vue
-│   ├── ModelsPicker.vue
+│   ├── PromptProcessingProgress.vue
+│   ├── SamplingPresets.vue
 │   ├── TaskTools.vue
 │   ├── TheHeader.vue
 │   ├── ThinkingContent.vue
 │   ├── ThinkingNode.vue
 │   ├── ToolCallNode.vue
 │   ├── ViewConf.vue
+│   ├── WorkspacePicker.vue
 │   ├── navbars
 │   │   ├── NavbarTask.vue
 │   │   └── PromptNavbarLeft.vue
@@ -52,8 +57,10 @@
 │   └── pink-black.scss
 ├── services
 │   ├── api.ts
+│   ├── history.ts
 │   ├── notify.ts
 │   ├── perf.ts
+│   ├── stats.ts
 │   ├── str.ts
 │   └── task_events.ts
 ├── state.ts
@@ -69,13 +76,23 @@
 └── widgets
     ├── AutoTextarea.vue
     ├── FormatedToolCall.vue
+    ├── HistoryTurnStatsBar.vue
+    ├── LoadingSpinner.vue
+    ├── ToolCallDetails.vue
+    ├── TurnTitle.vue
     └── icons
         ├── AgentIcon.vue
         ├── AppsIcon.vue
         ├── ArgumentIcon.vue
         ├── BackendIcon.vue
+        ├── CopyIcon.vue
+        ├── DeleteIcon.vue
+        ├── ExecuteIcon.vue
+        ├── FolderIcon.vue
         ├── MarkdownIcon.vue
         ├── McpIcon.vue
+        ├── ModelIcon.vue
+        ├── ModelsPresetsIcon.vue
         ├── NoScrollIcon.vue
         ├── ScrollIcon.vue
         ├── TaskIcon.vue
@@ -83,6 +100,8 @@
         ├── TextIcon.vue
         ├── ToolsIcon.vue
         ├── UserEditIcon.vue
+        ├── UserIcon.vue
+        ├── UserSpeakingIcon.vue
         └── WorkflowIcon.vue
 ```
 
@@ -97,8 +116,8 @@
 | `env.d.ts` | TypeScript declarations for Vite client and `.vue` file imports |
 | `interfaces.ts` | Shared TypeScript interfaces and types (SidebarType, UiTaskView, NotificationMsg, etc.) |
 | `main.ts` | Application entry point; creates Vue app, registers PrimeVue, and mounts to DOM |
-| `router.ts` | Vue Router configuration with route definitions for Home, App, Workflow, Task views |
-| `state.ts` | Global reactive state management using `@snowind/state` and Vue `reactive`/`ref` |
+| `router.ts` | Vue Router configuration with route definitions for Home, Config, Init, Workflow, App, Task, and Agent views |
+| `state.ts` | Global reactive state management using `@snowind/state` and Vue `reactive`/`ref`. Manages agent state, models, backends, workspaces, settings, and UI preferences |
 | `utils.ts` | Utility functions including `createAwaiter` promise helper |
 
 ### `apps/`
@@ -106,7 +125,7 @@
 | File | Description |
 |------|-------------|
 | `debate.ORI.js` | Original debate app module; exports AppComponent and AppSidebar from `@agent-smith/app-debate` |
-| `debate.js` | Symlink pointing to `../../../agent-smith-apps/debate/src/main.ts` |
+| `debate.js` | Debate app routes module |
 
 ### `assets/`
 
@@ -120,20 +139,25 @@
 
 | File | Description |
 |------|-------------|
-| `index.ts` | CLI entry point; runs the Node.js server and sets up app routes |
+| `index.ts` | CLI entry point; runs the Node.js server and sets up app routes using `@agent-smith/server` |
 
 ### `components/`
 
 | File | Description |
 |------|-------------|
+| `AgentParamsPicker.vue` | Agent parameter selection and configuration picker |
+| `FormatedToolCallInProgress.vue` | Displays in-progress tool calls with status indicators |
+| `InferenceParamsForm.vue` | Form for configuring model inference parameters (temperature, top_k, top_p, etc.) |
 | `ManageBackends.vue` | UI for managing and switching between AI backends |
-| `ModelsPicker.vue` | Model selection picker component with listbox and confirmation view |
+| `PromptProcessingProgress.vue` | Progress indicator showing prompt processing status |
+| `SamplingPresets.vue` | Sampling preset management interface |
 | `TaskTools.vue` | Displays available tools for a task |
 | `TheHeader.vue` | Top header bar with branding, navigation, and responsive breakpoints |
 | `ThinkingContent.vue` | Renders thinking/reasoning content blocks with toggle visibility |
 | `ThinkingNode.vue` | Renders a thinking step node with expand/collapse functionality |
 | `ToolCallNode.vue` | Renders a tool call execution node with markdown rendering |
 | `ViewConf.vue` | Configuration viewer showing features and folder settings |
+| `WorkspacePicker.vue` | Workspace selector component |
 
 #### `components/navbars/`
 
@@ -177,8 +201,10 @@
 | File | Description |
 |------|-------------|
 | `api.ts` | API client setup using `restmix` with server URL configuration |
+| `history.ts` | UI history management composable; handles conversation turns, tool calls, and inference statistics |
 | `notify.ts` | Notification helpers wrapping PrimeVue Toast and Confirm services |
 | `perf.ts` | Inference performance timer tracking tokens/second (TPS) |
+| `stats.ts` | Statistics tracking utilities |
 | `str.ts` | String utility functions (`humanize`, `humanizeNumber`) |
 | `task_events.ts` | Task event processing including markdown parsing and history turn handling |
 
@@ -190,8 +216,8 @@
 | `ConfigInitView.vue` | Initial setup wizard; create config or load existing config |
 | `ConfigView.vue` | Configuration management view for app settings |
 | `HomeView.vue` | Home page; handles URL query params and redirects |
-| `TaskRunView.vue` | Task execution view showing live inference output and history |
-| `TaskViewView.vue` | Task detail view with file/tab-based interface |
+| `TaskRunView.vue` | Task execution view showing live inference output and history (also used for agents) |
+| `TaskViewView.vue` | Task detail view with file/tab-based interface (also used for agents) |
 | `WorkflowView.vue` | Workflow view displaying workflow information |
 
 ### `widgets/`
@@ -200,6 +226,10 @@
 |------|-------------|
 | `AutoTextarea.vue` | Auto-resizing textarea component |
 | `FormatedToolCall.vue` | Formatted display of tool calls with icon, source, and result |
+| `HistoryTurnStatsBar.vue` | Statistics bar showing inference metrics for a history turn |
+| `LoadingSpinner.vue` | Loading spinner widget |
+| `ToolCallDetails.vue` | Detailed view of tool call information |
+| `TurnTitle.vue` | Title component for conversation turns |
 
 #### `widgets/icons/`
 
@@ -209,8 +239,14 @@
 | `AppsIcon.vue` | SVG icon for apps |
 | `ArgumentIcon.vue` | SVG icon for arguments |
 | `BackendIcon.vue` | SVG icon for backends |
+| `CopyIcon.vue` | SVG icon for copy action |
+| `DeleteIcon.vue` | SVG icon for delete action |
+| `ExecuteIcon.vue` | SVG icon for execute/run action |
+| `FolderIcon.vue` | SVG icon for folders |
 | `MarkdownIcon.vue` | SVG icon for markdown |
 | `McpIcon.vue` | SVG icon for MCP (Model Context Protocol) |
+| `ModelIcon.vue` | SVG icon for models |
+| `ModelsPresetsIcon.vue` | SVG icon for model presets |
 | `NoScrollIcon.vue` | SVG icon indicating no-scroll mode |
 | `ScrollIcon.vue` | SVG icon for scroll mode |
 | `TaskIcon.vue` | SVG icon for tasks |
@@ -218,4 +254,6 @@
 | `TextIcon.vue` | SVG icon for text |
 | `ToolsIcon.vue` | SVG icon for tools |
 | `UserEditIcon.vue` | SVG icon for user edit |
+| `UserIcon.vue` | SVG icon for user |
+| `UserSpeakingIcon.vue` | SVG icon for user speaking |
 | `WorkflowIcon.vue` | SVG icon for workflows |
