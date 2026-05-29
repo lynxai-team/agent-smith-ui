@@ -45,7 +45,7 @@
         <div class="flex flex-wrap gap-2 justify-around">
             <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
             <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{ loadedModel.id
-                }}
+            }}
                 {{ humanizeNumber(loadedModel.ctx) }}</button>
             <button v-for="preset in state.samplingPresets" class="btn soft" @click="applySamplingPreset(preset)">{{
                 preset.name }}</button>
@@ -76,8 +76,8 @@ const props = defineProps<{
 const emit = defineEmits(["end"]);
 
 const loadedModel = ref<ModelInfo | null>(null);
-const switchPropagateModel = ref(true);
-const switchPropagateIp = ref(true);
+const switchPropagateModel = ref(false);
+const switchPropagateIp = ref(false);
 const enableThinking = ref(false);
 const preserveThinking = ref(false);
 const model = ref<string | undefined>(undefined);
@@ -137,6 +137,11 @@ async function saveAgentsSettings() {
         }
         bk = uistate.value.backend
     }
+    if (!inferenceParams?.chat_template_kwargs) {
+        inferenceParams.chat_template_kwargs = {}
+    }
+    inferenceParams.chat_template_kwargs.enable_thinking = enableThinking.value;
+    inferenceParams.chat_template_kwargs.preserve_thinking = preserveThinking.value;
     const st: AgentSettings = {
         model: model.value,
         backend: bk,
@@ -156,17 +161,21 @@ async function saveAgentsSettings() {
 }
 
 function applySamplingPreset(preset: SamplingPreset) {
+    //console.log("Apply preset", preset);
     const ips = Object.keys(toRaw(inferenceParams));
     for (const ip of ips) {
         inferenceParams[ip] = preset[ip] ?? undefined;
     }
     if (preset?.chat_template_kwargs) {
         if (preset.chat_template_kwargs?.enable_thinking) {
-            enableThinking.value = true
+            enableThinking.value = preset.chat_template_kwargs.enable_thinking;
         }
         if (preset.chat_template_kwargs?.preserve_thinking) {
-            preserveThinking.value = true
+            preserveThinking.value = preset.chat_template_kwargs.preserve_thinking
         }
+    } else {
+        enableThinking.value = false
+        preserveThinking.value = false
     }
     backend.value = preset.backend;
     if (preset?.model) {
@@ -197,7 +206,7 @@ const isValid = computed(() => {
 
 async function init() {
     state.agentsSettings = await srv.loadAgentSettings();
-    //console.log("AS", state.agentsSettings);
+    console.log("AS", state.agentsSettings[props.agentSpec.name]);
     if (Object.keys(state.agentsSettings).includes(props.agentSpec.name)) {
         const agentSettings = state.agentsSettings[props.agentSpec.name];
         //console.log("AS", agentSettings);

@@ -86,7 +86,7 @@ async function initTaskData() {
             //console.log("SMOD", state.models)
         } catch (e) {
             msg.error("Can not load models", "Check you backend server")
-            throw new Error("can not load models")
+            //throw new Error("can not load models")
         }
     }
     let ts: Record<string, Record<string, any>>;
@@ -94,7 +94,7 @@ async function initTaskData() {
     let ws: Workspace[];
     let st: Record<string, any>;
     let mp: Record<string, SamplingPreset>;
-    let mo: Record<string, ModelInfo>
+    let mo: Record<string, ModelInfo> | undefined = {};
     try {
         [mo, ts, bk, ws, st, mp] = await Promise.all([
             lm(),
@@ -108,7 +108,7 @@ async function initTaskData() {
     } catch (e) {
         throw new Error(`initialization: ${e}`)
     }
-    state.models = mo;
+    state.models = mo ?? {};
     const wss: Record<string, Workspace> = {};
     ws.forEach(w => wss[w.name] = w);
     state.workspaces = wss;

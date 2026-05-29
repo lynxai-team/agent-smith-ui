@@ -70,7 +70,7 @@
             </div>
           </div>
         </template>
-        <div v-if="state.isLoadingModel" class="pt-2 txt-semilight">
+        <div v-if="state.isLoadingModel" class="pl-6 txt-semilight">
           Loading {{ state.currentModel.id }} model ...
         </div>
         <div v-if="state.isProcessingPrompt" class="pb-3 pl-3">
@@ -78,7 +78,8 @@
           </PromptProcessingProgress>
         </div>
         <div v-if="stream.length > 0" class="flex-grow">
-          <TurnTitle :name="currentAgent" v-if="state.uihistory[state.uihistory.length - 1].from != currentAgent">
+          <TurnTitle :name="currentAgent" v-if="state.uihistory[state.uihistory.length - 1].from != currentAgent"
+            class="pt-3">
           </TurnTitle>
           <template v-if="hasThinking">
             <ThinkingNode :nodes="thinkingNodes" custom-id="think" :is-strict="true" :from="currentAgent" class="pl-3">
@@ -345,22 +346,6 @@ async function exec() {
   scrollOutput(true, 50);
 }
 
-function useAgentSettings(data: {
-  params: InferenceParams,
-  model: string,
-  backend: string,
-  propagateModel: boolean,
-  propagateInferParams: boolean;
-}) {
-  inferOptions.params = data.params;
-  inferOptions.model = data.model;
-  inferOptions.backend = data.backend;
-  inferOptions.propagateModel = data.propagateModel;
-  inferOptions.propagateInferParams = data.propagateInferParams;
-  state.currentModel = state.models[data.model];
-  modelsPopover.value.toggle();
-}
-
 async function loadTask() {
   //console.log("Settings", state.agentsSettings);
   await srv.load(props.name, props.isAgent);
@@ -396,14 +381,14 @@ async function loadTask() {
   }
   setCurrentFeature(props.name, "agent");
   //console.log("M", selectedModel.value)
-  //console.log("LOADED T", srv.task);
+  console.log("LOADED T", inferOptions);
   isReady.value = true;
 };
 
 function restartAtTurn(n: number) {
   console.log("Restart at", n);
   taskEvents.resetStream();
-  console.log("H1", state.uihistory);
+  //console.log("H1", state.uihistory);
 
   //console.log("Q", question.value);
   if (n == 0) {
@@ -414,11 +399,27 @@ function restartAtTurn(n: number) {
   }
   state.uihistory = state.uihistory.slice(0, n);
   state.history = state.history.slice(0, n);
-  console.log("H2", state.uihistory);
+  //console.log("H2", state.uihistory);
   confirmRestart.value = null;
   nUserInteraction.value = n;
-  console.log("SH1", state.history);
+  //console.log("SH1", state.history);
   //history.reset();
+}
+
+function useAgentSettings(data: {
+  params: InferenceParams,
+  model: string,
+  backend: string,
+  propagateModel: boolean,
+  propagateInferParams: boolean;
+}) {
+  inferOptions.params = data.params;
+  inferOptions.model = data.model;
+  inferOptions.backend = data.backend;
+  inferOptions.propagateModel = data.propagateModel;
+  inferOptions.propagateInferParams = data.propagateInferParams;
+  state.currentModel = state.models[data.model];
+  modelsPopover.value.toggle();
 }
 
 function updateInferParams(evt: InferenceParams) {
