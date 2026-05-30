@@ -159,6 +159,7 @@ const useTaskEvents = (
             uihistoryManager.addToolResponseToCurrentTurn(tc, tr, from)
         }
         stream.value = "";
+        scrollOutput(true, 50);
     };
 
     const confirmToolUsage: AgentInferenceOptions["confirmToolUsage"] = async (tc: ToolCallSpec, from: string) => {

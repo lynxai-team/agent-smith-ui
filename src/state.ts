@@ -45,6 +45,7 @@ const state = reactive<AgentState>({
         percent_progress: 0,
         percent_cache: 0,
         time_humanized: "",
+        tps: 0,
     },
     hasConfig: false,
     uihistory: new Array<UiHistoryTurn>(),
@@ -68,15 +69,15 @@ async function initState() {
     if (found) {
         conf.value = config
     }
-    const lm = async () => {
+    const lm = () => {
         if (conf.value?.backends) {
             for (const k of Object.keys(conf.value.backends)) {
                 if (k == "default") {
                     continue
                 }
                 try {
-                    const bks = await srv.loadModels(k);
-                    state.models[k] = bks;
+                    srv.loadModels(k).then(bks => state.models[k] = bks);
+                    //state.models[k] = bks;
                 } catch (e) {
                     console.error(`Can not load models from ${k}`, `Check you backend server`)
                     //throw new Error("can not load models")

@@ -4,10 +4,10 @@
             <div class="flex flex-row px-2 space-x-2">
                 <div class="flex flex-row space-x-2">
                     <div class="txt-semilight">Prefill</div>
-                    <div>{{ promptProcessingStats.tps }}</div>
-                    <div class="txt-light">tps</div>
+                    <!-- div>{{ promptProcessingStats.tps.toFixed(0) }}</div>
+                    <div class="txt-light">tps</div -->
                     <div class="flex flex-row">
-                        <div class="text-orange-400">{{ promptProcessingStats.total - promptProcessingStats.cache }}
+                        <div class="text-orange-400">{{ promptProcessingStats.processed }}
                         </div>
                         <div class="txt-light">/</div>
                         <div class="opacity-75">{{ promptProcessingStats.total }}</div>
