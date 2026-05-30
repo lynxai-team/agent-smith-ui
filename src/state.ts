@@ -8,7 +8,7 @@ import { useUiHistory } from "./services/history.js";
 import { createAwaiter } from "./utils.js";
 
 const debugInference = ref(true);
-const history = useUiHistory();
+const uihistoryManager = useUiHistory();
 const user = new User();
 const theme = ref("bluestar");
 const appSidebar = shallowRef();
@@ -149,7 +149,7 @@ function setCurrentFeature(name: string, type: string) {
 }
 
 export {
-    appSidebar, conf, debugInference, history, initState,
+    appSidebar, conf, debugInference, uihistoryManager, initState,
     resetCurrentFeature,
     setCurrentFeature, srv, state,
     theme, uistate, user

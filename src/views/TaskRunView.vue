@@ -203,7 +203,7 @@ import SidebarInferParams from '../components/sidebars/SidebarInferParams.vue';
 import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
 import { confirmDanger, msg } from '../services/notify.js';
-import { debugInference, history, resetCurrentFeature, setCurrentFeature, state, uistate } from '../state.js';
+import { debugInference, uihistoryManager, resetCurrentFeature, setCurrentFeature, state, uistate } from '../state.js';
 import AutoTextarea from '../widgets/AutoTextarea.vue';
 //import ToolCallNode from '../components/ToolCallNode.vue';
 import 'markstream-vue/index.css';
@@ -294,15 +294,17 @@ async function exec() {
   const p = prompt.value;
   const opts: AgentInferenceOptions = toRaw(inferOptions);
   prompt.value = "";
-  if (nUserInteraction.value < 2) {
+  let pr = p;
+  if (nUserInteraction.value == 1) {
     // conversation starts
     question.value = p;
-    const pr = srv.agentSpec.value.prompt.replace("{prompt}", p);
-    history.newTurn("user", props.name, { user: pr });
+    pr = srv.agentSpec.value.prompt.replace("{prompt}", p);
+    uihistoryManager.newTurn("user", props.name, { user: pr });
+    state.history.push({user: pr})
   } else {
     // conversation continues
     opts.history = toRaw(state.history);
-    history.newTurn("user", props.name, { user: p });
+    uihistoryManager.newTurn("user", props.name, { user: pr });
   }
   nodes.value = [];
   thinkingNodes.value = [];
@@ -343,11 +345,12 @@ async function exec() {
   await srv.executeAgent(p, opts);
   //taskEvents.onTaskEnd();
   //clearInterval(tid);
+  nUserInteraction.value++;
   scrollOutput(true, 50);
 }
 
 async function loadTask() {
-  console.log("Load task", props.name);
+  //console.log("Load task", props.name);
   await srv.load(props.name, props.isAgent);
   //console.log("AS", toRaw(srv.agentSpec.value));
   let hasSettings = props.name in state.agentsSettings;
@@ -389,7 +392,7 @@ async function loadTask() {
   }
   setCurrentFeature(props.name, "agent");
   //console.log("M", selectedModel.value)
-  console.log("LOADED T", props.name, inferOptions);
+  //console.log("LOADED T", props.name, inferOptions);
   isReady.value = true;
 };
 

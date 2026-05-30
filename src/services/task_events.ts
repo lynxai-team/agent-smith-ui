@@ -2,7 +2,7 @@ import type { AgentInferenceOptions, ClientFeaturesOptions, HistoryTurn, PromptP
 import { getMarkdown, parseMarkdownToStructure } from "markstream-vue";
 import { nextTick, type Reactive, type Ref } from "vue";
 import type { ParsedNode } from "yaml";
-import { history, state, uistate } from "../state.js";
+import { uihistoryManager, state, uistate } from "../state.js";
 import { createAwaiter } from "../utils.js";
 import { msg } from "./notify.js";
 
@@ -61,7 +61,7 @@ const useTaskEvents = (
     const onToolsTurnStart: AgentInferenceOptions["onToolsTurnStart"] = (tcs: Array<ToolCallSpec>, from: string) => {
         if (debug) { console.log("TOOLS TURN START", from) }
         // create a new turn
-        history.newTurn("tools", from);
+        uihistoryManager.newTurn("tools", from);
         stream.value = "";
     }
 
@@ -90,7 +90,7 @@ const useTaskEvents = (
     const onEndThinking: AgentInferenceOptions["onEndThinking"] = (from: string) => {
         if (debug) { console.log("ON THINKING END", from) };
         hasThinking.value = false;
-        history.newTurn("think", from, {
+        uihistoryManager.newTurn("think", from, {
             think: stream.value,
         });
         buffer = "";
@@ -118,7 +118,7 @@ const useTaskEvents = (
             call: { id: tc.id, name: tc.name, arguments: tc.arguments },
             response: null,
         };
-        history.addToolCallToCurrentTurn(t);
+        uihistoryManager.addToolCallToCurrentTurn(t);
         const tcip = toolCallsState.tcs.findIndex(a => a.id == tc.id);
         if (tcip === -1) {
             throw new Error(`tool call in progress ${tc} not found`)
@@ -132,9 +132,9 @@ const useTaskEvents = (
         // auto open last tool call in history
         if (uistate.value.autoOpenTools) {
             //console.log("AOT", history.currentTurn.state.showToolResponses);
-            if (history.currentTurn?.tools) {
-                history.currentTurn.state.showToolResponses.push(
-                    history.currentTurn.tools[history.currentTurn.tools.length - 1].call.id
+            if (uihistoryManager.currentTurn?.tools) {
+                uihistoryManager.currentTurn.state.showToolResponses.push(
+                    uihistoryManager.currentTurn.tools[uihistoryManager.currentTurn.tools.length - 1].call.id
                 )
             }
             //console.log("AOT END", history.currentTurn.state.showToolResponses);
@@ -156,7 +156,7 @@ const useTaskEvents = (
             //console.log("SET CA onToolCallEnd", tc.name, currentAgent.value, "=>", ca);
             //currentAgent.value = ca;
         } else {
-            history.addToolResponseToCurrentTurn(tc, tr, from)
+            uihistoryManager.addToolResponseToCurrentTurn(tc, tr, from)
         }
         stream.value = "";
     };
@@ -188,7 +188,7 @@ const useTaskEvents = (
 
     const onAssistant: AgentInferenceOptions["onAssistant"] = (txt: string, from: string) => {
         if (debug) { console.log("ASSISTANT", from, txt); }
-        history.newTurn("assistant", from, {
+        uihistoryManager.newTurn("assistant", from, {
             assistant: txt,
         });
         nextTick(async () => { stream.value = ""; });
@@ -202,16 +202,19 @@ const useTaskEvents = (
     };
 
     const onTurnEnd: AgentInferenceOptions["onTurnEnd"] = (ht: HistoryTurn, from: string) => {
-        if (debug) { console.log("END TURN", from, ht); };
-        state.history.push(ht);
+        if (debug) { console.log("END TURN", from, "/", currentAgent.value, "/", state.currentFeature.name, ht); };
+        if (from == state.currentFeature.name) {
+            state.history.push(ht);
+            if (ht?.stats && !(from == "server")) {
+                uihistoryManager.addStatsToCurrentTurn(ht.stats)
+            }
+        }
         stream.value = "";
         nodes.value = [];
         thinkingNodes.value = [];
         buffer = "";
-        if (ht?.stats && !(from == "server")) {
-            history.addStatsToCurrentTurn(ht.stats)
-        }
         scrollOutput(true, 100);
+        console.log("HIST", state.history);
     }
 
     /*const onEndEmit: AgentInferenceOptions["onEndEmit"] = (res: InferenceResult, from: string) => {
@@ -248,6 +251,7 @@ const useTaskEvents = (
             state.isProcessingPrompt = true;
             state.promptProcessingProgress = progress;
         }
+        scrollOutput(true, 50);
 
     }
 
