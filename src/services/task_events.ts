@@ -6,6 +6,8 @@ import { uihistoryManager, state, uistate } from "../state.js";
 import { createAwaiter } from "../utils.js";
 import { msg } from "./notify.js";
 
+let parseScheduled = false;
+
 const useTaskEvents = (
     stream: Ref<string>,
     scrollOutput: CallableFunction,
@@ -100,14 +102,16 @@ const useTaskEvents = (
 
     const onToken: AgentInferenceOptions["onToken"] = (chunk: string, from: string) => {
         buffer += chunk;
-        // @ts-ignore
-        nodes.value = parseMarkdownToStructure(buffer, md, {
-            final: true,
-            //requireClosingStrong: true,
-        })
         stream.value += chunk;
-        //console.log("T", t)
-        scrollOutput();
+        if (!parseScheduled) {
+            parseScheduled = true;
+            requestAnimationFrame(() => {
+                // @ts-ignore
+                nodes.value = parseMarkdownToStructure(buffer, md, { final: true });
+                parseScheduled = false;
+                nextTick(() => scrollOutput())
+            });
+        }
     }
 
     const onToolCall: AgentInferenceOptions["onToolCall"] = (tc: ToolCallSpec, type: string, from: string) => {
