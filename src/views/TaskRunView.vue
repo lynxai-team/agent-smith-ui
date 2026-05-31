@@ -376,23 +376,22 @@ async function loadTask() {
       }
     }
   }
-  //console.log("MODEL", state.currentModel);
   else if (srv.agentSpec.value?.inferParams) {
     for (const [k, v] of Object.entries(srv.agentSpec.value.inferParams)) {
       inferOptions.params[k] = v
     }
   }
   const b = inferOptions?.backend ?? uistate.value.backend;
-  if (m.length > 0) {
-    inferOptions.model = state.models[b][m].id;
-    state.currentModel = state.models[b][m];
-  }
-  if (state.currentModel?.id == "") {
-    state.currentModel = state.models[b][srv.agentSpec.value.model];
-  }
+  state.onReady.then(() => {
+    if (m.length > 0) {
+      inferOptions.model = state.models[b][m].id;
+      state.currentModel = state.models[b][m];
+    }
+    if (state.currentModel?.id == "") {
+      state.currentModel = state.models[b][srv.agentSpec.value.model];
+    }
+  });
   setCurrentFeature(props.name, "agent");
-  //console.log("M", selectedModel.value)
-  //console.log("LOADED T", props.name, inferOptions);
   isReady.value = true;
 };
 

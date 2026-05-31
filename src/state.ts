@@ -64,17 +64,14 @@ const conf = ref<ConfigFile>();
 const srv = useClientFeatures();
 
 async function initState() {
+    state.onReady.then(() => console.log("state ready"))
     const { found, config } = await srv.checkState();
     state.hasConfig = found;
     if (found) {
         conf.value = config
     }
-    //console.log("CONF", conf.value)
-    //console.log("SRV STATE", state);
     if (state.hasConfig) {
-        //console.log("Init td");
         await initTaskData();
-        //console.log("run lm");
         state.isReady = true;
         unblock(true)
     } else {
@@ -85,7 +82,6 @@ async function initState() {
 
 async function initTaskData() {
     let ts: Record<string, Record<string, any>>;
-    let bk: Record<string, any>;
     let ws: Workspace[];
     let st: Record<string, any>;
     let mp: Record<string, SamplingPreset>;
@@ -104,7 +100,6 @@ async function initTaskData() {
                 }
                 try {
                     srv.loadModels(k).then(bks => state.models[k] = bks);
-                    //state.models[k] = bks;
                 } catch (e) {
                     console.error(`Can not load models from ${k}`, `Check you backend server`)
                     //throw new Error("can not load models")
