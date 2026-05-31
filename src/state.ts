@@ -69,7 +69,34 @@ async function initState() {
     if (found) {
         conf.value = config
     }
-    const lm = () => {
+    //console.log("CONF", conf.value)
+    //console.log("SRV STATE", state);
+    if (state.hasConfig) {
+        //console.log("Init td");
+        await initTaskData();
+        //console.log("run lm");
+        state.isReady = true;
+        unblock(true)
+    } else {
+        state.isReady = true;
+        unblock(true)
+    }
+}
+
+async function initTaskData() {
+    let ts: Record<string, Record<string, any>>;
+    let bk: Record<string, any>;
+    let ws: Workspace[];
+    let st: Record<string, any>;
+    let mp: Record<string, SamplingPreset>;
+    srv.loadBackends().then((bk) => {
+        state.backends = bk;
+        for (const v of Object.values(bk)) {
+            if (v.isDefault) {
+                uistate.value.backend = v.name;
+                break
+            }
+        }
         if (conf.value?.backends) {
             for (const k of Object.keys(conf.value.backends)) {
                 if (k == "default") {
@@ -84,32 +111,10 @@ async function initState() {
                 }
             }
         }
-    }
-    //console.log("CONF", conf.value)
-    //console.log("SRV STATE", state);
-    if (state.hasConfig) {
-        //console.log("Init td");
-        await initTaskData();
-        //console.log("run lm");
-        state.isReady = true;
-        unblock(true)
-        lm();
-    } else {
-        state.isReady = true;
-        unblock(true)
-    }
-}
-
-async function initTaskData() {
-    let ts: Record<string, Record<string, any>>;
-    let bk: Record<string, any>;
-    let ws: Workspace[];
-    let st: Record<string, any>;
-    let mp: Record<string, SamplingPreset>;
+    });
     try {
-        [ts, bk, ws, st, mp] = await Promise.all([
+        [ts, ws, st, mp] = await Promise.all([
             srv.loadAgentSettings(),
-            srv.loadBackends(),
             srv.loadWorkspaces(),
             srv.loadSettings(),
             srv.loadSamplingPresets(),
@@ -128,13 +133,6 @@ async function initTaskData() {
     }
     //console.log("WS", ws);
     state.agentsSettings = ts;
-    state.backends = bk;
-    for (const v of Object.values(bk)) {
-        if (v.isDefault) {
-            uistate.value.backend = v.name;
-            break
-        }
-    }
     state.samplingPresets = mp;
 }
 

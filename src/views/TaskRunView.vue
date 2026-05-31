@@ -299,12 +299,12 @@ async function exec() {
     // conversation starts
     question.value = p;
     pr = srv.agentSpec.value.prompt.replace("{prompt}", p);
-    uihistoryManager.newTurn("user", props.name, { user: pr });
-    state.history.push({user: pr})
+    uihistoryManager.newTurn("user", props.name, 0, { user: pr });
+    state.history.push({ user: pr })
   } else {
     // conversation continues
     opts.history = toRaw(state.history);
-    uihistoryManager.newTurn("user", props.name, { user: pr });
+    uihistoryManager.newTurn("user", props.name, state.history.length - 1, { user: pr });
   }
   nodes.value = [];
   thinkingNodes.value = [];
@@ -397,20 +397,24 @@ async function loadTask() {
 };
 
 function restartAtTurn(n: number) {
-  console.log("Restart at", n);
+  //console.log("Restart at", n);
   taskEvents.resetStream();
-  //console.log("H1", state.uihistory);
-
-  //console.log("Q", question.value);
   if (n == 0) {
     prompt.value = question.value;
     question.value = "";
   } else {
     prompt.value = state.uihistory[n].user ?? "";
   }
+  //console.log("Restart 2 n", n, "/", state.uihistory.length, state.uihistory[n - 1]);
   state.uihistory = state.uihistory.slice(0, n);
-  state.history = state.history.slice(0, n);
-  //console.log("H2", state.uihistory);
+  const at = state.uihistory[n - 1].agentTurn + 1;
+  //console.log("Restart 3 n", n - 1, "at", at);
+  if (at > 0) {
+    state.history = state.history.slice(0, at + 1);
+  } else {
+    state.history = [state.history[0]];
+  }
+  //console.log("H", toRaw(state.history));
   confirmRestart.value = null;
   nUserInteraction.value = n;
   //console.log("SH1", state.history);

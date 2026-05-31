@@ -1,6 +1,6 @@
 import type { AgentInferenceOptions, ClientFeaturesOptions, HistoryTurn, PromptProcessingInProgressStats, ToolCallSpec, ToolTurn } from "@agent-smith/types";
 import { getMarkdown, parseMarkdownToStructure } from "markstream-vue";
-import { nextTick, type Reactive, type Ref } from "vue";
+import { nextTick, toRaw, type Reactive, type Ref } from "vue";
 import type { ParsedNode } from "yaml";
 import { uihistoryManager, state, uistate } from "../state.js";
 import { createAwaiter } from "../utils.js";
@@ -19,7 +19,7 @@ const useTaskEvents = (
     let buffer = "";
     const md = getMarkdown();
     //const perf = useInferencePerfTimer();
-    const debug = true;
+    const debug = false;
     let callerAgents = new Array<string>();
     //let currentStats: InferenceStats | null = null;
 
@@ -61,7 +61,7 @@ const useTaskEvents = (
     const onToolsTurnStart: AgentInferenceOptions["onToolsTurnStart"] = (tcs: Array<ToolCallSpec>, from: string) => {
         if (debug) { console.log("TOOLS TURN START", from) }
         // create a new turn
-        uihistoryManager.newTurn("tools", from);
+        uihistoryManager.newTurn("tools", from, state.history.length - 1);
         stream.value = "";
     }
 
@@ -90,7 +90,7 @@ const useTaskEvents = (
     const onEndThinking: AgentInferenceOptions["onEndThinking"] = (from: string) => {
         if (debug) { console.log("ON THINKING END", from) };
         hasThinking.value = false;
-        uihistoryManager.newTurn("think", from, {
+        uihistoryManager.newTurn("think", from, state.history.length - 1, {
             think: stream.value,
         });
         buffer = "";
@@ -189,7 +189,7 @@ const useTaskEvents = (
 
     const onAssistant: AgentInferenceOptions["onAssistant"] = (txt: string, from: string) => {
         if (debug) { console.log("ASSISTANT", from, txt); }
-        uihistoryManager.newTurn("assistant", from, {
+        uihistoryManager.newTurn("assistant", from, state.history.length - 1, {
             assistant: txt,
         });
         nextTick(async () => { stream.value = ""; });
@@ -203,8 +203,16 @@ const useTaskEvents = (
     };
 
     const onTurnEnd: AgentInferenceOptions["onTurnEnd"] = (ht: HistoryTurn, from: string) => {
-        if (debug) { console.log("END TURN", from, "/", currentAgent.value, "/", state.currentFeature.name, ht); };
+        if (debug) {
+            console.log("END TURN", from, "/", currentAgent.value, "/", state.currentFeature.name, ht);
+        };
         if (from == state.currentFeature.name) {
+            if (state.history.length > 0) {
+                // user always has the first turn
+                if (ht?.user) {
+                    delete ht.user
+                }
+            }
             state.history.push(ht);
             if (ht?.stats && !(from == "server")) {
                 uihistoryManager.addStatsToCurrentTurn(ht.stats)
@@ -215,7 +223,6 @@ const useTaskEvents = (
         thinkingNodes.value = [];
         buffer = "";
         scrollOutput(true, 100);
-        console.log("HIST", state.history);
     }
 
     /*const onEndEmit: AgentInferenceOptions["onEndEmit"] = (res: InferenceResult, from: string) => {
