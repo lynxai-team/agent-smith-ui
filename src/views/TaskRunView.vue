@@ -401,9 +401,13 @@ function restartAtTurn(n: number) {
   if (n == 0) {
     prompt.value = question.value;
     question.value = "";
-  } else {
-    prompt.value = state.uihistory[n].user ?? "";
+    state.uihistory = [];
+    state.history = [];
+    confirmRestart.value = null;
+    nUserInteraction.value = 0;
+    return
   }
+  prompt.value = state.uihistory[n].user ?? "";
   //console.log("Restart 2 n", n, "/", state.uihistory.length, state.uihistory[n - 1]);
   state.uihistory = state.uihistory.slice(0, n);
   const at = state.uihistory[n - 1].agentTurn + 1;
@@ -460,9 +464,7 @@ function confirmDelHistory() {
   confirmDanger("Start a new conversation?", "Remove this conversation history and start a new one",
     async () => {
       taskEvents.resetStream();
-      nUserInteraction.value = 0;
-      state.uihistory = [];
-      state.history = [];
+      restartAtTurn(0)
     }
   )
 }

@@ -7,6 +7,7 @@ import { createAwaiter } from "../utils.js";
 import { msg } from "./notify.js";
 
 let parseScheduled = false;
+const PARSE_INTERVAL_MS = 50; // ~20 parses/sec
 
 const useTaskEvents = (
     stream: Ref<string>,
@@ -75,13 +76,19 @@ const useTaskEvents = (
 
     const onThinkingToken: AgentInferenceOptions["onThinkingToken"] = (t: string, from: string) => {
         buffer += t;
-        // @ts-ignore
-        thinkingNodes.value = parseMarkdownToStructure(buffer, md, {
-            final: true,
-            //requireClosingStrong: true,
-        });
         stream.value += t;
-        scrollOutput();
+        if (!parseScheduled) {
+            parseScheduled = true;
+            setTimeout(() => {
+                // @ts-ignore
+                thinkingNodes.value = parseMarkdownToStructure(buffer, md, {
+                    final: true,
+                    //requireClosingStrong: true,
+                });
+                parseScheduled = false;
+                nextTick(() => scrollOutput());
+            }, PARSE_INTERVAL_MS);
+        }
     }
 
     const onStartThinking: AgentInferenceOptions["onStartThinking"] = (from: string) => {
@@ -105,12 +112,12 @@ const useTaskEvents = (
         stream.value += chunk;
         if (!parseScheduled) {
             parseScheduled = true;
-            requestAnimationFrame(() => {
+            setTimeout(() => {
                 // @ts-ignore
                 nodes.value = parseMarkdownToStructure(buffer, md, { final: true });
                 parseScheduled = false;
                 nextTick(() => scrollOutput())
-            });
+            }, PARSE_INTERVAL_MS);
         }
     }
 

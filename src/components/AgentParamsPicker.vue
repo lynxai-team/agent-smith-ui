@@ -45,7 +45,7 @@
         <div class="flex flex-wrap gap-2 justify-around">
             <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
             <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{ loadedModel.id
-            }}
+                }}
                 {{ humanizeNumber(loadedModel.ctx) }}</button>
             <button v-for="preset in state.samplingPresets" class="btn soft" @click="applySamplingPreset(preset)">{{
                 preset.name }}</button>
@@ -257,7 +257,11 @@ async function init() {
             backend.value = uistate.value.backend
         }
     }
-    getLoadedModel(backend.value);
+    try {
+        getLoadedModel(backend.value);
+    } catch (e) {
+        console.warn(e)
+    }
 }
 
 onBeforeMount(() => init());
