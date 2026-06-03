@@ -170,6 +170,7 @@ const useTaskEvents = (
             uihistoryManager.addToolResponseToCurrentTurn(tc, tr, from)
         }
         stream.value = "";
+        buffer = "";
         scrollOutput(true, 50);
     };
 

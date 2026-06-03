@@ -350,6 +350,12 @@ async function exec() {
 }
 
 async function loadTask() {
+  // reset opts
+  inferOptions.params = defaultInferenceParams;
+  inferOptions.model = "";
+  inferOptions.backend = "";
+  inferOptions.propagateModel = false;
+  inferOptions.propagateInferParams = false;
   //console.log("Load task", props.name);
   await srv.load(props.name, props.isAgent);
   //console.log("AS", toRaw(srv.agentSpec.value));
