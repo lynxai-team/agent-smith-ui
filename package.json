@@ -14,8 +14,8 @@
     "build": "run-s build:check build:compile build:compress build:server"
   },
   "dependencies": {
-    "@agent-smith/ui-components": "file:../agent-smith-ui-components",
-    "@agent-smith/server": "file:../agent-smith/server/node",
+    "@agent-smith/ui-components": "file:../../agent-smith-ui-components",
+    "@agent-smith/server": "file:../agent-smith/server",
     "@agent-smith/wscli": "file:../agent-smith/packages/wscli",
     "@fontsource/roboto": "^5.2.10",
     "@primeuix/themes": "^2.0.3",
@@ -40,10 +40,9 @@
     "vue-router": "5.0.7",
     "vuecodit": "^0.0.11",
     "yaml": "^2.9.0",
-    "@agent-smith/app-debate": "file:../agent-smith-apps/debate"
+    "@agent-smith/app-debate": "file:../../agent-smith-apps/debate"
   },
   "devDependencies": {
-    "@agent-smith/task": "file:../agent-smith/packages/task",
     "@agent-smith/types": "file:../agent-smith/packages/types",
     "@iconify/json": "^2.2.477",
     "@tailwindcss/forms": "^0.5.11",

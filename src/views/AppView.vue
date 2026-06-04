@@ -23,12 +23,18 @@ const loadComponent = async () => {
     const apps = import.meta.glob('../apps/*' /* @vite-ignore */,);
     //console.log("APPS", apps);
     const pack = "../apps/" + props.name + ".js";
-    //console.log("P", pack);
-    let mod = await apps[pack]();
+    let mod;
+    try {
+        //console.log("M1");
+        mod = await apps[pack]();
+        //console.log("M2", mod);
+    } catch (e) {
+        throw new Error(`loading app ${props.name}: ${e}`);
+    }
+    //console.log("MOD", mod);
     if (mod?.default) {
         mod = mod.default;
     }
-    //console.log("MOD", mod);
     currentComponent.value = mod.AppComponent;
     if (mod?.AppSidebar) {
         appSidebar.value = mod.AppSidebar;

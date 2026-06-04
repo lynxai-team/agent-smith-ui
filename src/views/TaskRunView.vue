@@ -4,7 +4,6 @@
       <div class="w-full flex flex-col h-max overflow-y-auto p-3">
         <template v-if="state.uihistory.length > 0">
           <div v-for="(turn, i) in state.uihistory" class="flex flex-col">
-
             <TurnTitle name="user" v-if="i == 0"></TurnTitle>
             <TurnTitle :name="turn.from" v-else-if="state.uihistory[i - 1].from != turn.from" class="pt-3"></TurnTitle>
             <div v-if="turn?.user" class="hover:background rounded-md px-3 flex flex-row items-end w-full"
