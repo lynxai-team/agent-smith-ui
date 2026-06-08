@@ -129,6 +129,9 @@
           <div class="flex flex-row">
             <PromptNavbarLeft></PromptNavbarLeft>
             <div class="flex flex-row w-full justify-end items-center flex-grow">
+              <!-- div v-if="prompt.length > 0">
+                <button class="btn" @click="applyTemplateToPrompt(prompt, srv, inferOptions)">T</button>
+              </div -->
               <div class="txt-semilight text-sm mr-2" v-if="srv.isReady">
                 <Popover ref="modelsPopover">
                   <AgentParamsPicker :agent-spec="srv.agentSpec.value" @end="useAgentSettings($event);">
@@ -207,7 +210,7 @@ import AutoTextarea from '../widgets/AutoTextarea.vue';
 //import ToolCallNode from '../components/ToolCallNode.vue';
 import 'markstream-vue/index.css';
 //import "../assets/markstream.css";
-import { ToolCallSpec, UiHistoryTurn } from '@agent-smith/types';
+import { ChatCompletionHistoryTurn, ToolCallSpec, UiHistoryTurn } from '@agent-smith/types';
 import { useClientFeatures } from '@agent-smith/wscli';
 import Popover from 'primevue/popover';
 import { nextTick } from 'process';
@@ -222,6 +225,7 @@ import HistoryTurnStatsBar from '../widgets/HistoryTurnStatsBar.vue';
 import UserEditIcon from '../widgets/icons/UserEditIcon.vue';
 import ToolCallDetails from '../widgets/ToolCallDetails.vue';
 import TurnTitle from '../widgets/TurnTitle.vue';
+import { applyTemplateToPrompt } from '../services/template.js';
 
 const props = defineProps({
   name: {
@@ -404,7 +408,7 @@ function restartAtTurn(n: number) {
   //console.log("Restart at", n);
   taskEvents.resetStream();
   if (n == 0) {
-    prompt.value = question.value;
+    prompt.value = "";
     question.value = "";
     state.uihistory = [];
     state.history = [];
@@ -469,6 +473,7 @@ function confirmDelHistory() {
   confirmDanger("Start a new conversation?", "Remove this conversation history and start a new one",
     async () => {
       taskEvents.resetStream();
+      state.history = [];
       restartAtTurn(0)
     }
   )
@@ -532,7 +537,7 @@ onBeforeUnmount(() => resetCurrentFeature())
 
 watch(props, () => {
   if (props.name != srv.agentSpec.value?.name) {
-    console.log("W", props.name, srv.agentSpec.value?.name)
+    //console.log("W", props.name, srv.agentSpec.value?.name)
     resetCurrentFeature();
     taskEvents.resetStream();
     srv.isReady.value = false;

@@ -37,6 +37,7 @@ declare module 'vue' {
     ThinkingContent: typeof import('./src/components/ThinkingContent.vue')['default']
     ThinkingNode: typeof import('./src/components/ThinkingNode.vue')['default']
     ToolCallNode: typeof import('./src/components/ToolCallNode.vue')['default']
+    ViewAgent: typeof import('./src/components/ViewAgent.vue')['default']
     ViewConf: typeof import('./src/components/ViewConf.vue')['default']
     WorkspacePicker: typeof import('./src/components/WorkspacePicker.vue')['default']
   }
