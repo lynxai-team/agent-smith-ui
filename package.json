@@ -14,9 +14,8 @@
     "build": "run-s build:check build:compile build:compress build:server"
   },
   "dependencies": {
-    "@agent-smith/ui-components": "file:../../agent-smith-ui-components",
-    "@agent-smith/server": "file:../agent-smith/server",
-    "@agent-smith/wscli": "file:../agent-smith/packages/wscli",
+    "@agent-smith/server": "^0.0.9",
+    "@agent-smith/wscli": "^0.0.6",
     "@fontsource/roboto": "^5.2.10",
     "@primeuix/themes": "^2.0.3",
     "@primevue/themes": "^4.5.4",

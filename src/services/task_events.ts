@@ -1,6 +1,6 @@
 import type { AgentInferenceOptions, ClientFeaturesOptions, HistoryTurn, PromptProcessingInProgressStats, ToolCallSpec, ToolTurn } from "@agent-smith/types";
 import { getMarkdown, parseMarkdownToStructure } from "markstream-vue";
-import { nextTick, toRaw, type Reactive, type Ref } from "vue";
+import { nextTick, type Reactive, type Ref } from "vue";
 import type { ParsedNode } from "yaml";
 import { uihistoryManager, state, uistate } from "../state.js";
 import { createAwaiter } from "../utils.js";
@@ -204,6 +204,7 @@ const useTaskEvents = (
         uihistoryManager.newTurn("assistant", from, state.history.length - 1, {
             assistant: txt,
         });
+        //console.log("ASSISTANT H", state.history);
         nextTick(async () => { stream.value = ""; });
         scrollOutput(true, 100)
     };
@@ -219,12 +220,13 @@ const useTaskEvents = (
             console.log("END TURN", from, "/", currentAgent.value, "/", state.currentFeature.name, ht);
         };
         if (from == state.currentFeature.name) {
-            if (state.history.length > 0) {
+            /*if (state.history.length > 0) {
                 // user always has the first turn
                 if (ht?.user) {
                     delete ht.user
                 }
-            }
+            }*/
+            //console.log("************** SH", state.history);
             state.history.push(ht);
             if (ht?.stats && !(from == "server")) {
                 uihistoryManager.addStatsToCurrentTurn(ht.stats)

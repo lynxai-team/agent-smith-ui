@@ -151,7 +151,7 @@
                 </svg>
               </button>
               <button class="btn flex justify-end p-3" :disabled="stream.length == 0 && toolCallsState.tcs.length == 0"
-                @click="srv.cancel()"
+                @click="srv.cancel(); taskEvents.resetStream()"
                 :class="stream.length == 0 && toolCallsState.tcs.length == 0 ? 'txt-semilight' : ''">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16">
                   <path fill="currentColor"
@@ -298,17 +298,18 @@ async function exec() {
   const opts: AgentInferenceOptions = toRaw(inferOptions);
   prompt.value = "";
   let pr = p;
-  if (nUserInteraction.value == 1) {
+  //state.history = state.uihistory;
+  if (nUserInteraction.value < 2) {
     // conversation starts
     question.value = p;
     pr = srv.agentSpec.value.prompt.replace("{prompt}", p);
     uihistoryManager.newTurn("user", props.name, 0, { user: pr });
-    state.history.push({ user: pr })
   } else {
     // conversation continues
-    opts.history = toRaw(state.history);
+    opts.history = [...toRaw(state.history)];
     uihistoryManager.newTurn("user", props.name, state.history.length - 1, { user: pr });
   }
+  state.history.push({ user: pr });
   nodes.value = [];
   thinkingNodes.value = [];
   nextTick(() => {
@@ -344,7 +345,7 @@ async function exec() {
     opts.params = {}
   }
   opts.params.extra = { return_progress: true };
-  //console.log("EXEC OPTS", opts);
+  //console.log("EXEC AGENT", opts.history);
   await srv.executeAgent(p, opts);
   //taskEvents.onTaskEnd();
   //clearInterval(tid);
@@ -474,6 +475,7 @@ function confirmDelHistory() {
     async () => {
       taskEvents.resetStream();
       state.history = [];
+      state.uihistory = [];
       restartAtTurn(0)
     }
   )

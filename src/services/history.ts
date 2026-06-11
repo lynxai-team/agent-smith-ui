@@ -65,7 +65,7 @@ const useUiHistory = () => {
     }
 
     const reset = () => {
-        state.history = [];
+        state.uihistory = [];
     }
 
     return {
