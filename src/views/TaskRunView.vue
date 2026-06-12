@@ -151,7 +151,7 @@
                 </svg>
               </button>
               <button class="btn flex justify-end p-3" :disabled="stream.length == 0 && toolCallsState.tcs.length == 0"
-                @click="srv.cancel(); taskEvents.resetStream()"
+                @click="srv.cancel();"
                 :class="stream.length == 0 && toolCallsState.tcs.length == 0 ? 'txt-semilight' : ''">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16">
                   <path fill="currentColor"

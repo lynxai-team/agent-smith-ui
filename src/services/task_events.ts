@@ -1,6 +1,6 @@
 import type { AgentInferenceOptions, ClientFeaturesOptions, HistoryTurn, PromptProcessingInProgressStats, ToolCallSpec, ToolTurn } from "@agent-smith/types";
 import { getMarkdown, parseMarkdownToStructure } from "markstream-vue";
-import { nextTick, type Reactive, type Ref } from "vue";
+import { nextTick, toRaw, type Reactive, type Ref } from "vue";
 import type { ParsedNode } from "yaml";
 import { uihistoryManager, state, uistate } from "../state.js";
 import { createAwaiter } from "../utils.js";
@@ -22,7 +22,7 @@ const useTaskEvents = (
     let buffer = "";
     const md = getMarkdown();
     //const perf = useInferencePerfTimer();
-    const debug = false;
+    const debug = true;
     let callerAgents = new Array<string>();
     //let currentStats: InferenceStats | null = null;
 
@@ -123,20 +123,25 @@ const useTaskEvents = (
 
     const onToolCall: AgentInferenceOptions["onToolCall"] = (tc: ToolCallSpec, type: string, from: string) => {
         if (debug) { console.log("TOOL CALL", "from=" + from, "type=" + type, tc); }
-        const t: ToolTurn = {
-            from: from,
-            type: type,
-            call: { id: tc.id, name: tc.name, arguments: tc.arguments },
-            response: null,
-        };
-        uihistoryManager.addToolCallToCurrentTurn(t);
+        let turn = state.uihistory[state.uihistory.length - 1];
+        if (!(tc.id in turn.state.confirmToolCalls)) {
+            const t: ToolTurn = {
+                from: from,
+                type: type,
+                call: { id: tc.id, name: tc.name, arguments: tc.arguments },
+                response: null,
+            };
+            uihistoryManager.addToolCallToCurrentTurn(t);
+        } else {
+            delete turn.state.confirmToolCalls[tc.id];
+        }
         const tcip = toolCallsState.tcs.findIndex(a => a.id == tc.id);
         if (tcip === -1) {
             throw new Error(`tool call in progress ${tc} not found`)
         }
         toolCallsState.tcs.splice(tcip, 1);
         if (type == "agent") {
-            console.log("SET CA onToolCall", tc.name, currentAgent.value, "=>", from);
+            //console.log("SET CA onToolCall", tc.name, currentAgent.value, "=>", from);
             currentAgent.value = tc.name;
             callerAgents.push(from);
         }
@@ -174,26 +179,34 @@ const useTaskEvents = (
         scrollOutput(true, 50);
     };
 
-    const confirmToolUsage: AgentInferenceOptions["confirmToolUsage"] = async (tc: ToolCallSpec, from: string) => {
+    const onConfirmToolUsage: AgentInferenceOptions["onConfirmToolUsage"] = async (tc: ToolCallSpec) => {
+        if (debug) {
+            console.log("CONFIRM TOOL", tc, null, 2);
+        }
+        const tcip = toolCallsState.tcs.findIndex(a => a.id == tc.id);
+        if (tcip === -1) {
+            throw new Error(`tool call in progress ${tc} not found`)
+        }
+        toolCallsState.tcs.splice(tcip, 1);
         const { awaiter, unblock } = createAwaiter<boolean>();
         let turn = state.uihistory[state.uihistory.length - 1];
-        //console.log("HIST", toRaw(state.uihistory), null, 2);
         if (!turn?.tools) {
             turn.tools = []
         }
         const t = {
-            from: from,
+            from: currentAgent.value,
             type: "",
             call: { id: tc.id, name: tc.name, arguments: tc.arguments },
             response: null,
             order: []
         };
         //console.log("ADD TOOL TO CURRENT TURN FROM CONFIRM", t);
-        turn.tools.push(t)
+        uihistoryManager.addToolCallToCurrentTurn(t)
+        //turn.tools.push(t)
         //console.log("TT", JSON.stringify(toRaw(turn), null, 2));
         turn.state.confirmToolCalls[tc.id] = { resolve: unblock, reject: () => true };
+        console.log("CTC", turn.state.confirmToolCalls);
         const res = await awaiter;
-        delete turn.state.confirmToolCalls[tc.id];
         turn.state.showToolResponses = []
         return res
         //console.log("CONFIRM TOOL", tc); return confirm(`Use tool \n${JSON.stringify(tc)} ?`)
@@ -313,7 +326,7 @@ const useTaskEvents = (
             onEndThinking,
             onToolCall,
             onToolCallEnd,
-            confirmToolUsage,
+            onConfirmToolUsage,
             onToolsTurnStart,
             onToolsTurnEnd,
             onTurnStart,

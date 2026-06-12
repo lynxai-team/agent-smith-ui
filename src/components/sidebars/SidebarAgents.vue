@@ -21,13 +21,16 @@ const agents = ref<Record<string, any>>();
 const isReady = ref(false);
 const router = useRouter();
 const nodes = ref<Array<TreeNode>>([]);
+const noDisplay = new Array<string>("subagent");
 
 async function loadAgents() {
     const data = await api.get<Record<string, any>>("/agents");
     const ts: Record<string, string> = {};
     for (const [n, t] of Object.entries(data.data)) {
         if (t?.category) {
-            ts[n] = t.category;
+            if (!noDisplay.includes(t.category)) {
+                ts[n] = t.category;
+            }
         }
     }
     nodes.value = transformTasksData(ts) as Array<TreeNode>;

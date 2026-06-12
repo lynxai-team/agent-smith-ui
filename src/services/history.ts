@@ -3,7 +3,7 @@ import { state, uistate } from "../state.js";
 
 const useUiHistory = () => {
     const newTurn = (type: UiHistoryTurnType, from: string, n: number, ht?: HistoryTurn) => {
-        console.log("NEW TURN", state.uihistory.length + 1, from, type, ht);
+        //console.log("NEW TURN", state.uihistory.length + 1, from, type, ht);
         let turn: UiHistoryTurn = {
             from: type == "user" ? "user" : from,
             type: type,
