@@ -38,9 +38,10 @@
                 </div>
             </div>
             <div class="pt-3 flex flex-row space-x-2">
-                <button class="btn success w-max" @click="installPlugins()">Install</button>
+                <button class="btn success w-max" @click="installPlugins()" :disabled="isInstalling">Install</button>
                 <button class="btn txt-warning w-max" @click="addPlugins = false">Cancel</button>
             </div>
+            <div v-if="isInstalling">Installing plugins ...</div>
         </div>
         <div v-if="conf?.apps" class="flex flex-col space-y-3">
             <div class="text-xl">Apps</div>
@@ -57,7 +58,7 @@ import type { ConfigFile } from '@agent-smith/types';
 import { onBeforeMount, ref } from 'vue';
 import { api } from '../services/api.js';
 import { msg } from '../services/notify.js';
-import { useRouter } from 'vue-router';
+import { availablePlugins } from '../conf.js';
 
 const emit = defineEmits(["reload"]);
 
@@ -65,30 +66,14 @@ const props = defineProps({
     conf: {
         type: Object as () => ConfigFile,
         required: true
+    },
+    plugins: {
+        type: Boolean,
     }
 });
 
-const router = useRouter();
-
-const availablePlugins = [
-    {
-        name: "@agent-smith/feat-inference",
-        description: "basic inference task",
-    },
-    {
-        name: "@agent-smith/feat-fs",
-        description: "filesystem tools and agents"
-    },
-    {
-        name: "@agent-smith/feat-lang",
-        description: "translation tasks"
-    },
-    {
-        name: "@agent-smith/feat-search",
-        description: "web search features"
-    },
-];
-const addPlugins = ref(false);
+const isInstalling = ref(false);
+const addPlugins = ref(true);
 const addFolders = ref(false);
 const selectedPlugins = ref<Array<string>>([]);
 const folder = ref("");
@@ -98,6 +83,7 @@ async function installPlugins() {
         msg.warn("Select a plugin", "Select a plugin to install")
         return
     }
+    isInstalling.value = true;
     const res = await api.post("/plugins/install", selectedPlugins.value);
     if (res.ok) {
         selectedPlugins.value = [];
@@ -120,11 +106,11 @@ async function addFolder() {
 }
 
 onBeforeMount(() => {
-    const q = router.currentRoute.value.query;
-    if (q?.plugins) {
-        if (q.plugins.toString() == "1") {
+    if (props?.plugins) {
+        if (props.plugins.toString() == "1") {
             addPlugins.value = true
         }
+        selectedPlugins.value = availablePlugins.map(p => p.name)
     }
 })
 </script>

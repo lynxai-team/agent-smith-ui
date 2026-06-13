@@ -10,6 +10,22 @@ const defaultInferenceParams: InferenceParams = {
     frequency_penalty: undefined,
 }
 
+const availablePlugins = [
+    {
+        name: "@agent-smith/feat-fs",
+        description: "filesystem tools and agents"
+    },
+    {
+        name: "@agent-smith/feat-shell",
+        description: "sandboxed shell"
+    },
+    {
+        name: "@agent-smith/feat-search",
+        description: "web search features"
+    },
+];
+
 export {
     defaultInferenceParams,
+    availablePlugins,
 }

@@ -27,15 +27,21 @@ async function loadAgents() {
     const data = await api.get<Record<string, any>>("/agents");
     const ts: Record<string, string> = {};
     for (const [n, t] of Object.entries(data.data)) {
+        //console.log("A", n, t, uistate.value.availableAgents[n])
         if (t?.category) {
-            if (!noDisplay.includes(t.category)) {
+            if (!(n in uistate.value.availableAgents)) {
+                uistate.value.availableAgents[n] = t.category.startsWith("internal") ? false : true;
+                //console.log("ADD KEY", n, uistate.value.availableAgents[n]);
+            }
+            if (!noDisplay.includes(t.category) && uistate.value.availableAgents[n] === true) {
                 ts[n] = t.category;
             }
         }
     }
+    //console.log("TS", transformTasksData(ts))
     nodes.value = transformTasksData(ts) as Array<TreeNode>;
     agents.value = data.data;
-    //console.log(agents.value);
+    //console.log("SB", agents.value);
     isReady.value = true;
 }
 

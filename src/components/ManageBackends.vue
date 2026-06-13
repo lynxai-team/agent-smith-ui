@@ -30,7 +30,7 @@ async function change(name: string) {
     }
     let m: Record<string, any> = {};
     try {
-        m = await srv.loadModels();
+        m = await srv.loadModels(name);
         state.models = m;
     } catch (e) {
         msg.error("Can not load models", "Check you backend server")

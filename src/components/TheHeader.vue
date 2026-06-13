@@ -88,7 +88,7 @@
     <template #menu>
       <div class="flex flex-row items-center justify-end w-full h-full txt-semilight">
         <template v-if="state.isReady">
-          <WorkspacePicker></WorkspacePicker>
+          <WorkspacePicker :show-workspace="openWorkspace"></WorkspacePicker>
           <SamplingPresets></SamplingPresets>
           <div>
             <button class="btn" :class="backendCls" @click="toggleBackends($event)">
@@ -144,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onBeforeMount } from 'vue';
 import { SwTopbar, useTopbar } from "@snowind/header";
 import { useRouter } from 'vue-router';
 import { resetCurrentFeature, user, state, conf, uistate } from '@/state.js';
@@ -167,6 +167,7 @@ const backends = ref();
 const showApps = ref(false);
 const showBackends = ref(false);
 const isHome = computed<boolean>(() => router.currentRoute.value.path == "/");
+const openWorkspace = ref(false);
 
 const toggleApps = (event) => {
   apps.value.toggle(event);
@@ -197,6 +198,17 @@ const backendCls = computed(() => {
   }
   return 'txt-light'
 })
+
+async function redirOpts() {
+  const q = router.currentRoute.value.query;
+  if (q?.workspace) {
+    if (q.workspace.toString() == "1") {
+      openWorkspace.value = true
+    }
+  }
+}
+
+onBeforeMount(() => redirOpts())
 </script>
 
 <style lang="sass">

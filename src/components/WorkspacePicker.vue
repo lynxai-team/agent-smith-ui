@@ -29,11 +29,13 @@
         </Popover>
         <button class="btn" @click="wspopover.toggle($event)">
             <template v-if="state.currentWorkspace.name == ''">
-                <WorkspaceIcon width="32" height="32" class=" txt-light"></WorkspaceIcon>
+                <WorkspaceIcon width="32" height="32" :class="_show ? 'txt-danger' : 'txt-light'">
+                </WorkspaceIcon>
             </template>
             <div v-else class="flex flex-row space-x-2 items-center">
                 <div>
-                    <FolderIcon width="32" height="32" class=" txt-light"></FolderIcon>
+                    <FolderIcon width="32" height="32" class=" txt-light">
+                    </FolderIcon>
                 </div>
                 <div class=" txt-light"></div>{{ humanize(state.currentWorkspace.name) }}
             </div>
@@ -41,17 +43,22 @@
     </div>
 </template>
 <script setup lang="ts">
-import Popover from 'primevue/popover';
-import { ref, computed } from 'vue';
-import { state } from '../state.js';
-import WorkspaceIcon from '../widgets/icons/WorkspaceIcon.vue';
-import { api } from '../services/api.js';
 import type { Workspace } from '@agent-smith/types';
-import FolderIcon from '../widgets/icons/FolderIcon.vue';
+import Popover from 'primevue/popover';
+import { computed, ref } from 'vue';
+import { api } from '../services/api.js';
 import { humanize } from '../services/str.js';
+import { state } from '../state.js';
+import FolderIcon from '../widgets/icons/FolderIcon.vue';
+import WorkspaceIcon from '../widgets/icons/WorkspaceIcon.vue';
+
+const props = defineProps<{
+    showWorkspace?: boolean
+}>();
 
 const wspopover = ref();
 const view = ref<'view' | 'create'>('view');
+const _show = ref(props.showWorkspace);
 
 const form = ref({ name: '', path: '' });
 
@@ -81,6 +88,7 @@ async function addWorkspace() {
         state.currentWorkspace = payload;
     }
     view.value = "view";
+    _show.value = false
 }
 
 const isValid = computed(() => Boolean(form.value.name && form.value.path));

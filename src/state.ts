@@ -21,6 +21,7 @@ const uistate = useStorage<{
     viewMode: "text" | "markdown" | "raw",
     title: string,
     backend: string,
+    availableAgents: Record<string, boolean>,
 }>('uistate', {
     sidebar: "agents",
     taskView: "view",
@@ -30,6 +31,7 @@ const uistate = useStorage<{
     viewMode: "markdown",
     title: "",
     backend: "",
+    availableAgents: {},
 });
 const { awaiter, unblock } = createAwaiter<boolean>();
 const state = reactive<AgentState>({
@@ -64,9 +66,10 @@ const conf = ref<ConfigFile>();
 const srv = useClientFeatures();
 
 async function initState() {
-    state.onReady.then(() => console.log("state ready"))
+    //state.onReady.then(() => console.log("state ready"))
     const { found, config } = await srv.checkState();
     state.hasConfig = found;
+    //console.log("CONF", config)
     if (found) {
         conf.value = config
     }

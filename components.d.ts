@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AgentParamsPicker: typeof import('./src/components/AgentParamsPicker.vue')['default']
+    EditSettings: typeof import('./src/components/EditSettings.vue')['default']
     FormatedToolCallInProgress: typeof import('./src/components/FormatedToolCallInProgress.vue')['default']
     'IEosIcons:bubbleLoading': typeof import('~icons/eos-icons/bubble-loading')['default']
     'IFaSolid:moon': typeof import('~icons/fa-solid/moon')['default']

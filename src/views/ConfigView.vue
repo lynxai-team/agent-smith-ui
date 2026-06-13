@@ -1,17 +1,21 @@
 <template>
     <div class="container mx-auto flex flex-col space-y-5 p-3 h-full pb-24 w-main">
-        <div class="flex flex-row">
-            <div class="flex flex-row w-full justify-end">
-                <div class="text-2xl flex-grow">Configuration</div>
-                <div class="flex flex-row mr-3">
-                    <button class="btn p-1 border bord-lighter" :class="view == 'file' ? 'txt-semilight' : 'txt-light'"
-                        @click="view = 'file'">File</button>
-                    <button class="btn p-1 border bord-lighter" :class="view == 'edit' ? ' txt-semilight' : 'txt-light'"
-                        @click="view = 'edit'">Edit</button>
-                </div>
-            </div>
+        <div class="flex flex-row mr-3">
+            <button class="btn p-1 border bord-lighter"
+                :class="view == 'settings' ? ['txt-semilight', 'border-b-0'] : 'txt-light'"
+                @click="view = 'settings'">Settings</button>
+            <button class="btn p-1 border bord-lighter"
+                :class="view == 'file' ? ['txt-semilight', 'border-b-0'] : 'txt-light'" @click="view = 'file'">Config
+                file</button>
+            <button class="btn p-1 border bord-lighter"
+                :class="view == 'edit' ? ['txt-semilight', 'border-b-0'] : 'txt-light'" @click="view = 'edit'">Edit
+                config</button>
+            <div class="border-b bord-lighter flex-grow"></div>
         </div>
         <template v-if="view == 'file'">
+            <div class="flex flex-row w-full">
+                <div class="text-2xl flex-grow">Configuration</div>
+            </div>
             <div class="p-3 bg-gray-100 border border-gray-200 rounded-md not-prose dark:bg-black dark:border-neutral-800"
                 v-if="isReady">
                 <code-editor :hljs="hljs" :code="code" lang="yaml" @edit="codeChange($event)">
@@ -19,9 +23,18 @@
             </div>
             <!-- button class="btn success w-max" @click="saveConfig()">Save config</button -->
         </template>
-        <template v-else-if="conf">
-            <view-conf :conf="conf" @reload="redirectReload()"></view-conf>
+        <template v-else-if="view == 'settings'">
+            <div class="w-full">
+                <edit-settings></edit-settings>
+            </div>
         </template>
+        <template v-else-if="view == 'edit' && conf">
+            <div class="flex flex-row w-full">
+                <div class="text-2xl flex-grow">Configuration</div>
+            </div>
+            <view-conf :conf="conf" @reload="redirectReload()" :plugins="addPlugins"></view-conf>
+        </template>
+
     </div>
 </template>
 
@@ -37,19 +50,23 @@ import { onBeforeMount, ref, toRaw } from "vue";
 import type { ConfigFile } from "@agent-smith/types";
 import ViewConf from '../components/ViewConf.vue';
 import { conf } from '../state.js';
+import { useRouter } from 'vue-router';
+import EditSettings from '../components/EditSettings.vue';
 
 hljs.registerLanguage('yaml', _yaml);
+const router = useRouter();
 
 const isReady = ref(false);
 const code = ref("");
-const view = ref<"edit" | "file">("edit");
+const view = ref<"edit" | "file" | "settings">("settings");
+const addPlugins = ref(false);
 
 async function saveConfig() {
 
 }
 
 const redirectReload = async () => {
-    window.location.href = '/?redirect=config&plugins=1';
+    window.location.href = '/?workspace=1';
 }
 
 async function initConf() {
@@ -60,12 +77,27 @@ async function initConf() {
     isReady.value = true;
 };
 
+async function redirOpts() {
+    const q = router.currentRoute.value.query;
+    if (q?.plugins) {
+        if (q.plugins.toString() == "1") {
+            addPlugins.value = true
+        }
+        view.value = "edit"
+    } else if (q?.settings) {
+        if (q.settings.toString() == "1") {
+            view.value = "settings"
+        }
+    }
+}
+
 function codeChange(e) {
     // update the code
     code.value = e;
 }
 
 onBeforeMount(() => {
+    redirOpts();
     initConf()
 })
 </script>
