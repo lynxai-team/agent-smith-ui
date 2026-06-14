@@ -39,10 +39,10 @@
     "vue-router": "5.1.0",
     "vuecodit": "^0.0.11",
     "yaml": "^2.9.0",
-    "@agent-smith/app-debate": "file:../../agent-smith-apps/debate"
+    "@agent-smith/app-debate": "file:../agent-smith-apps/debate"
   },
   "devDependencies": {
-    "@agent-smith/types": "file:../agent-smith/packages/types",
+    "@agent-smith/types": "^0.0.6",
     "@iconify/json": "^2.2.486",
     "@tailwindcss/forms": "^0.5.11",
     "@types/node": "^25.9.3",

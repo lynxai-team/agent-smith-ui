@@ -409,7 +409,7 @@ function restartAtTurn(n: number) {
   //console.log("Restart at", n);
   taskEvents.resetStream();
   if (n == 0) {
-    prompt.value = "";
+    prompt.value = question.value.length > 0 ? question.value : "";
     question.value = "";
     state.uihistory = [];
     state.history = [];
