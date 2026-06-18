@@ -55,7 +55,9 @@ function open(tn: string) {
 
 const onNodeSelect = (node: TreeNode) => {
     if (!node?.children) {
-        open(node.key)
+        const k = node.key;
+        //console.log("Open k", k);
+        open(k)
     }
 };
 

@@ -4,68 +4,58 @@
       <div class="w-full flex flex-col h-max overflow-y-auto p-3">
         <template v-if="state.uihistory.length > 0">
           <div v-for="(turn, i) in state.uihistory" class="flex flex-col">
-            <TurnTitle name="user" v-if="i == 0"></TurnTitle>
-            <TurnTitle :name="turn.from" v-else-if="state.uihistory[i - 1].from != turn.from" class="pt-3"></TurnTitle>
-            <div v-if="turn?.user" class="hover:background rounded-md px-3 flex flex-row items-end w-full"
-              :class="confirmRestart !== null ? 'visible' : 'border invisible hover:visible'">
-              <template v-if="confirmRestart != i">
-                <div class="flex-grow visible p-3">
+            <div class="flex flex-row">
+              <div class="flex-grow">
+                <TurnTitle name="user" v-if="i == 0"></TurnTitle>
+                <TurnTitle :name="turn.from" v-else-if="state.uihistory[i - 1].from != turn.from" class="pt-3">
+                </TurnTitle>
+                <div v-if="turn?.user" class="p-3 w-full">
                   <!-- MarkdownRender :content="turn.user" v-if="uistate.viewMode == 'markdown'" / -->
                   <div class="txt-semilight" v-html="turn.user.replaceAll('\n', '<br />')"></div>
                 </div>
-                <button class="btn txt-success hover:success mb-2 flex flex-row items-center space-x-2"
-                  @click="confirmRestart = i">
-                  <UserEditIcon width="24" height="24"></UserEditIcon>
-                  <div class="text-sm">Restart&nbsp;here</div>
-                </button>
-              </template>
-              <template v-else>
-                <div class="flex-grow visible p-3 pl-0 flex flex-col space-y-3">
-                  <!-- MarkdownRender :content="turn.user" v-if="uistate.viewMode == 'markdown'" / -->
-                  <div class="txt-semilight" v-html="turn.user.replaceAll('\n', '<br />')"></div>
+                <div v-if="turn?.prefillStats" class="pl-3">
+                  <PromptProcessingProgress v-if="turn.prefillStats.total > 0"
+                    :prompt-processing-stats="turn.prefillStats">
+                  </PromptProcessingProgress>
                 </div>
-                <button class="btn success text-sm py-0 mr-2" @click="confirmRestart = null">Cancel</button>
-                <button class="btn warning text-sm py-0 flex flex-row space-x-2 items-center" @click="restartAtTurn(i)">
-                  <UserEditIcon width="24" height="24"></UserEditIcon>
-                  <div>Restart at turn {{ i + 1 }}?</div>
-                </button>
-              </template>
-            </div>
-            <div v-if="turn?.prefillStats" class="pl-3">
-              <PromptProcessingProgress v-if="turn.prefillStats.total > 0" :prompt-processing-stats="turn.prefillStats">
-              </PromptProcessingProgress>
-            </div>
-            <div v-if="turn?.think" class="pb-2 px-2">
-              <ThinkingContent :content="turn.think" :from="turn.from"></ThinkingContent>
-            </div>
-            <div v-if="turn?.assistant" class="px-3 pb-3 flex flex-col space-y-3">
-              <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="turn.assistant" class="mdr" />
-              <div v-else-if="uistate.viewMode == 'text'" v-html="turn.assistant.replaceAll('\n', '<br />')"></div>
-              <div v-else>
-                <pre>{{ turn.assistant }}</pre>
-              </div>
-            </div>
-            <div v-if="turn?.tools" class="flex flex-col">
-              <div v-for="tool in turn.tools" class="flex flex-col px-3">
-                <FormatedToolCall :tool="tool" :turn="turn" class="cursor-pointer"
-                  :class="i == (turn.tools.length - 1) ? 'mb-1' : 'mb-3'"
-                  @click="toggleViewToolResult(tool.call.id, turn)">
-                </FormatedToolCall>
-                <div v-if="tool.call.id in turn.state.confirmToolCalls" class="flex flex-row space-x-2">
-                  <button class="btn danger text-sm"
-                    @click="turn.state.confirmToolCalls[tool.call.id].resolve(false)">Deny</button>
-                  <button class="btn success text-sm"
-                    @click="turn.state.confirmToolCalls[tool.call.id].resolve(true)">Authorize</button>
+                <div v-if="turn?.think" class="pb-2 px-2">
+                  <ThinkingContent :content="turn.think" :from="turn.from"></ThinkingContent>
                 </div>
-                <div class="toolcall overflow-y-auto slide-y" :class="turn.state.showToolResponses.includes(tool.call.id) ? [
-                  ['slidedown']
-                ] : 'slideup'">
-                  <ToolCallDetails :tool="tool" class="mt-2 ml-3"></ToolCallDetails>
+                <div v-if="turn?.assistant" class="px-3 pb-3 flex flex-col space-y-3">
+                  <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="turn.assistant" class="mdr" />
+                  <div v-else-if="uistate.viewMode == 'text'" v-html="turn.assistant.replaceAll('\n', '<br />')"></div>
+                  <div v-else>
+                    <pre>{{ turn.assistant }}</pre>
+                  </div>
+                </div>
+                <div v-if="turn?.tools" class="flex flex-col">
+                  <div v-for="tool in turn.tools" class="flex flex-col px-3">
+                    <FormatedToolCall :tool="tool" :turn="turn" class="cursor-pointer"
+                      :class="i == (turn.tools.length - 1) ? 'mb-1' : 'mb-3'"
+                      @click="toggleViewToolResult(tool.call.id, turn)">
+                    </FormatedToolCall>
+                    <div v-if="tool.call.id in turn.state.confirmToolCalls" class="flex flex-row space-x-2">
+                      <button class="btn danger text-sm"
+                        @click="turn.state.confirmToolCalls[tool.call.id].resolve(false)">Deny</button>
+                      <button class="btn success text-sm"
+                        @click="turn.state.confirmToolCalls[tool.call.id].resolve(true)">Authorize</button>
+                    </div>
+                    <div class="toolcall overflow-y-auto slide-y" :class="turn.state.showToolResponses.includes(tool.call.id) ? [
+                      ['slidedown']
+                    ] : 'slideup'">
+                      <ToolCallDetails :tool="tool" class="mt-2 ml-3"></ToolCallDetails>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="turn?.stats" class="px-3 my-2">
+                  <HistoryTurnStatsBar :stats="turn.stats"></HistoryTurnStatsBar>
                 </div>
               </div>
-            </div>
-            <div v-if="turn?.stats" class="px-3 my-2">
-              <HistoryTurnStatsBar :stats="turn.stats"></HistoryTurnStatsBar>
+              <button class="btn flex flex-row items-center txt-light hover:secondary pl-3"
+                :disabled="stream.length > 0 || toolCallsState.tcs.length > 0" @click="confirmRestartAtTurn(i + 1)">
+                <RestartIcon width="24" height="24"></RestartIcon>
+                <div>{{ i }}</div>
+              </button>
             </div>
           </div>
         </template>
@@ -143,7 +133,7 @@
                 }}</button>
               </div>
               <button class="btn flex justify-end p-3" :disabled="state.uihistory.length == 0"
-                @click="confirmDelHistory()"
+                @click="confirmDelHistory(); toolCallsState.from = ''; toolCallsState.tcs = []"
                 :class="(state.uihistory.length == 0 || stream.length > 0) ? 'txt-light' : 'txt-semilight'">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                   <path fill="none" stroke="currentColor" stroke-width="2"
@@ -151,7 +141,7 @@
                 </svg>
               </button>
               <button class="btn flex justify-end p-3" :disabled="stream.length == 0 && toolCallsState.tcs.length == 0"
-                @click="srv.cancel();"
+                @click="srv.cancel(); toolCallsState.from = ''; toolCallsState.tcs = []"
                 :class="stream.length == 0 && toolCallsState.tcs.length == 0 ? 'txt-semilight' : ''">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16">
                   <path fill="currentColor"
@@ -226,6 +216,7 @@ import UserEditIcon from '../widgets/icons/UserEditIcon.vue';
 import ToolCallDetails from '../widgets/ToolCallDetails.vue';
 import TurnTitle from '../widgets/TurnTitle.vue';
 import { applyTemplateToPrompt } from '../services/template.js';
+import RestartIcon from '../widgets/icons/RestartIcon.vue';
 
 const props = defineProps({
   name: {
@@ -304,6 +295,7 @@ async function exec() {
     question.value = p;
     pr = srv.agentSpec.value.prompt.replace("{prompt}", p);
     uihistoryManager.newTurn("user", props.name, 0, { user: pr });
+    opts.history = [];
   } else {
     // conversation continues
     opts.history = [...toRaw(state.history)];
@@ -408,8 +400,8 @@ async function loadTask() {
 function restartAtTurn(n: number) {
   //console.log("Restart at", n);
   taskEvents.resetStream();
-  if (n == 0) {
-    prompt.value = question.value.length > 0 ? question.value : "";
+  if (n <= 0) {
+    prompt.value = n == 0 ? question.value : "";
     question.value = "";
     state.uihistory = [];
     state.history = [];
@@ -476,7 +468,16 @@ function confirmDelHistory() {
       taskEvents.resetStream();
       state.history = [];
       state.uihistory = [];
-      restartAtTurn(0)
+      restartAtTurn(-1)
+    }
+  )
+}
+
+function confirmRestartAtTurn(i: number) {
+  confirmDanger(`Restart at turn ${i}?`, `This will reset conversation history to turn ${i}`,
+    async () => {
+      taskEvents.resetStream();
+      restartAtTurn(i)
     }
   )
 }

@@ -146,8 +146,6 @@ async function addSamplingPreset() {
     mpopover.value.toggle()
 }
 
-const isValid = computed(() => Boolean(form.value.name && form.value.backend));
-
 async function deletePreset(name: string) {
     confirmDanger(`Delete ${name} model preset?`, "The preset will be permanently deleted", async () => {
         const n = encodeURIComponent(name);
@@ -217,8 +215,12 @@ function loadModels(backend: string) {
     modelsData.value = md;
 }
 
+const isValid = computed(() => Boolean(form.value.name && form.value.backend));
+
 watch(form.value, () => {
-    //selectedModel.value = { id: "", status: "", ctx: 0, hasVision: false };
-    loadModels(form.value.backend)
+    if (form.value.backend) {
+        loadModels(form.value.backend)
+    }
+
 });
 </script>

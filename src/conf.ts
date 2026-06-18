@@ -12,6 +12,10 @@ const defaultInferenceParams: InferenceParams = {
 
 const availablePlugins = [
     {
+        name: "@agent-smith/feat-agents",
+        description: "agents and skills"
+    },
+    {
         name: "@agent-smith/feat-fs",
         description: "filesystem tools and agents"
     },
