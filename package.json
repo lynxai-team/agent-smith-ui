@@ -11,10 +11,10 @@
     "build:compile": "vite build && cp -r src/apps dist/",
     "build:compress": "gzipper c ./dist --verbose --incremental --exclude avif,jpg --threshold 999 --remove-larger --brotli --brotli-param-mode font",
     "build:server": "tsc -p tsconfig_bin.json",
-    "build": "run-s build:check build:compile build:compress build:server"
+    "build": "run-s build:check build:compile build:server"
   },
   "dependencies": {
-    "@agent-smith/server": "^0.1.4",
+    "@agent-smith/server": "^0.1.5",
     "@agent-smith/wscli": "^0.0.7",
     "@fontsource/roboto": "^5.2.10",
     "@primeuix/themes": "^2.0.3",
@@ -42,10 +42,10 @@
     "@agent-smith/app-debate": "file:../agent-smith-apps/debate"
   },
   "devDependencies": {
-    "@agent-smith/types": "^0.0.6",
-    "@iconify/json": "^2.2.487",
+    "@agent-smith/types": "^0.0.7",
+    "@iconify/json": "^2.2.488",
     "@tailwindcss/forms": "^0.5.11",
-    "@types/node": "^25.9.3",
+    "@types/node": "^26.0.0",
     "@vitejs/plugin-vue": "6.0.7",
     "@vue/compiler-sfc": "3.5.38",
     "autoprefixer": "^10.5.0",
