@@ -27,6 +27,10 @@ const availablePlugins = [
         name: "@agent-smith/feat-search",
         description: "web search features"
     },
+    {
+        name: "@agent-smith/lynx-coder",
+        description: "Lynx AI coding agents"
+    },
 ];
 
 export {

@@ -205,7 +205,7 @@ const useTaskEvents = (
         //turn.tools.push(t)
         //console.log("TT", JSON.stringify(toRaw(turn), null, 2));
         turn.state.confirmToolCalls[tc.id] = { resolve: unblock, reject: () => true };
-        console.log("CTC", turn.state.confirmToolCalls);
+        //console.log("CTC", turn.state.confirmToolCalls);
         const res = await awaiter;
         turn.state.showToolResponses = []
         return res
@@ -214,9 +214,11 @@ const useTaskEvents = (
 
     const onAssistant: AgentInferenceOptions["onAssistant"] = (txt: string, from: string) => {
         if (debug) { console.log("ASSISTANT", from, txt); }
-        uihistoryManager.newTurn("assistant", from, state.history.length - 1, {
-            assistant: txt,
-        });
+        if (txt.trim().length > 0) {
+            uihistoryManager.newTurn("assistant", from, state.history.length - 1, {
+                assistant: txt,
+            });
+        }
         //console.log("ASSISTANT H", state.history);
         nextTick(async () => { stream.value = ""; });
         scrollOutput(true, 100)

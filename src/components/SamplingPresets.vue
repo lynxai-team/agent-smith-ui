@@ -20,12 +20,12 @@
                         <div class="flex flex-col space-y-3">
                             <div>
                                 <label class="block text-sm font-medium mb-1">Name</label>
-                                <input v-model="form.name" type="text" class="input" placeholder="Preset name" />
+                                <input v-model="name" type="text" class="input" placeholder="Preset name" />
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Backend</label>
-                                <select v-model="form.backend" :required="true">
-                                    <option v-for="b in Object.keys(state.backends)" :selected="b == form.backend"
+                                <select v-model="backend" :required="true">
+                                    <option v-for="b in Object.keys(state.backends)" :selected="b == backend"
                                         :value="b">
                                         {{ b }}
                                     </option>
@@ -72,18 +72,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onBeforeMount, toRaw, onBeforeUnmount, watchEffect, watch } from 'vue';
-import Popover from 'primevue/popover';
-import { state, uistate } from '../state.js';
-import { api } from '../services/api.js';
-import { humanize, humanizeNumber } from '../services/str.js';
 import type { InferenceParams, ModelInfo, SamplingPreset } from '@agent-smith/types';
+import Listbox from 'primevue/listbox';
+import Popover from 'primevue/popover';
+import { computed, reactive, ref, toRaw, watch } from 'vue';
+import { api } from '../services/api.js';
+import { confirmDanger, msg } from '../services/notify.js';
+import { humanize, humanizeNumber } from '../services/str.js';
+import { state, uistate } from '../state.js';
+import CopyIcon from '../widgets/icons/CopyIcon.vue';
+import DeleteIcon from '../widgets/icons/DeleteIcon.vue';
 import ModelsPresetsIcon from '../widgets/icons/ModelsPresetsIcon.vue';
 import InferenceParamsForm from './InferenceParamsForm.vue';
-import Listbox from 'primevue/listbox';
-import DeleteIcon from '../widgets/icons/DeleteIcon.vue';
-import { confirmDanger, msg } from '../services/notify.js';
-import CopyIcon from '../widgets/icons/CopyIcon.vue';
 
 const mpopover = ref();
 const view = ref<'view' | 'create'>('view');
@@ -103,10 +103,8 @@ const inferenceParams: InferenceParams = reactive({
     frequency_penalty: undefined,
 });
 
-const form = ref({
-    name: '',
-    backend: uistate.value.backend,
-});
+const name = ref("");
+const backend = ref("");
 
 async function addSamplingPreset() {
     const cta: Record<string, any> = {};
@@ -122,7 +120,7 @@ async function addSamplingPreset() {
         m = selectedModel.value.id != "" ? selectedModel.value.id : undefined;
     }
     const payload: SamplingPreset = {
-        name: form.value.name,
+        name: name.value,
         model: m,
         max_tokens: inferenceParams.max_tokens,
         top_k: inferenceParams.top_k,
@@ -132,7 +130,7 @@ async function addSamplingPreset() {
         repeat_penalty: inferenceParams.repeat_penalty,
         presence_penalty: inferenceParams.presence_penalty,
         frequency_penalty: inferenceParams.frequency_penalty,
-        backend: form.value.backend,
+        backend: backend.value,
         chat_template_kwargs: Object.keys(cta).length > 0 ? cta : undefined,
         props: undefined
     };
@@ -159,10 +157,10 @@ async function deletePreset(name: string) {
     })
 }
 
-function editPreset(name: string) {
-    const preset = state.samplingPresets[name];
-    form.value.name = preset.name;
-    form.value.backend = preset.backend ?? uistate.value.backend;
+function editPreset(_name: string) {
+    const preset = state.samplingPresets[_name];
+    name.value = preset.name;
+    backend.value = preset.backend ?? uistate.value.backend;
     inferenceParams.max_tokens = preset.max_tokens;
     inferenceParams.top_k = preset.top_k;
     inferenceParams.top_p = preset.top_p;
@@ -171,7 +169,7 @@ function editPreset(name: string) {
     inferenceParams.repeat_penalty = preset.repeat_penalty;
     inferenceParams.presence_penalty = preset.presence_penalty;
     inferenceParams.frequency_penalty = preset.frequency_penalty;
-    selectedModel.value = preset?.model ? state.models[form.value.backend][preset.model] : { id: "", status: "", ctx: 0, hasVision: false };
+    selectedModel.value = preset?.model ? state.models[backend.value][preset.model] : { id: "", status: "", ctx: 0, hasVision: false };
     //console.log("P", preset)
     if (preset?.chat_template_kwargs) {
         if (preset.chat_template_kwargs?.enable_thinking) {
@@ -185,8 +183,8 @@ function editPreset(name: string) {
 }
 
 function reset() {
-    form.value.name = "";
-    form.value.backend = "";
+    name.value = "";
+    backend.value = "";
     inferenceParams.max_tokens = undefined;
     inferenceParams.top_k = undefined;
     inferenceParams.top_p = undefined;
@@ -215,11 +213,13 @@ function loadModels(backend: string) {
     modelsData.value = md;
 }
 
-const isValid = computed(() => Boolean(form.value.name && form.value.backend));
+const isValid = computed(() => {
+    return name.value.length > 0
+});
 
-watch(form.value, () => {
-    if (form.value.backend) {
-        loadModels(form.value.backend)
+watch(backend, () => {
+    if (backend.value) {
+        loadModels(backend.value)
     }
 
 });

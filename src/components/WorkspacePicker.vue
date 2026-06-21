@@ -5,9 +5,11 @@
                 <button v-for="workspace in state.workspaces" class="btn flex flex-row space-x-2"
                     @click="updateDefaultWorkspace(workspace)">
                     <div>{{ humanize(workspace.name) }}</div>
-                    <div v-if="workspace.name == state.currentWorkspace.name">
-                        🟢
-                    </div>
+                    <template v-if="state?.currentWorkspace">
+                        <div v-if="workspace.name == state.currentWorkspace.name">
+                            🟢
+                        </div>
+                    </template>
                 </button>
                 <button class="btn primary" @click="view = 'create'">New workspace</button>
             </div>
@@ -28,17 +30,23 @@
             </div>
         </Popover>
         <button class="btn" @click="wspopover.toggle($event)">
-            <template v-if="state.currentWorkspace.name == ''">
+            <template v-if="state?.currentWorkspace">
+                <template v-if="state?.currentWorkspace?.name == ''">
+                    <WorkspaceIcon width="32" height="32" :class="_show ? 'txt-danger' : 'txt-light'">
+                    </WorkspaceIcon>
+                </template>
+                <div v-else class="flex flex-row space-x-2 items-center">
+                    <div>
+                        <FolderIcon width="32" height="32" class=" txt-light">
+                        </FolderIcon>
+                    </div>
+                    <div class=" txt-light"></div>{{ humanize(state.currentWorkspace.name) }}
+                </div>
+            </template>
+            <template v-else>
                 <WorkspaceIcon width="32" height="32" :class="_show ? 'txt-danger' : 'txt-light'">
                 </WorkspaceIcon>
             </template>
-            <div v-else class="flex flex-row space-x-2 items-center">
-                <div>
-                    <FolderIcon width="32" height="32" class=" txt-light">
-                    </FolderIcon>
-                </div>
-                <div class=" txt-light"></div>{{ humanize(state.currentWorkspace.name) }}
-            </div>
         </button>
     </div>
 </template>
