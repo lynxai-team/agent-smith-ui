@@ -166,7 +166,6 @@
 
 <script setup lang="ts">
 import type { AgentInferenceOptions, InferenceParams } from '@agent-smith/types';
-import SwSidebar from "@snowind/sidebar";
 // @ts-ignore
 import type { ParsedNode } from 'markstream-vue';
 import MarkdownRender, { CodeBlockNode, enableMermaid, setCustomComponents } from 'markstream-vue';

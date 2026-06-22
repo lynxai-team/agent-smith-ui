@@ -1,8 +1,5 @@
 <template>
   <sw-topbar :topbar="topBar" class="z-10 flex items-center w-full h-16" breakpoint="lg">
-    <template #mobile-back>
-      <i-ion-arrow-back-outline class="inline-flex ml-2 text-3xl" v-if="!isHome"></i-ion-arrow-back-outline>
-    </template>
     <template #mobile-branding>
       <div class="inline-flex flex-row items-center h-full pt-1 ml-2 text-2xl truncate">
         <div v-if="['task', 'agent'].includes(state.currentFeature.type)">
@@ -120,8 +117,8 @@
           </svg>
         </button>
         <div class="pr-3 text-lg cursor-pointer txt-light dark:txt-light" @click="user.toggleDarkMode()">
-          <i-fa-solid:moon v-if="!user.isDarkMode.value"></i-fa-solid:moon>
-          <i-fa-solid:sun v-else></i-fa-solid:sun>
+          <MoonIcon width="24" height="24" v-if="!user.isDarkMode.value"></MoonIcon>
+          <SunIcon width="24" height="24" v-else></SunIcon>
         </div>
         <div class="pr-5 cursor-pointer txt-light" @click="toggleRightSidebar()">
           <SidebarIcon width="32" height="32"></SidebarIcon>
@@ -133,14 +130,14 @@
         <div>
           <button class="border-none btn" @click="router.push('/config'); topBar.closeMenu()">Config</button>
         </div>
-        <div class="text-lg cursor-pointer" @click=" user.toggleDarkMode(); topBar.closeMenu()">
+        <!-- div class="text-lg cursor-pointer" @click=" user.toggleDarkMode(); topBar.closeMenu()">
           <template v-if="!user.isDarkMode.value">
             <i-fa-solid:moon></i-fa-solid:moon>&nbsp;Dark mode
           </template>
-          <template v-else>
+<template v-else>
             <i-fa-solid:sun></i-fa-solid:sun>&nbsp;Light mode
           </template>
-        </div>
+</div -->
       </div>
     </template>
   </sw-topbar>
@@ -163,6 +160,8 @@ import ManageBackends from './ManageBackends.vue';
 import WorkspacePicker from './WorkspacePicker.vue';
 import SamplingPresets from './SamplingPresets.vue';
 import SidebarIcon from '../widgets/icons/SidebarIcon.vue';
+import MoonIcon from '../widgets/icons/MoonIcon.vue';
+import SunIcon from '../widgets/icons/SunIcon.vue';
 
 const router = useRouter()
 const topBar = useTopbar(router);
