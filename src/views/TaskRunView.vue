@@ -164,8 +164,8 @@
       </div -->
     </div>
     <sw-sidebar id="sidebar-task" v-model:opened="sidebar" name="sidebar1" class="z-30 flex flex-col h-full 
-    border border-l-1 border-r-0 border-y-0 bord-secondary bg-[#f1f2f4] dark:background bg-opacity-50 min-w-24">
-      <SidebarInferParams :inference-params="inferOptions.params" @paramchange="updateInferParams($event)" />
+    border border-l-1 border-r-0 border-y-0 bord-secondary  min-w-24">
+      <SidebarRightDispatch :inference-params="inferOptions.params" @paramchange="updateInferParams($event)" />
       <div
         class="flex-none h-12 mb-3 text-2xl text-center cursor-pointer txt-semilight flex justify-center flex-grow items-end pb-3"
         @click="toggleSidebar()">
@@ -191,16 +191,15 @@ import MarkdownRender, { CodeBlockNode, enableMermaid, setCustomComponents } fro
 import { IftaLabel } from 'primevue';
 import InputText from 'primevue/inputtext';
 import { onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, toRaw, watch } from 'vue';
-import SidebarInferParams from '../components/sidebars/SidebarInferParams.vue';
 import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
 import { confirmDanger, msg } from '../services/notify.js';
-import { debugInference, uihistoryManager, resetCurrentFeature, setCurrentFeature, state, uistate } from '../state.js';
+import { debugInference, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
 import AutoTextarea from '../widgets/AutoTextarea.vue';
 //import ToolCallNode from '../components/ToolCallNode.vue';
 import 'markstream-vue/index.css';
 //import "../assets/markstream.css";
-import { ChatCompletionHistoryTurn, ToolCallSpec, UiHistoryTurn } from '@agent-smith/types';
+import { ToolCallSpec, UiHistoryTurn } from '@agent-smith/types';
 import { useClientFeatures } from '@agent-smith/wscli';
 import Popover from 'primevue/popover';
 import { nextTick } from 'process';
@@ -208,15 +207,14 @@ import AgentParamsPicker from '../components/AgentParamsPicker.vue';
 import FormatedToolCallInProgress from '../components/FormatedToolCallInProgress.vue';
 import PromptNavbarLeft from '../components/navbars/PromptNavbarLeft.vue';
 import PromptProcessingProgress from '../components/PromptProcessingProgress.vue';
+import SidebarRightDispatch from '../components/sidebars/SidebarRightDispatch.vue';
 import { defaultInferenceParams } from '../conf.js';
 import { useTaskEvents } from '../services/task_events.js';
 import FormatedToolCall from '../widgets/FormatedToolCall.vue';
 import HistoryTurnStatsBar from '../widgets/HistoryTurnStatsBar.vue';
-import UserEditIcon from '../widgets/icons/UserEditIcon.vue';
+import RestartIcon from '../widgets/icons/RestartIcon.vue';
 import ToolCallDetails from '../widgets/ToolCallDetails.vue';
 import TurnTitle from '../widgets/TurnTitle.vue';
-import { applyTemplateToPrompt } from '../services/template.js';
-import RestartIcon from '../widgets/icons/RestartIcon.vue';
 
 const props = defineProps({
   name: {

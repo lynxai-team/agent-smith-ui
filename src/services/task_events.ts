@@ -247,10 +247,7 @@ const useTaskEvents = (
                 uihistoryManager.addStatsToCurrentTurn(ht.stats)
             }
         }
-        stream.value = "";
-        nodes.value = [];
-        thinkingNodes.value = [];
-        buffer = "";
+        resetStream();
         scrollOutput(true, 100);
     }
 

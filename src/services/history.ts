@@ -1,12 +1,12 @@
 import type { HistoryTurn, InferenceStats, PromptProcessingInProgressStats, ToolCallSpec, ToolTurn, UiHistoryTurn, UiHistoryTurnType } from "@agent-smith/types";
-import { state, uistate } from "../state.js";
+import { state } from "../state.js";
 
 const useUiHistory = () => {
-    const newTurn = (type: UiHistoryTurnType, from: string, n: number, ht?: HistoryTurn) => {
-        //console.log("NEW TURN", state.uihistory.length + 1, from, type, ht);
-        let turn: UiHistoryTurn = {
-            from: type == "user" ? "user" : from,
-            type: type,
+    const newTurn = (_type: UiHistoryTurnType, from: string, n: number, ht?: HistoryTurn) => {
+        //console.log("NEW TURN", state.uihistory.length, from, _type, JSON.stringify(ht, null, 2));
+        const turn: UiHistoryTurn = {
+            from: _type == "user" ? "user" : from,
+            type: _type,
             agentTurn: n,
             state: {
                 showThinking: false,
@@ -15,10 +15,30 @@ const useUiHistory = () => {
                 confirmToolCalls: {},
             },
         };
+        //console.log("TURN A", turn.type);
         if (ht) {
-            turn = { ...turn, ...ht }
+            if (ht?.user) {
+                turn.user = ht.user;
+            }
+            if (ht?.think) {
+                turn.think = ht.think;
+            }
+            if (ht?.assistant) {
+                turn.assistant = ht.assistant;
+            }
+            if (ht?.tools) {
+                turn.tools = ht.tools;
+            }
+            if (ht?.images) {
+                turn.images = ht.images;
+            }
         }
-        state.uihistory.push(turn)
+        //console.log("TURN B", turn.type);
+        //console.log("HT", ht);
+        //console.log("===== HIST 1", JSON.stringify(state.uihistory, null, 2), "\n===========")
+        state.uihistory.push(turn);
+        //console.log("===== HIST 2", JSON.stringify(state.uihistory, null, 2), "\n===========")
+        //console.log("HCT", JSON.stringify(_currentTurn(), null, 2));
     }
 
     const _currentTurn = (): UiHistoryTurn => {
@@ -27,7 +47,9 @@ const useUiHistory = () => {
 
     const addStatsToCurrentTurn = (s: InferenceStats) => {
         const ct = _currentTurn();
-        ct.stats = s;
+        //console.log("ST", JSON.stringify(ct, null, 2))
+        state.uihistory[state.uihistory.length - 1].stats = s;
+        //console.log("===== HIST STATS", JSON.stringify(state.uihistory, null, 2), "\n===========")
     }
 
     const addPrefillStatsToCurrentTurn = (s: PromptProcessingInProgressStats) => {
