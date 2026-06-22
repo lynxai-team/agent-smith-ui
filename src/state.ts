@@ -22,6 +22,8 @@ const uistate = useStorage<{
     title: string,
     backend: string,
     availableAgents: Record<string, boolean>,
+    inferenceSidebar: "none" | "full" | "mini",
+    inferenceSidebarName: string,
 }>('uistate', {
     sidebar: "agents",
     taskView: "view",
@@ -32,6 +34,8 @@ const uistate = useStorage<{
     title: "",
     backend: "",
     availableAgents: {},
+    inferenceSidebar: "none",
+    inferenceSidebarName: "sampling",
 });
 const { awaiter, unblock } = createAwaiter<boolean>();
 const state = reactive<AgentState>({

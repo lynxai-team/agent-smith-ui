@@ -1,10 +1,11 @@
 <template>
-  <div class="flex flex-row w-fit">
-    <div id="main-output" class="flex flex-col flex-grow w-full h-max overflow-y-auto">
-      <div class="w-full flex flex-col h-max overflow-y-auto p-3">
+  <div class="flex flex-row w-fit h-full">
+    <div id="main-output" class="flex flex-col flex-grow w-full h-full overflow-y-auto">
+      <div class="w-full flex flex-col flex-grow overflow-y-auto p-3">
         <template v-if="state.uihistory.length > 0">
           <div v-for="(turn, i) in state.uihistory" class="flex flex-col">
             <div class="flex flex-row">
+              <a :id="`turn-${i}`"></a>
               <div class="flex-grow">
                 <TurnTitle name="user" v-if="i == 0"></TurnTitle>
                 <TurnTitle :name="turn.from" v-else-if="state.uihistory[i - 1].from != turn.from" class="pt-3">
@@ -54,7 +55,7 @@
               <button class="btn flex flex-row items-center txt-light hover:secondary pl-3"
                 :disabled="stream.length > 0 || toolCallsState.tcs.length > 0" @click="confirmRestartAtTurn(i + 1)">
                 <RestartIcon width="24" height="24"></RestartIcon>
-                <div>{{ i }}</div>
+                <div>{{ i + 1 }}</div>
               </button>
             </div>
           </div>
@@ -65,6 +66,12 @@
         <div v-if="state.isProcessingPrompt" class="pb-3 pl-3">
           <PromptProcessingProgress :prompt-processing-stats="state.promptProcessingProgress">
           </PromptProcessingProgress>
+        </div>
+        <div v-if="toolCallsState.tcs.length > 0" class="flex flex-col pt-2 pl-4">
+          <div v-for="tc in toolCallsState.tcs" class="pb-2">
+            <FormatedToolCallInProgress :from="toolCallsState.from" :tool-call-spec="tc" :stream="stream">
+            </FormatedToolCallInProgress>
+          </div>
         </div>
         <div v-if="stream.length > 0" class="flex-grow">
           <TurnTitle :name="currentAgent" v-if="state.uihistory[state.uihistory.length - 1].from != currentAgent"
@@ -83,15 +90,9 @@
             </div>
           </template>
         </div>
-        <div v-if="toolCallsState.tcs.length > 0" class="flex flex-col pt-2 pl-4">
-          <div v-for="tc in toolCallsState.tcs" class="pb-2">
-            <FormatedToolCallInProgress :from="toolCallsState.from" :tool-call-spec="tc" :stream="stream">
-            </FormatedToolCallInProgress>
-          </div>
-        </div>
         <a id="bottom-output" class="mt-3"></a>
       </div>
-      <div id="prompt-input" class="px-3 pb-5 flex flex-col fixed bottom-0 left-[16.666667%] z-20">
+      <div id="prompt-input" class="px-3 pb-5 flex flex-col z-20 w-full">
         <div class="flex flex-wrap gap-3 w-full mb-3" v-if="srv.isReady">
           <div v-for="(v, k) in srv.variables?.required" class="w-[49%] success">
             <IftaLabel v-if="k != 'workspace'">
@@ -112,7 +113,7 @@
             </IftaLabel>
           </div>
         </div>
-        <div class="flex flex-col" v-if="isReady">
+        <div class="flex flex-col w-full" v-if="isReady">
           <!-- div>tps={{ taskEvents.perf.tps }}</div -->
           <AutoTextarea :data="prompt" @update="prompt = $event;" @run="exec()" class="w-full">
           </AutoTextarea>
@@ -127,7 +128,7 @@
                   <AgentParamsPicker :agent-spec="srv.agentSpec.value" @end="useAgentSettings($event);">
                   </AgentParamsPicker>
                 </Popover>
-                <button class="btn px-0" @click="modelsPopover.toggle($event);">{{
+                <button class="btn px-0 hover:secondary" @click="modelsPopover.toggle($event);">{{
                   inferOptions.model != "" ? state.models[inferOptions.backend][inferOptions.model].id :
                     srv.agentSpec.value?.model
                 }}</button>
@@ -135,25 +136,17 @@
               <button class="btn flex justify-end p-3" :disabled="state.uihistory.length == 0"
                 @click="confirmDelHistory(); toolCallsState.from = ''; toolCallsState.tcs = []"
                 :class="(state.uihistory.length == 0 || stream.length > 0) ? 'txt-light' : 'txt-semilight'">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                  <path fill="none" stroke="currentColor" stroke-width="2"
-                    d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12s4.477 10 10 10ZM5 5l14 14" />
-                </svg>
+                <ResetIcon width="24" height="24"></ResetIcon>
               </button>
-              <button class="btn flex justify-end p-3" :disabled="stream.length == 0 && toolCallsState.tcs.length == 0"
+              <button class="btn flex justify-end p-3"
+                :disabled="taskEvents.isStreaming && toolCallsState.tcs.length == 0"
                 @click="srv.cancel(); toolCallsState.from = ''; toolCallsState.tcs = []"
                 :class="stream.length == 0 && toolCallsState.tcs.length == 0 ? 'txt-semilight' : ''">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 16 16">
-                  <path fill="currentColor"
-                    d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m0 14.5a6.5 6.5 0 1 1 0-13a6.5 6.5 0 0 1 0 13M5 5h6v6H5z" />
-                </svg>
+                <StopIcon width="24" height="24"></StopIcon>
               </button>
               <button class="btn flex justify-end p-3" @click="exec()"
                 :class="prompt.length == 0 ? 'txt-semilight' : ''">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512">
-                  <path fill="currentColor"
-                    d="M440 6.5L24 246.4c-34.4 19.9-31.1 70.8 5.7 85.9L144 379.6V464c0 46.4 59.2 65.5 86.6 28.6l43.8-59.1l111.9 46.2c5.9 2.4 12.1 3.6 18.3 3.6c8.2 0 16.3-2.1 23.6-6.2c12.8-7.2 21.6-20 23.9-34.5l59.4-387.2c6.1-40.1-36.9-68.8-71.5-48.9M192 464v-64.6l36.6 15.1zm212.6-28.7l-153.8-63.5L391 169.5c10.7-15.5-9.5-33.5-23.7-21.2L155.8 332.6L48 288L464 48z" />
-                </svg>
+                <SendIcon width="24" height="24"></SendIcon>
               </button>
             </div>
           </div>
@@ -163,22 +156,11 @@
         <pre>{{ state.uihistory }}</pre>
       </div -->
     </div>
-    <sw-sidebar id="sidebar-task" v-model:opened="sidebar" name="sidebar1" class="z-30 flex flex-col h-full 
-    border border-l-1 border-r-0 border-y-0 bord-secondary  min-w-24">
-      <SidebarRightDispatch :inference-params="inferOptions.params" @paramchange="updateInferParams($event)" />
-      <div
-        class="flex-none h-12 mb-3 text-2xl text-center cursor-pointer txt-semilight flex justify-center flex-grow items-end pb-3"
-        @click="toggleSidebar()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256" v-if="!sidebar">
-          <path fill="currentColor"
-            d="M208.49 199.51a12 12 0 0 1-17 17l-80-80a12 12 0 0 1 0-17l80-80a12 12 0 0 1 17 17L137 128ZM57 128l71.52-71.51a12 12 0 0 0-17-17l-80 80a12 12 0 0 0 0 17l80 80a12 12 0 0 0 17-17Z" />
-        </svg>
-        <svg v-else xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256">
-          <path fill="currentColor"
-            d="m144.49 136.49l-80 80a12 12 0 0 1-17-17L119 128L47.51 56.49a12 12 0 0 1 17-17l80 80a12 12 0 0 1-.02 17m80-17l-80-80a12 12 0 1 0-17 17L199 128l-71.52 71.51a12 12 0 0 0 17 17l80-80a12 12 0 0 0 .01-17Z" />
-        </svg>
-      </div>
-    </sw-sidebar>
+    <div id="sidebar-task2" name="sidebar1" class="z-30 flex flex-col h-full 
+    border border-l-1 border-r-0 border-y-0 bord-secondary min-w-24" :class="inferenceSidebarWidth">
+      <SidebarRightDispatch :inference-params="inferOptions.params" @paramchange="updateInferParams($event)"
+        @goto-turn="jumpToTurn($event)" />
+    </div>
   </div>
 </template>
 
@@ -190,7 +172,7 @@ import type { ParsedNode } from 'markstream-vue';
 import MarkdownRender, { CodeBlockNode, enableMermaid, setCustomComponents } from 'markstream-vue';
 import { IftaLabel } from 'primevue';
 import InputText from 'primevue/inputtext';
-import { onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, toRaw, watch } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, toRaw, watch } from 'vue';
 import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
 import { confirmDanger, msg } from '../services/notify.js';
@@ -215,6 +197,9 @@ import HistoryTurnStatsBar from '../widgets/HistoryTurnStatsBar.vue';
 import RestartIcon from '../widgets/icons/RestartIcon.vue';
 import ToolCallDetails from '../widgets/ToolCallDetails.vue';
 import TurnTitle from '../widgets/TurnTitle.vue';
+import ResetIcon from '../widgets/icons/ResetIcon.vue';
+import StopIcon from '../widgets/icons/StopIcon.vue';
+import SendIcon from '../widgets/icons/SendIcon.vue';
 
 const props = defineProps({
   name: {
@@ -273,7 +258,7 @@ const srv = useClientFeatures({
   ...taskEvents.events,
   defaultInferenceParams: defaultInferenceParams,
 });
-const sidebar = ref(true);
+
 const prompt = ref("");
 const question = ref("");
 const nUserInteraction = ref(0);
@@ -398,8 +383,8 @@ async function loadTask() {
 function restartAtTurn(n: number) {
   //console.log("Restart at", n);
   taskEvents.resetStream();
-  if (n <= 0) {
-    prompt.value = n == 0 ? question.value : "";
+  if (n <= 1) {
+    prompt.value = n == 1 ? question.value : "";
     question.value = "";
     state.uihistory = [];
     state.history = [];
@@ -444,20 +429,6 @@ function updateInferParams(evt: InferenceParams) {
   const ip = toRaw(evt);
   //console.log("Update IP", ip);
   inferOptions.params = ip;
-}
-
-function setPromptInputWidth() {
-  const sb = document.getElementById('sidebar-task');
-  const pi = document.getElementById('prompt-input');
-  // @ts-ignore
-  pi.style.width = `calc( 83.333333% - ${sb.offsetWidth}px)`;
-}
-
-function toggleSidebar() {
-  sidebar.value = !sidebar.value;
-  setTimeout(() => {
-    setPromptInputWidth();
-  }, 250);
 }
 
 function confirmDelHistory() {
@@ -523,16 +494,31 @@ function load() {
 
 function setMainHeight() {
   // @ts-ignore
-  const offsetHeight = document.getElementById('prompt-input').offsetHeight
-  const maino = document.getElementById('main-output')!;
-  maino.style.height = `calc(100% - ${offsetHeight}px)`;
+  //const offsetHeight = document.getElementById('prompt-input').offsetHeight
+  //const maino = document.getElementById('main-output')!;
+  //maino.style.height = `calc(100% - ${offsetHeight}px)`;
 }
+
+function jumpToTurn(i: number) {
+  //console.log("GOTO", i);
+  const o: ScrollIntoViewOptions = { block: "start", inline: "nearest", behavior: "smooth" };
+  const a = `turn-${i}`;
+  const el = document.getElementById(a)!;
+  el.scrollIntoView(o)
+}
+
+const inferenceSidebarWidth = computed(() => {
+  if (uistate.value.inferenceSidebar == 'full') {
+    return 'w-[20rem]'
+  } else if (uistate.value.inferenceSidebar == 'mini') {
+    return 'w-[4rem]'
+  }
+  return 'hidden'
+})
 
 onBeforeMount(() => {
   load();
 });
-
-onMounted(() => setPromptInputWidth());
 
 onBeforeUnmount(() => resetCurrentFeature())
 
@@ -545,15 +531,15 @@ watch(props, () => {
     load()
   };
 });
-watch(prompt, () => {
+/*watch(prompt, () => {
   setMainHeight();
   //console.log("PR", offsetHeight, "/", maino.offsetHeight)
-})
+})*/
 </script>
 
 <style lang="sass" scoped>
 .opened.sw-sidebar
-  width: 24rem
+  width: 20rem
 
 .toolcall.slidedown
   max-height: 400px;

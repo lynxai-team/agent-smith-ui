@@ -1,32 +1,37 @@
 <template>
-    <div class="flex flex-col space-y-2 p-3 3xl:max-w-[28rem]">
-        <div v-for="(turn, i) in state.uihistory" class="flex flex-row space-x-2">
-            <div>{{ i }}</div>
-            <div v-if="turn?.user" class="flex flex-row space-x-2">
+    <div class="flex flex-col p-3" :class="uistate.inferenceSidebar == 'mini' ? 'items-center' : ''">
+        <div v-for="(turn, i) in state.uihistory" class="flex flex-row space-x-2 txt-semilight text-sm"
+            @click="emit('moveto-turn', i)">
+            <button v-if="turn?.user" class="btn hover:lighter hover:bord-light flex flex-row space-x-2">
+                <div>{{ i }}</div>
                 <UserIcon width="24" height="24"></UserIcon>
-                <div>{{ turn?.stats?.nTotalTokens }}</div>
-            </div>
-            <div v-else-if="turn?.think" class="txt-semilight flex flex-row space-x-2">
+                <div v-if="uistate.inferenceSidebar == 'full'" class="truncate">{{ turn?.user.slice(0, 20) }}</div>
+            </button>
+            <button v-else-if="turn?.think"
+                class="btn hover:lighter hover:bord-light txt-light flex flex-row space-x-2">
+                <div>{{ i }}</div>
                 <AgentIcon width="24" height="24"></AgentIcon>
-                <div>
+                <div v-if="uistate.inferenceSidebar == 'full'">
                     {{ turn.from }} {{
                         turn?.stats?.nTotalTokens }}
                 </div>
-            </div>
-            <div v-else-if="turn?.assistant" class="flex flex-row space-x-2">
+            </button>
+            <button v-else-if="turn?.assistant" class="btn hover:lighter hover:bord-light flex flex-row space-x-2">
+                <div>{{ i }}</div>
                 <AgentIcon width="24" height="24"></AgentIcon>
-                <div>
+                <div v-if="uistate.inferenceSidebar == 'full'">
                     {{ turn.from }} {{
                         turn?.stats?.nTotalTokens }}</div>
-            </div>
-            <div v-else-if="turn?.tools" class="flex flex-row space-x-2">
+            </button>
+            <button v-else-if="turn?.tools" class="btn hover:lighter hover:bord-light flex flex-row space-x-2">
+                <div>{{ i }}</div>
                 <ToolsIcon width="24" height="24"></ToolsIcon>
-                <div>
+                <div v-if="uistate.inferenceSidebar == 'full'">
                     {{ turn.from }} {{
                         turn?.tools.map(t => t.call.name)}}</div>
-            </div>
+            </button>
         </div>
-        <pre>{{ state.uihistory }}</pre>
+        <!-- pre>{{ state.uihistory }}</pre -->
     </div>
 </template>
 <script setup lang="ts">
@@ -34,4 +39,7 @@ import { state } from '../../state.js';
 import AgentIcon from '../../widgets/icons/AgentIcon.vue';
 import UserIcon from '../../widgets/icons/UserIcon.vue';
 import ToolsIcon from '../../widgets/icons/ToolsIcon.vue';
+import { uistate } from '../../state.js';
+
+const emit = defineEmits(["moveto-turn"]);
 </script>

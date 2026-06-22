@@ -1,6 +1,6 @@
 import type { AgentInferenceOptions, ClientFeaturesOptions, HistoryTurn, PromptProcessingInProgressStats, ToolCallSpec, ToolTurn } from "@agent-smith/types";
 import { getMarkdown, parseMarkdownToStructure } from "markstream-vue";
-import { nextTick, toRaw, type Reactive, type Ref } from "vue";
+import { nextTick, ref, type Reactive, type Ref } from "vue";
 import type { ParsedNode } from "yaml";
 import { uihistoryManager, state, uistate } from "../state.js";
 import { createAwaiter } from "../utils.js";
@@ -17,9 +17,14 @@ const useTaskEvents = (
     toolCallsState: Reactive<{ tcs: Array<ToolCallSpec>, from: string }>,
     hasThinking: Ref<boolean>,
     currentAgent: Ref<string>,
-): { events: ClientFeaturesOptions, resetStream: () => void } => {
+): {
+    events: ClientFeaturesOptions,
+    resetStream: () => void,
+    isStreaming: Ref<boolean>,
+} => {
     //let prevToken = "";
     let buffer = "";
+    let isStreaming = ref(false);
     const md = getMarkdown();
     //const perf = useInferencePerfTimer();
     const debug = false;
@@ -34,6 +39,7 @@ const useTaskEvents = (
     }
 
     const onStartEmit: AgentInferenceOptions["onStartEmit"] = (progress: PromptProcessingInProgressStats, from: string) => {
+        isStreaming.value = true;
         if (debug) {
             console.log("START EMIT", from, progress);
         }
@@ -231,6 +237,7 @@ const useTaskEvents = (
     };
 
     const onTurnEnd: AgentInferenceOptions["onTurnEnd"] = (ht: HistoryTurn, from: string) => {
+        isStreaming.value = false;
         if (debug) {
             console.log("END TURN", from, "/", currentAgent.value, "/", state.currentFeature.name, ht);
         };
@@ -295,6 +302,7 @@ const useTaskEvents = (
     }
 
     const resetStream = () => {
+        isStreaming.value = false;
         buffer = "";
         nodes.value = [];
         thinkingNodes.value = [];
@@ -339,6 +347,7 @@ const useTaskEvents = (
             onStartEmit,
         },
         resetStream,
+        isStreaming,
     }
 }
 

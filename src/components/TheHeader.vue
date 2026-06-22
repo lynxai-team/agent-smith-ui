@@ -119,9 +119,12 @@
               d="M16 22a6 6 0 1 1 6-6a5.94 5.94 0 0 1-6 6m0-10a3.91 3.91 0 0 0-4 4a3.91 3.91 0 0 0 4 4a3.91 3.91 0 0 0 4-4a3.91 3.91 0 0 0-4-4" />
           </svg>
         </button>
-        <div class="pr-5 text-lg cursor-pointer txt-lighter dark:txt-light" @click="user.toggleDarkMode()">
+        <div class="pr-3 text-lg cursor-pointer txt-light dark:txt-light" @click="user.toggleDarkMode()">
           <i-fa-solid:moon v-if="!user.isDarkMode.value"></i-fa-solid:moon>
           <i-fa-solid:sun v-else></i-fa-solid:sun>
+        </div>
+        <div class="pr-5 cursor-pointer txt-light" @click="toggleRightSidebar()">
+          <SidebarIcon width="32" height="32"></SidebarIcon>
         </div>
       </div>
     </template>
@@ -159,6 +162,7 @@ import BackendIcon from '../widgets/icons/BackendIcon.vue';
 import ManageBackends from './ManageBackends.vue';
 import WorkspacePicker from './WorkspacePicker.vue';
 import SamplingPresets from './SamplingPresets.vue';
+import SidebarIcon from '../widgets/icons/SidebarIcon.vue';
 
 const router = useRouter()
 const topBar = useTopbar(router);
@@ -189,15 +193,15 @@ function goApp(name: string) {
   router.push(`/app/${name}`);
 }
 
-const backendCls = computed(() => {
-  if (Object.keys(state.models).length == 0) {
-    return "txt-danger"
+function toggleRightSidebar() {
+  if (uistate.value.inferenceSidebar == "none") {
+    uistate.value.inferenceSidebar = "full"
+  } else if (uistate.value.inferenceSidebar == "full") {
+    uistate.value.inferenceSidebar = "mini"
+  } else if (uistate.value.inferenceSidebar == "mini") {
+    uistate.value.inferenceSidebar = "none"
   }
-  if (showBackends.value) {
-    return 'txt-semilight'
-  }
-  return 'txt-light'
-})
+}
 
 async function redirOpts() {
   const q = router.currentRoute.value.query;
@@ -207,6 +211,16 @@ async function redirOpts() {
     }
   }
 }
+
+const backendCls = computed(() => {
+  if (Object.keys(state.models).length == 0) {
+    return "txt-danger"
+  }
+  if (showBackends.value) {
+    return 'txt-semilight'
+  }
+  return 'txt-light'
+})
 
 onBeforeMount(() => redirOpts())
 </script>
