@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col p-3" :class="uistate.inferenceSidebar == 'mini' ? 'items-center' : ''">
+    <div class="flex flex-col p-3 overflow-y-auto" :class="uistate.inferenceSidebar == 'mini' ? 'items-center' : ''">
         <div v-for="(turn, i) in state.uihistory" class="flex flex-row space-x-2 txt-semilight text-sm"
             @click="emit('moveto-turn', i)">
             <button v-if="turn?.user" class="btn hover:lighter hover:bord-light flex flex-row space-x-2">

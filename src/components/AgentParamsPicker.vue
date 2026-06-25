@@ -45,7 +45,7 @@
         <div class="flex flex-wrap gap-2 justify-around">
             <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
             <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{ loadedModel.id
-                }}
+            }}
                 {{ humanizeNumber(loadedModel.ctx) }}</button>
             <button v-for="preset in state.samplingPresets" class="btn soft" @click="applySamplingPreset(preset)">{{
                 preset.name }}</button>
@@ -195,10 +195,12 @@ function pickLoadedModel() {
 
 function getLoadedModel(backend: string) {
     loadedModel.value = null;
-    for (const m of Object.values(state.models[backend])) {
-        if (m?.status == "loaded") {
-            loadedModel.value = m
-            break;
+    if (backend in state.models) {
+        for (const m of Object.values(state.models[backend])) {
+            if (m?.status == "loaded") {
+                loadedModel.value = m
+                break;
+            }
         }
     }
 }

@@ -4,7 +4,7 @@
       <the-header class="h-16 background fixed top-0 left-0 border-b bord-lighter"></the-header>
       <div class="fixed left-0 top-16 w-full h-main">
         <SidebarsDispatch class="w-[15rem] fixed left-0 top-16 overflow-y-auto h-main"></SidebarsDispatch>
-        <router-view class="overflow-y-auto fixed left-[15rem] top-16 h-main min-w-main"></router-view>
+        <router-view class="fixed left-[15rem] top-16 h-main min-w-main"></router-view>
       </div>
     </template>
     <router-view v-else class="container mx-auto w-full h-full"></router-view>

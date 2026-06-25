@@ -29,6 +29,9 @@ const emit = defineEmits(["update", "run"]);
 const _data = ref(props.data);
 
 function ch() {
+  if (_data.value.endsWith("%")) {
+    console.log("SKILL")
+  }
   emit("update", _data.value);
 }
 

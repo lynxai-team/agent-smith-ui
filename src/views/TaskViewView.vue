@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto flex flex-col space-y-5 p-3 h-full pb-24 w-main">
+    <div class="container mx-auto flex flex-col space-y-5 p-3 h-full pb-24 w-main overflow-y-auto">
         <div class="flex flex-row txt-light w-full">
             <div class="p-2 border-r border-t border-l bord-lighter cursor-pointer rounded-l-md"
                 :class="tab == 'file' ? ['txt-semilight'] : ['border-b']" @click="toggleTab('file')">File</div>
