@@ -1,11 +1,10 @@
 <template>
-  <div id="params" class="flex w-full flex-col 3xl:max-w-[28rem] p-5">
+  <div id="params" class="3xl:max-w-[28rem] p-5 w-fit">
     <InferenceParamsForm :inference-params="inferParams"></InferenceParamsForm>
   </div>
 </template>
 
 <script setup lang="ts">
-import InputNumber from 'primevue/inputnumber';
 import type { InferenceParams } from '@agent-smith/types';
 import { ref, watchEffect } from 'vue';
 import InferenceParamsForm from '../InferenceParamsForm.vue';
@@ -47,7 +46,7 @@ watchEffect(() => {
   .p-slider-range
     @apply light
   .p-slider-handle
-    @apply border bord-primary
+    @apply border border-primary
 .dark
   #params
     .p-inputnumber-button

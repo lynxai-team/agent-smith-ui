@@ -1,6 +1,6 @@
 <template>
-    <div class="flex flex-col space-y-3 pb-5 max-w-2xl">
-        <InferenceParamsForm :inference-params="inferenceParams"></InferenceParamsForm>
+    <div class="flex flex-col space-y-3 pb-5 max-w-2xl items-center">
+        <InferenceParamsForm :inference-params="inferenceParams" :auto="true"></InferenceParamsForm>
         <div class="flex flex-row space-x-3 justify-center">
             <div>
                 <input type="checkbox" v-model="enableThinking" class="ring-0">&nbsp;Enable thinking</input>
@@ -18,9 +18,10 @@
                     <span class="ml-2">Use this inference params for all subagents</span>
                 </sw-switch>
                 <div class="flex flex-row space-x-2 pt-2 items-center">
-                    <div class="txt-semilight">Backend:</div>&nbsp;
+                    <div class="text-semilight">Backend:</div>&nbsp;
                     <div>
-                        <select v-model="backend" :required="true" class="ring-0 px-3 py-2 border bord-lighter">
+                        <select v-model="backend" :required="true" class="ring-0 px-3 py-2 border bord-lighter"
+                            @change="onSelectBackend()">
                             <option v-for="b in Object.keys(state.backends)" :selected="uistate.backend == b"
                                 :value="b">
                                 {{ b }}
@@ -30,28 +31,29 @@
 
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <div class="txt-semilight">Model:</div>
-                    <div v-if="model">
+                    <div class="text-semilight">Model:</div>
+                    <div v-if="model.length > 0">
                         {{ model }}
                     </div>
                 </div>
             </div>
         </div>
         <div class="flex justify-center" v-if="showModelPicker">
-            <Listbox :options="Object.values(state.models[backend])" filter optionLabel="id"
-                @update:modelValue="$event?.id ? model = $event.id : model = undefined; showModelPicker = false"
+            <Listbox v-if="enableBackendModels" :options="Object.values(state.models[backend])" filter optionLabel="id"
+                @update:modelValue="$event?.id ? model = $event.id : model = ''; showModelPicker = false"
                 class="w-56" />
+            <input v-else type="text" v-model="model" />
         </div>
         <div class="flex flex-wrap gap-2 justify-around">
             <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
             <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{ loadedModel.id
-            }}
+                }}
                 {{ humanizeNumber(loadedModel.ctx) }}</button>
             <button v-for="preset in state.samplingPresets" class="btn soft" @click="applySamplingPreset(preset)">{{
                 preset.name }}</button>
         </div>
         <div class="w-full flex flex-row justify-center pt-3 space-x-2">
-            <button class="btn txt-primary font-semibold hover:primary py-1 text-sm" :disabled="!isValid"
+            <button class="btn text-primary font-semibold hover:primary py-1 text-sm" :disabled="!isValid"
                 @click="useAgentSettings()">Use agent settings</button>
             <button class="btn success py-1 text-sm" :disabled="!isValid" @click="saveAgentsSettings()">Save agent
                 settings</button>
@@ -80,8 +82,9 @@ const switchPropagateModel = ref(false);
 const switchPropagateIp = ref(false);
 const enableThinking = ref(false);
 const preserveThinking = ref(false);
-const model = ref<string | undefined>(undefined);
+const model = ref<string>("");
 const backend = ref<string>(uistate.value.backend);
+const enableBackendModels = ref(state.backends[backend.value]?.type !== 'openai');
 const showModelPicker = ref(false);
 
 const inferenceParams: InferenceParams = reactive({
@@ -119,7 +122,7 @@ function useAgentSettings() {
     } = {
         model: model.value,
         backend: bk,
-        params: inferenceParams,
+        params: toRaw(inferenceParams),
         propagateModel: switchPropagateModel.value,
         propagateInferParams: switchPropagateIp.value,
     }
@@ -206,7 +209,7 @@ function getLoadedModel(backend: string) {
 }
 
 const isValid = computed(() => {
-    return model.value
+    return model.value.length > 0
 })
 
 async function init() {
@@ -220,7 +223,8 @@ async function init() {
             if (k == "model") {
                 model.value = v
             } else if (k == "backend") {
-                backend.value = v
+                backend.value = v;
+                enableBackendModels.value = state.backends[backend.value]?.type !== 'openai';
             }
             else if (k == "chat_template_kwargs") {
                 if (v?.enable_thinking) {
@@ -249,7 +253,7 @@ async function init() {
             }
         }
     };
-    if (!model.value) {
+    if (model.value.length == 0) {
         model.value = props.agentSpec.model
     }
     if (!backend.value) {
@@ -260,17 +264,20 @@ async function init() {
         }
     }
     try {
-        getLoadedModel(backend.value);
+        if (enableBackendModels.value) {
+            getLoadedModel(backend.value);
+        }
     } catch (e) {
         console.warn(e)
     }
 }
 
-onBeforeMount(() => init());
+function onSelectBackend() {
+    enableBackendModels.value = state.backends[backend.value]?.type !== 'openai';
+    if (enableBackendModels) {
+        srv.loadModels(backend.value).then(() => getLoadedModel(backend.value));
+    }
+}
 
-watch(backend, () => {
-    //console.log("B", loadedModel.value, "/", backend.value)
-    srv.loadModels(backend.value).then(() => getLoadedModel(backend.value));
-    //console.log("BE", loadedModel.value)
-})
+onBeforeMount(() => init());
 </script>

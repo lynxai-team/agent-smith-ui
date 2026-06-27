@@ -6,7 +6,7 @@
                 <div class="flex flex-row space-x-3 items-center btn hover:lighter w-fit"
                     @click="openTool(tool.def, tool.type)">
                     <div class="text-lg font-semibold">{{ tool.def.name }}</div>
-                    <div class="txt-semilight">{{ tool.type }}</div>
+                    <div class="text-semilight">{{ tool.type }}</div>
                     <div v-if="autoTools.includes(tool.def.name)" class="btn success text-sm py-0 px-2 cursor-default">
                         Auto</div>
                     <div v-else class="btn danger text-sm py-0 px-2 cursor-default">Confirm</div>
@@ -18,11 +18,11 @@
                         <div>{{ arg.description }}</div>
                         <div v-if="arg?.required" class="flex flex-row space-x-2 items-center">
                             <div class="warning h-3 w-3 rounded-full opacity-55"></div>
-                            <div class="txt-semilight">required</div>
+                            <div class="text-semilight">required</div>
                         </div>
                         <div v-else class="flex flex-row space-x-2 items-center">
                             <div class="success h-3 w-3 rounded-full opacity-55"></div>
-                            <div class="txt-semilight">optional</div>
+                            <div class="text-semilight">optional</div>
                         </div>
                     </div>
                 </div>

@@ -1,20 +1,20 @@
 <template>
     <div class="container mx-auto flex flex-col space-y-5 p-3 h-full pb-24 w-main">
         <div class="flex flex-row mr-3">
-            <button class="btn p-1 border bord-lighter"
+            <button class="btn p-1 border border-lighter"
                 :class="view == 'settings' ? ['txt-semilight', 'border-b-0'] : 'txt-light'"
                 @click="view = 'settings'">Settings</button>
-            <button class="btn p-1 border bord-lighter"
+            <button class="btn p-1 border border-lighter"
                 :class="view == 'file' ? ['txt-semilight', 'border-b-0'] : 'txt-light'" @click="view = 'file'">Config
                 file</button>
-            <button class="btn p-1 border bord-lighter"
+            <button class="btn p-1 border border-lighter"
                 :class="view == 'edit' ? ['txt-semilight', 'border-b-0'] : 'txt-light'" @click="view = 'edit'">Edit
                 config</button>
-            <div class="border-b bord-lighter flex-grow"></div>
+            <div class="border-b border-lighter grow"></div>
         </div>
         <template v-if="view == 'file'">
             <div class="flex flex-row w-full">
-                <div class="text-2xl flex-grow">Configuration</div>
+                <div class="text-2xl grow">Configuration</div>
             </div>
             <div class="p-3 bg-gray-100 border border-gray-200 rounded-md not-prose dark:bg-black dark:border-neutral-800"
                 v-if="isReady">
@@ -30,7 +30,7 @@
         </template>
         <template v-else-if="view == 'edit' && conf">
             <div class="flex flex-row w-full">
-                <div class="text-2xl flex-grow">Configuration</div>
+                <div class="text-2xl grow">Configuration</div>
             </div>
             <view-conf :conf="conf" @reload="redirectReload()" :plugins="addPlugins"></view-conf>
         </template>

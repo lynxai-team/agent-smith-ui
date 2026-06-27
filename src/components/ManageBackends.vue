@@ -4,7 +4,7 @@
             <div v-if="v.isDefault && Object.keys(state.models).length > 0" class="rounded-full success w-5 h-5"></div>
             <div v-else class="w-5 h-5"></div>
             <div>{{ k }}</div>
-            <div class="txt-semilight">{{ v.type }}</div>
+            <div class="text-semilight">{{ v.type }}</div>
         </button>
     </div>
 </template>

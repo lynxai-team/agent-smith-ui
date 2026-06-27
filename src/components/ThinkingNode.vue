@@ -4,7 +4,7 @@
         <pre>|{{ node.content == "" }}|{{ node.content }}|</pre -->
     <div class="flex flex-col">
         <div class=" btn flex flex-row space-x-3 items-center w-min text-sm" @click="toggleThinking()">
-            <div class="txt-light">
+            <div class="text-light">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 36 36">
                     <path fill="currentColor"
                         d="M33.49 26.28a1 1 0 0 0-1.2-.7l-2.49.67a14.23 14.23 0 0 0 2.4-6.75a14.48 14.48 0 0 0-4.83-12.15a1 1 0 0 0-1.37.09a1 1 0 0 0 .09 1.41a12.45 12.45 0 0 1 4.16 10.46a12.2 12.2 0 0 1-2 5.74L28 22.54a1 1 0 1 0-1.95.16l.5 6.44l6.25-1.66a1 1 0 0 0 .69-1.2"
@@ -21,9 +21,9 @@
                     <path fill="none" d="M0 0h36v36H0z" />
                 </svg>
             </div>
-            <div class="txt-semilight w-max">{{ from }}&nbsp;thinking</div>
+            <div class="text-semilight w-max">{{ from }}&nbsp;thinking</div>
         </div>
-        <div v-if="showThinking" class="txt-semilight">
+        <div v-if="showThinking" class="text-semilight">
             <MarkdownRender class="mdr" :nodes="nodes" :is-strict="true" :batch-rendering="true" />
         </div>
     </div>

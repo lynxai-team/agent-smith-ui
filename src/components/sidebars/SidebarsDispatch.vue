@@ -1,18 +1,18 @@
 <template>
     <div class="h-full">
-        <div class="flex flex-col border bord-lighter h-full" v-if="!appSidebar">
+        <div class="flex flex-col border border-lighter h-full border-t-0" v-if="!appSidebar">
             <div class="flex flex-row txt-light">
-                <!--div class="p-2 border-r bord-lighter cursor-pointer"
+                <!--div class="p-2 border-r border-lighter cursor-pointer"
                     :class="uistate.sidebar == 'agents' ? ['txt-semilight'] : ['border-b']"
                     @click="toggleSidebar('agents')">
                     <AgentIcon width="32" height="32"></AgentIcon>
                 </div>
-                <div class="p-2 border-r bord-lighter cursor-pointer"
+                <div class="p-2 border-r border-lighter cursor-pointer"
                     :class="uistate.sidebar == 'tasks' ? ['txt-semilight'] : ['border-b']"
                     @click="toggleSidebar('tasks')">
                     <TaskIcon width="32" height="32"></TaskIcon>
                 </div>
-                <div class="p-2 border-r bord-lighter cursor-pointer"
+                <div class="p-2 border-r border-lighter cursor-pointer"
                     :class="uistate.sidebar == 'workflows' ? ['txt-semilight'] : ['border-b']"
                     @click="toggleSidebar('workflows')">
                     <WorkflowIcon width="32" height="32"></WorkflowIcon >
@@ -25,7 +25,7 @@
                 :class="uistate.sidebar == 'mcp' ? ['txt-semilight'] : ['border-b']" @click="toggleSidebar('mcp')">
                 <McpIcon width="32" height="32"></McpIcon>
             </div -->
-                <div class="flex-grow border-b bord-lighter"></div>
+                <div class="grow border-b border-lighter"></div>
             </div>
             <div>
                 <SidebarAgents v-if="uistate.sidebar == 'agents'"></SidebarAgents>
@@ -33,7 +33,7 @@
                 <SidebarWorkflows v-else-if="uistate.sidebar == 'workflows'"></SidebarWorkflows -->
             </div>
         </div>
-        <div v-else class="border border-t-0 bord-lighter h-full">
+        <div v-else class="border border-t-0 border-lighter h-full">
             <component :is="appSidebar"></component>
         </div>
     </div>

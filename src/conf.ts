@@ -33,7 +33,15 @@ const availablePlugins = [
     },
 ];
 
+const themes = new Array<string>(
+    "bluestar",
+    "black",
+    "brown",
+    "stone",
+);
+
 export {
     defaultInferenceParams,
     availablePlugins,
+    themes,
 }

@@ -4,19 +4,19 @@
             v-if="tool?.response && tool.type != 'agent'">
         </ToolsIcon>
         <ExecuteIcon v-else width="24" height="24" class="min-w-12 opacity-50 font-semibold"
-            :class="tool.type == 'agent' ? 'txt-success' : 'txt-warning'"></ExecuteIcon>
+            :class="tool.type == 'agent' ? 'text-success' : 'text-warning'"></ExecuteIcon>
         <div class="w-max">{{ tool.from }}</div>
         <div>=></div>
-        <div class="font-semibold txt-success">{{ tool.call.name }}</div>
-        <div class="txt-semilight">{{ tool.type }}</div>
+        <div class="text-success">{{ tool.call.name }}</div>
+        <div class="text-semilight">{{ tool.type }}</div>
         <div>
-            <div class="flex flex-col space-y-3 ml-5 flex-shrink">
+            <div class="flex flex-col space-y-3 ml-5 shrink">
                 <div v-for="(k, v) in tool.call.arguments" class="flex flex-row space-x-2">
-                    <div class="txt-semilight">
+                    <div class="text-semilight">
                         <ArgumentIcon width="24" height="24"></ArgumentIcon>
                     </div>
                     <div>{{ v }}:</div>
-                    <div class="txt-semilight">{{ k.slice(0, 68) }}{{ k.length > 67 ? '(...)' : '' }}</div>
+                    <div class="text-semilight">{{ k.slice(0, 68) }}{{ k.length > 67 ? '(...)' : '' }}</div>
                 </div>
             </div>
         </div>
@@ -42,20 +42,20 @@ defineProps({
 
 function toolIconCls(turn: UiHistoryTurn, tool: ToolTurn): string {
     if (tool.call.id in turn.state.confirmToolCalls) {
-        return 'txt-warning'
+        return 'text-warning'
     }
     if (tool?.response) {
         if (tool.response == "tool execution denied" ||
             tool.response.toString().startsWith("[Error]")
         ) {
-            return 'txt-danger'
+            return 'text-danger'
         }
-        return 'txt-success'
+        return 'text-success'
     } else {
         if (tool?.type == "agent") {
-            return 'txt-success'
+            return 'text-success'
         }
-        return 'txt-warning'
+        return 'text-warning'
     }
 }
 </script>

@@ -1,12 +1,12 @@
 <template>
     <div class="flex flex-col space-y-3">
         <div class="flex flex-row space-x-2 items-center cursor-pointer" @click="toggleToolCallProgress()">
-            <ToolsIcon width="24" height="24" class="min-w-12 opacity-50 txt-warning">
+            <ToolsIcon width="24" height="24" class="min-w-12 opacity-50 text-warning">
             </ToolsIcon>
-            <LoadingSpinner class="txt-light"></LoadingSpinner>
+            <LoadingSpinner class="text-light"></LoadingSpinner>
             <div class="w-max">{{ from }}</div>
             <div>=></div>
-            <div class="font-semibold txt-success">{{ toolCallSpec.name }}</div>
+            <div class="font-semibold text-success">{{ toolCallSpec.name }}</div>
         </div>
         <div v-if="showToolCallProgress" v-html="parseStream()">
         </div>

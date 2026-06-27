@@ -11,7 +11,7 @@
                         </div>
                     </template>
                 </button>
-                <button class="btn primary" @click="view = 'create'">New workspace</button>
+                <button class="btn prim" @click="view = 'create'">New workspace</button>
             </div>
             <div v-else class="flex flex-col space-y-3">
                 <div class="text-xl">New workspace</div>
@@ -25,26 +25,26 @@
                         <input v-model="form.path" type="text" class="input" placeholder="/workspace/path" />
                     </div>
                     <button type="submit" class="btn success pt-2" :disabled="!isValid">Create</button>
-                    <button class="btn txt-warning" @click="view = 'view'">Cancel</button>
+                    <button class="btn text-warning" @click="view = 'view'">Cancel</button>
                 </form>
             </div>
         </Popover>
         <button class="btn" @click="wspopover.toggle($event)">
             <template v-if="state?.currentWorkspace">
                 <template v-if="state?.currentWorkspace?.name == ''">
-                    <WorkspaceIcon width="32" height="32" :class="_show ? 'txt-danger' : 'txt-light'">
+                    <WorkspaceIcon width="32" height="32" :class="_show ? 'text-danger' : 'text-light'">
                     </WorkspaceIcon>
                 </template>
                 <div v-else class="flex flex-row space-x-2 items-center">
                     <div>
-                        <FolderIcon width="32" height="32" class=" txt-light">
+                        <FolderIcon width="32" height="32" class=" text-light">
                         </FolderIcon>
                     </div>
-                    <div class=" txt-light"></div>{{ humanize(state.currentWorkspace.name) }}
+                    <div class=" text-light"></div>{{ humanize(state.currentWorkspace.name) }}
                 </div>
             </template>
             <template v-else>
-                <WorkspaceIcon width="32" height="32" :class="_show ? 'txt-danger' : 'txt-light'">
+                <WorkspaceIcon width="32" height="32" :class="_show ? 'text-danger' : 'text-light'">
                 </WorkspaceIcon>
             </template>
         </button>

@@ -1,4 +1,4 @@
-import type { AgentState, ConfigFile, HistoryTurn, SamplingPreset, UiHistoryTurn, Workspace } from "@agent-smith/types";
+import type { AgentState, ConfigFile, HistoryTurn, InferenceBackend, SamplingPreset, UiHistoryTurn, Workspace } from "@agent-smith/types";
 import { useClientFeatures } from "@agent-smith/wscli";
 import { User } from "@snowind/state";
 import { useStorage } from '@vueuse/core';
@@ -10,7 +10,6 @@ import { createAwaiter } from "./utils.js";
 const debugInference = ref(true);
 const uihistoryManager = useUiHistory();
 const user = new User();
-const theme = ref("bluestar");
 const appSidebar = shallowRef();
 const uistate = useStorage<{
     sidebar: SidebarType,
@@ -24,6 +23,7 @@ const uistate = useStorage<{
     availableAgents: Record<string, boolean>,
     inferenceSidebar: "none" | "full" | "mini",
     inferenceSidebarName: string,
+    theme: string,
 }>('uistate', {
     sidebar: "agents",
     taskView: "view",
@@ -36,6 +36,7 @@ const uistate = useStorage<{
     availableAgents: {},
     inferenceSidebar: "none",
     inferenceSidebarName: "sampling",
+    theme: "stone"
 });
 const { awaiter, unblock } = createAwaiter<boolean>();
 const state = reactive<AgentState>({
@@ -71,6 +72,7 @@ const srv = useClientFeatures();
 
 async function initState() {
     //state.onReady.then(() => console.log("state ready"))
+    setTheme();
     const { found, config } = await srv.checkState();
     state.hasConfig = found;
     //console.log("CONF", config)
@@ -101,12 +103,17 @@ async function initTaskData() {
             }
         }
         if (conf.value?.backends) {
-            for (const k of Object.keys(conf.value.backends)) {
+            for (const [k, v] of Object.entries(conf.value.backends)) {
                 if (k == "default") {
                     continue
                 }
                 try {
-                    srv.loadModels(k).then(bks => state.models[k] = bks);
+                    const b = v as InferenceBackend;
+                    const loadModels = b?.type !== "openai" ? true : false;
+                    //console.log("Load models", v, loadModels)
+                    if (loadModels) {
+                        srv.loadModels(k).then(bks => state.models[k] = bks);
+                    }
                 } catch (e) {
                     console.error(`Can not load models from ${k}`, `Check you backend server`)
                     //throw new Error("can not load models")
@@ -149,10 +156,21 @@ function setCurrentFeature(name: string, type: string) {
     state.currentFeature.name = name;
 }
 
+
+function setTheme(t?: string) {
+    const currentTheme = uistate.value.theme;
+    uistate.value.theme = t ?? currentTheme;
+    const th = document.getElementsByTagName("html")[0];
+    //console.log("Current theme", currentTheme);
+    //console.log("Switching to theme:", store.value.theme);
+    th?.classList.remove("theme-" + currentTheme);
+    th?.classList.add("theme-" + uistate.value.theme);
+}
+
 export {
     appSidebar, conf, debugInference, uihistoryManager, initState,
     resetCurrentFeature,
     setCurrentFeature, srv, state,
-    theme, uistate, user
+    uistate, user, setTheme
 };
 

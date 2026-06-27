@@ -2,8 +2,8 @@
     <div class="flex flex-col space-y-3 p-3">
         <div class="text-xl">Agents config</div>
         <div class="flex flex-row items-center space-x-3">
-            <button class="btn bord-light txt-semilight hover:primary text-sm py-1" @click="expandAll">Expand</button>
-            <button class="btn bord-light txt-semilight hover:primary text-sm py-1"
+            <button class="btn bord-light text-semilight hover:primary text-sm py-1" @click="expandAll">Expand</button>
+            <button class="btn bord-light text-semilight hover:primary text-sm py-1"
                 @click="collapseAll">Collapse</button>
         </div>
         <div v-if="isReady" class="flex flex-col items-start">
@@ -23,6 +23,10 @@
             </Tree>
             <button class="btn mt-5 success" @click="redirectReload()">Apply changes</button>
         </div>
+        <div class="flex flex-col space-y-3 w-min">
+            <div class="text-xl">Theme</div>
+            <ThemeSwitcher></ThemeSwitcher>
+        </div>
     </div>
 </template>
 <script setup lang="ts">
@@ -34,6 +38,7 @@ import { transformTasksData } from "../utils.js";
 import type { TreeNode } from 'primevue/treenode';
 import Tree from 'primevue/tree';
 import { useRouter } from "vue-router";
+import ThemeSwitcher from "./ThemeSwitcher.vue";
 
 const isReady = ref(false);
 const noDisplay = new Array<string>("subagent");

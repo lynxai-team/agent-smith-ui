@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-row items-center">
-        <button class="btn text-sm py-1 rounded-lg hover:primary" @click="openView('view')">View</button>
-        <button class="btn text-sm py-1 rounded-lg hover:primary" @click="openView('run')">Run</button>
+        <button class="btn text-sm py-1 rounded-lg hover:secondary" @click="openView('view')">View</button>
+        <button class="btn text-sm py-1 rounded-lg hover:secondary" @click="openView('run')">Run</button>
     </div>
 </template>
 

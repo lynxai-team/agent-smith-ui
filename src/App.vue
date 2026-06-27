@@ -1,10 +1,10 @@
 <template>
-  <div class="h-full w-full" :class="`theme-${theme}`">
+  <div class="h-full w-full">
     <template v-if="state.hasConfig">
-      <the-header class="h-16 background fixed top-0 left-0 border-b bord-lighter"></the-header>
+      <the-header class="h-16 prim fixed top-0 left-0 border-b border-lighter"></the-header>
       <div class="fixed left-0 top-16 w-full h-main">
-        <SidebarsDispatch class="w-[15rem] fixed left-0 top-16 overflow-y-auto h-main"></SidebarsDispatch>
-        <router-view class="fixed left-[15rem] top-16 h-main min-w-main"></router-view>
+        <SidebarsDispatch class="w-60 fixed left-0 top-16 overflow-y-auto h-main background"></SidebarsDispatch>
+        <router-view class="fixed left-60 top-16 h-main min-w-main background"></router-view>
       </div>
     </template>
     <router-view v-else class="container mx-auto w-full h-full"></router-view>
@@ -29,7 +29,7 @@ import TheHeader from "@/components/TheHeader.vue";
 import ConfirmDialog from "primevue/confirmdialog";
 import Toast from "primevue/toast";
 import { initNotifyService } from "@/services/notify.js";
-import { initState, state, theme } from './state.js';
+import { initState, state } from './state.js';
 // @ts-ignore
 import "@fontsource/roboto";
 import SidebarsDispatch from './components/sidebars/SidebarsDispatch.vue';
@@ -48,6 +48,11 @@ onBeforeMount(() => {
   initNotifyService();
 });
 </script>
+
+<style lang="css">
+@import "./styles/global.css";
+</style>
+
 
 <style lang="scss">
 @use "./scss/main.scss";

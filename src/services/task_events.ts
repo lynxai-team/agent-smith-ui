@@ -99,12 +99,14 @@ const useTaskEvents = (
 
     const onStartThinking: AgentInferenceOptions["onStartThinking"] = (from: string) => {
         if (debug) { console.log("START THINKING", from) };
+        isStreaming.value = true;
         hasThinking.value = true;
     }
 
     const onEndThinking: AgentInferenceOptions["onEndThinking"] = (from: string) => {
         if (debug) { console.log("ON THINKING END", from) };
         hasThinking.value = false;
+        isStreaming.value = false;
         uihistoryManager.newTurn("think", from, state.history.length - 1, {
             think: stream.value,
         });

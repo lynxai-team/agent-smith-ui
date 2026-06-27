@@ -4,14 +4,15 @@
             <div v-if="view == 'view'" class="flex flex-col space-y-2">
                 <div v-for="mp in state.samplingPresets" class="flex flex-row">
                     <button class="btn" @click="deletePreset(mp.name)">
-                        <DeleteIcon width="24" height="24" class="txt-danger opacity-20 hover:opacity-100"></DeleteIcon>
+                        <DeleteIcon width="24" height="24" class="text-danger opacity-20 hover:opacity-100">
+                        </DeleteIcon>
                     </button>
                     <button class="btn pl-0" @click="editPreset(mp.name)">{{ humanize(mp.name) }}</button>
-                    <button class="btn pl-0 flex-grow flex flex-row justify-end" @click="editPreset(mp.name)">
-                        <CopyIcon width="24" height="24" class="txt-semilight"></CopyIcon>
+                    <button class="btn pl-0 grow flex flex-row justify-end" @click="editPreset(mp.name)">
+                        <CopyIcon width="24" height="24" class="text-semilight"></CopyIcon>
                     </button>
                 </div>
-                <button class="btn primary pt-2" @click="toggleView('create')">New sampling preset</button>
+                <button class="btn prim pt-2" @click="toggleView('create')">New sampling preset</button>
             </div>
             <div v-else class="flex flex-col space-y-3">
                 <div class="text-xl">Sampling preset</div>
@@ -24,7 +25,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Backend</label>
-                                <select v-model="backend" :required="true">
+                                <select v-model="backend" :required="true" @change="onSelectBackend()">
                                     <option v-for="b in Object.keys(state.backends)" :selected="b == backend"
                                         :value="b">
                                         {{ b }}
@@ -52,21 +53,22 @@
                                     No model selected
                                 </template>
                             </label>
-                            <Listbox v-model="selectedModel" :options="modelsData" filter optionLabel="label"
-                                class="w-56" />
+                            <Listbox v-if="enableBackendModels" v-model="selectedModel" :options="modelsData" filter
+                                optionLabel="label" class="w-56" />
+                            <input v-else type="text" v-model="selectedModel.id" />
                         </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-1">Inference params</label>
-                        <InferenceParamsForm :inference-params="inferenceParams"></InferenceParamsForm>
+                        <InferenceParamsForm :inference-params="inferenceParams" :auto="true"></InferenceParamsForm>
                     </div>
                     <button type="submit" class="btn success pt-2" :disabled="!isValid">Save</button>
-                    <button class="btn txt-warning" @click="reset()">Cancel</button>
+                    <button class="btn text-warning" @click="reset()">Cancel</button>
                 </form>
             </div>
         </Popover>
-        <button class="btn flex flex-row space-x-2 items-center" @click="mpopover.toggle($event)">
-            <ModelsPresetsIcon width="32" height="32" class=" txt-light"></ModelsPresetsIcon>
+        <button class="btn flex flex-row space-x-2 items-center" @click="mpopover.toggle($event);">
+            <ModelsPresetsIcon width="32" height="32" class=" text-light"></ModelsPresetsIcon>
         </button>
     </div>
 </template>
@@ -75,7 +77,7 @@
 import type { InferenceParams, ModelInfo, SamplingPreset } from '@agent-smith/types';
 import Listbox from 'primevue/listbox';
 import Popover from 'primevue/popover';
-import { computed, reactive, ref, toRaw, watch } from 'vue';
+import { computed, reactive, ref, toRaw } from 'vue';
 import { api } from '../services/api.js';
 import { confirmDanger, msg } from '../services/notify.js';
 import { humanize, humanizeNumber } from '../services/str.js';
@@ -105,6 +107,7 @@ const inferenceParams: InferenceParams = reactive({
 
 const name = ref("");
 const backend = ref("");
+const enableBackendModels = ref(state.backends[backend.value]?.type !== 'openai');
 
 async function addSamplingPreset() {
     const cta: Record<string, any> = {};
@@ -180,6 +183,7 @@ function editPreset(_name: string) {
         }
     }
     view.value = "create";
+    onSelectBackend()
 }
 
 function reset() {
@@ -203,6 +207,16 @@ function toggleView(v: 'view' | 'create') {
     }
 }
 
+function onSelectBackend() {
+    enableBackendModels.value = state.backends[backend.value]?.type !== 'openai';
+    if (enableBackendModels.value) {
+        loadModels(backend.value)
+    } else {
+        backend.value = state.backends[backend.value].name;
+        selectedModel.value = { id: "", ctx: 0, status: "", hasVision: false }
+    }
+}
+
 function loadModels(backend: string) {
     //console.log("Load models", backend);
     const md: Array<Record<string, any>> = [];
@@ -215,12 +229,5 @@ function loadModels(backend: string) {
 
 const isValid = computed(() => {
     return name.value.length > 0
-});
-
-watch(backend, () => {
-    if (backend.value) {
-        loadModels(backend.value)
-    }
-
 });
 </script>

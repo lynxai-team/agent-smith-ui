@@ -1,18 +1,18 @@
 <template>
-  <div class="flex flex-row w-fit h-full">
-    <div id="main-output" class="flex flex-col flex-grow w-full h-full overflow-y-auto">
-      <div class="w-full flex flex-col flex-grow overflow-y-auto p-3">
+  <div class="flex flex-row h-main">
+    <div id="main-output" class="flex flex-col grow h-full overflow-y-auto ">
+      <div class="flex flex-col grow overflow-y-auto p-3">
         <template v-if="state.uihistory.length > 0">
           <div v-for="(turn, i) in state.uihistory" class="flex flex-col">
             <div class="flex flex-row">
               <a :id="`turn-${i}`"></a>
-              <div class="flex-grow">
+              <div class="grow">
                 <TurnTitle name="user" v-if="i == 0"></TurnTitle>
                 <TurnTitle :name="turn.from" v-else-if="state.uihistory[i - 1].from != turn.from" class="pt-3">
                 </TurnTitle>
-                <div v-if="turn?.user" class="p-3 w-full">
+                <div v-if="turn?.user" class="p-3">
                   <!-- MarkdownRender :content="turn.user" v-if="uistate.viewMode == 'markdown'" / -->
-                  <div class="txt-semilight" v-html="turn.user.replaceAll('\n', '<br />')"></div>
+                  <div class="text-semilight" v-html="turn.user.replaceAll('\n', '<br />')"></div>
                 </div>
                 <div v-if="turn?.prefillStats" class="pl-3">
                   <PromptProcessingProgress v-if="turn.prefillStats.total > 0"
@@ -52,7 +52,7 @@
                   <HistoryTurnStatsBar :stats="turn.stats"></HistoryTurnStatsBar>
                 </div>
               </div>
-              <button class="btn flex flex-row items-center txt-light hover:secondary pl-3"
+              <button class="btn flex flex-row items-center text-light hover:secondary pl-3"
                 :disabled="stream.length > 0 || toolCallsState.tcs.length > 0" @click="confirmRestartAtTurn(i + 1)">
                 <RestartIcon width="24" height="24"></RestartIcon>
                 <div>{{ i + 1 }}</div>
@@ -60,20 +60,14 @@
             </div>
           </div>
         </template>
-        <div v-if="state.isLoadingModel" class="pl-6 txt-semilight">
+        <div v-if="state.isLoadingModel" class="pl-6 text-semilight">
           Loading {{ state.currentModel.id }} model ...
         </div>
         <div v-if="state.isProcessingPrompt" class="pb-3 pl-3">
           <PromptProcessingProgress :prompt-processing-stats="state.promptProcessingProgress">
           </PromptProcessingProgress>
         </div>
-        <div v-if="toolCallsState.tcs.length > 0" class="flex flex-col pt-2 pl-4">
-          <div v-for="tc in toolCallsState.tcs" class="pb-2">
-            <FormatedToolCallInProgress :from="toolCallsState.from" :tool-call-spec="tc" :stream="stream">
-            </FormatedToolCallInProgress>
-          </div>
-        </div>
-        <div v-if="stream.length > 0" class="flex-grow">
+        <div v-if="stream.length > 0">
           <TurnTitle :name="currentAgent" v-if="state.uihistory[state.uihistory.length - 1].from != currentAgent"
             class="pt-3">
           </TurnTitle>
@@ -90,10 +84,16 @@
             </div>
           </template>
         </div>
+        <div v-if="toolCallsState.tcs.length > 0" class="flex flex-col pt-2 pl-4">
+          <div v-for="tc in toolCallsState.tcs" class="pb-2">
+            <FormatedToolCallInProgress :from="toolCallsState.from" :tool-call-spec="tc" :stream="stream">
+            </FormatedToolCallInProgress>
+          </div>
+        </div>
         <a id="bottom-output" class="mt-3"></a>
       </div>
-      <div id="prompt-input" class="px-3 pb-5 flex flex-col z-20 w-full">
-        <div class="flex flex-wrap gap-3 w-full mb-3" v-if="srv.isReady">
+      <div id="prompt-input" class="px-3 pb-5 flex flex-col z-20">
+        <div class="flex flex-wrap gap-3 mb-3" v-if="srv.isReady">
           <div v-for="(v, k) in srv.variables?.required" class="w-[49%] success">
             <IftaLabel v-if="k != 'workspace'">
               <InputText :id="k" v-model="srv.variables.values.required[k]" variant="filled" class="w-full" />
@@ -113,39 +113,40 @@
             </IftaLabel>
           </div>
         </div>
-        <div class="flex flex-col w-full" v-if="isReady">
+        <div class="flex flex-col" v-if="isReady">
           <!-- div>tps={{ taskEvents.perf.tps }}</div -->
           <AutoTextarea :data="prompt" @update="prompt = $event;" @run="exec()" class="w-full">
           </AutoTextarea>
           <div class="flex flex-row">
             <PromptNavbarLeft></PromptNavbarLeft>
-            <div class="flex flex-row w-full justify-end items-center flex-grow">
+            <div class="flex flex-row justify-end items-center grow">
               <!-- div v-if="prompt.length > 0">
                 <button class="btn" @click="applyTemplateToPrompt(prompt, srv, inferOptions)">T</button>
               </div -->
-              <div class="txt-semilight text-sm mr-2" v-if="srv.isReady">
+              <div class="text-semilight text-sm mr-2" v-if="srv.isReady">
                 <Popover ref="modelsPopover">
                   <AgentParamsPicker :agent-spec="srv.agentSpec.value" @end="useAgentSettings($event);">
                   </AgentParamsPicker>
                 </Popover>
-                <button class="btn px-0 hover:secondary" @click="modelsPopover.toggle($event);">{{
-                  inferOptions.model != "" ? state.models[inferOptions.backend][inferOptions.model].id :
+                <button class="btn p-0 hover:secondary" @click="modelsPopover.toggle($event);">{{
+                  inferOptions.model != "" ?
+                    inferOptions.model :
                     srv.agentSpec.value?.model
                 }}</button>
               </div>
               <button class="btn flex justify-end p-3" :disabled="state.uihistory.length == 0"
                 @click="confirmDelHistory(); toolCallsState.from = ''; toolCallsState.tcs = []"
-                :class="(state.uihistory.length == 0 || stream.length > 0) ? 'txt-light' : 'txt-semilight'">
+                :class="(state.uihistory.length == 0 || stream.length > 0) ? 'text-light' : 'text-semilight'">
                 <ResetIcon width="24" height="24"></ResetIcon>
               </button>
               <button class="btn flex justify-end p-3"
-                :disabled="taskEvents.isStreaming && toolCallsState.tcs.length == 0"
-                @click="srv.cancel(); toolCallsState.from = ''; toolCallsState.tcs = []"
-                :class="stream.length == 0 && toolCallsState.tcs.length == 0 ? 'txt-semilight' : ''">
+                :disabled="!taskEvents.isStreaming && toolCallsState.tcs.length == 0"
+                @click="srv.cancel(); toolCallsState.from = ''; toolCallsState.tcs = []; taskEvents.isStreaming.value = false"
+                :class="stream.length == 0 && toolCallsState.tcs.length == 0 ? 'text-semilight' : ''">
                 <StopIcon width="24" height="24"></StopIcon>
               </button>
               <button class="btn flex justify-end p-3" @click="exec()"
-                :class="prompt.length == 0 ? 'txt-semilight' : ''">
+                :class="prompt.length == 0 ? 'text-semilight' : ''">
                 <SendIcon width="24" height="24"></SendIcon>
               </button>
             </div>
@@ -157,7 +158,7 @@
       </div -->
     </div>
     <div id="sidebar-task2" name="sidebar1" class="z-30 flex flex-col h-full 
-    border border-l-1 border-r-0 border-y-0 bord-secondary min-w-24" :class="inferenceSidebarWidth">
+    border border-l border-r-0 border-y-0 border-lighter" :class="inferenceSidebarWidth">
       <SidebarRightDispatch :inference-params="inferOptions.params" @paramchange="updateInferParams($event)"
         @goto-turn="jumpToTurn($event)" />
     </div>
@@ -305,10 +306,14 @@ async function exec() {
   }
   // builtin var
   if (srv?.variables?.required) {
-    for (const k of Object.keys(srv.variables.required)) {
+    for (const k of Object.keys(toRaw(srv.variables.required))) {
+      console.log("K", k, srv?.agentSpec?.value?.name)
       if (k == "workspace") {
-        if (state.currentWorkspace.name == "") {
+        if (!state?.currentWorkspace?.name) {
           msg.warn("Workspace required", `To run ${srv.agentSpec.value.name} a workspace must be set`)
+          prompt.value = question.value;
+          uihistoryManager.reset();
+          state.isLoadingModel = false;
           return
         }
         srv.variables.values.required[k] = state.currentWorkspace.path;
@@ -319,7 +324,7 @@ async function exec() {
     opts.params = {}
   }
   opts.params.extra = { return_progress: true };
-  //console.log("EXEC AGENT", opts.history);
+  //console.log("EXEC AGENT", p, opts);
   await srv.executeAgent(p, opts);
   //taskEvents.onTaskEnd();
   //clearInterval(tid);
@@ -343,8 +348,8 @@ async function loadTask() {
     for (const [k, v] of Object.entries(state.agentsSettings[props.name])) {
       //console.log("S", k, v)
       if (k == "model") {
-        //inferOptions.model = state.models[v].id;
-        //state.currentModel = state.models[v];
+        inferOptions.model = v;
+        state.currentModel = v;
         m = v;
       } else if (k == "backend") {
         inferOptions.backend = v
@@ -420,7 +425,8 @@ function useAgentSettings(data: {
   inferOptions.backend = data.backend;
   inferOptions.propagateModel = data.propagateModel;
   inferOptions.propagateInferParams = data.propagateInferParams;
-  state.currentModel = state.models[data.backend][data.model];
+  state.currentModel = state.backends[data.backend]?.type == "openai" ? { id: data.model, ctx: 8192, status: "", hasVision: false } :
+    state.models[data.backend][data.model];
   modelsPopover.value.toggle();
 }
 
@@ -508,9 +514,9 @@ function jumpToTurn(i: number) {
 
 const inferenceSidebarWidth = computed(() => {
   if (uistate.value.inferenceSidebar == 'full') {
-    return 'w-[20rem]'
+    return 'min-w-[20rem]'
   } else if (uistate.value.inferenceSidebar == 'mini') {
-    return 'w-[4rem]'
+    return 'min-w-[5rem]'
   }
   return 'hidden'
 })

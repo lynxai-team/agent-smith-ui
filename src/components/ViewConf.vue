@@ -22,7 +22,7 @@
         <div class="text-xl">Plugins</div>
         <div v-if="conf?.plugins">
             <div v-for="plugin in conf.plugins">
-                {{ plugin }} <span class="txt-semilight">installed</span>
+                {{ plugin }} <span class="text-semilight">installed</span>
             </div>
         </div>
         <div class="pt-3" v-if="!addPlugins">
@@ -34,12 +34,12 @@
                     <Checkbox v-model="selectedPlugins" :inputId="plugin.name" name="category" :value="plugin.name" />
                     <label :for="plugin.name">
                         {{ plugin.name }}:
-                        <span class="txt-semilight">{{ plugin.description }}</span> </label>
+                        <span class="text-semilight">{{ plugin.description }}</span> </label>
                 </div>
             </div>
             <div class="pt-3 flex flex-row space-x-2">
                 <button class="btn success w-max" @click="installPlugins()" :disabled="isInstalling">Install</button>
-                <button class="btn txt-warning w-max" @click="addPlugins = false">Cancel</button>
+                <button class="btn text-warning w-max" @click="addPlugins = false">Cancel</button>
             </div>
             <div v-if="isInstalling">Installing plugins ...</div>
         </div>

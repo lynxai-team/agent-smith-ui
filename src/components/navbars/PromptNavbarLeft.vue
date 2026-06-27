@@ -1,19 +1,19 @@
 <template>
-    <div class="flex flex-row space-x-2 txt-light">
-        <button class="btn px-0" v-if="uistate.autoscroll" @click="toggleAutoscroll(false)">
+    <div class="flex flex-row text-light">
+        <button class="btn px-[0]" v-if="uistate.autoscroll" @click="toggleAutoscroll(false)">
             <ScrollIcon height="32" width="32"></ScrollIcon>
         </button>
-        <button class="btn px-0" v-else>
+        <button class="btn px-[0]" v-else>
             <NoScrollIcon height="32" width="32" @click="toggleAutoscroll(true)"></NoScrollIcon>
         </button>
-        <button class="btn px-0" v-if="uistate.viewMode == 'markdown'" @click="toggleTextViewMode('text')">
+        <button class="btn px-[0]" v-if="uistate.viewMode == 'markdown'" @click="toggleTextViewMode('text')">
             <MarkdownIcon height="32" width="32"></MarkdownIcon>
         </button>
-        <button class="btn px-0 flex flex-row space-x-2" v-else-if="uistate.viewMode == 'text'"
+        <button class="btn px-[0] flex flex-row space-x-2" v-else-if="uistate.viewMode == 'text'"
             @click="toggleTextViewMode('raw')">
             <TextFormatIcon height="32" width="32" class="mt-1"></TextFormatIcon>
         </button>
-        <button class="btn px-0 flex flex-row space-x-2" v-else @click="toggleTextViewMode('markdown')">
+        <button class="btn px-[0] flex flex-row space-x-2" v-else @click="toggleTextViewMode('markdown')">
             <TextIcon height="32" width="32" class="mt-1"></TextIcon>
         </button>
     </div>
