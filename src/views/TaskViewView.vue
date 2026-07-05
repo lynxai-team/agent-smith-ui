@@ -1,10 +1,10 @@
 <template>
     <div class="container mx-auto flex flex-col space-y-5 p-3 h-full pb-24 w-main overflow-y-auto">
-        <div class="flex flex-row txt-light w-full">
+        <div class="flex flex-row text-light w-full">
             <div class="p-2 border-r border-t border-l border-lighter cursor-pointer rounded-l-md"
-                :class="tab == 'file' ? ['txt-semilight'] : ['border-b']" @click="toggleTab('file')">File</div>
+                :class="tab == 'file' ? ['text-semilight'] : ['border-b']" @click="toggleTab('file')">File</div>
             <div class="p-2 border-r border-t border-lighter cursor-pointer rounded-r-md"
-                :class="tab == 'tools' ? ['txt-semilight'] : ['border-b']" @click="toggleTab('tools')">Tools</div>
+                :class="tab == 'tools' ? ['text-semilight'] : ['border-b']" @click="toggleTab('tools')">Tools</div>
             <div class="border-b border-lighter grow"></div>
         </div>
         <template v-if="tab == 'file'">
@@ -14,7 +14,7 @@
                 </code-editor>
             </div>
             <div class="flex flex-row space-x-3">
-                <!-- button class="btn w-max" :class="hasCodeChanged ? 'success' : 'border-lighter txt-light'" @click="save()"
+                <!-- button class="btn w-max" :class="hasCodeChanged ? 'success' : 'border-lighter text-light'" @click="save()"
                 :disabled="!hasCodeChanged">Save</button -->
                 <button class="btn w-max secondary hover:primary"
                     @click="uistate.taskView = 'run'; router.push(runLink)">Run</button>

@@ -1,33 +1,33 @@
 <template>
-    <div class="border bord-lighter rounded-md border-t-0 border-r-0">
+    <div class="border border-lighter rounded-md border-t-0 border-r-0">
         <div class="flex flex-col h-full">
             <div class="flex flex-row">
-                <div class="toolcallbg p-2 border-r border-t bord-lighter cursor-pointer"
-                    :class="tab == 'call' ? ['border-b-0', 'opacity-60'] : ['border-b', 'txt-semilight']"
+                <div class="toolcallbg p-2 border-r border-t border-lighter cursor-pointer"
+                    :class="tab == 'call' ? ['border-b-0', 'opacity-60'] : ['border-b', 'text-semilight']"
                     @click="tab = 'call'">
                     <div class="overflow-y-auto slide-y max-w-5xl">Call {{ tool?.type == 'agent' ? ' agent' : '' }}
                     </div>
                 </div>
                 <div v-if="!(tool?.type == 'agent')"
-                    class="toolcallbg p-2 border-r border-t bord-lighter cursor-pointer rounded-r-md"
-                    :class="tab == 'response' ? ['border-b-0', 'opacity-60'] : ['border-b', 'txt-semilight']"
+                    class="toolcallbg p-2 border-r border-t border-lighter cursor-pointer rounded-tr-md"
+                    :class="tab == 'response' ? ['border-b-0', 'opacity-60'] : ['border-b', 'text-semilight']"
                     @click="tab = 'response'">
-                    <div class="overflow-y-auto max-w-5xl txt-success">Response</div>
+                    <div class="overflow-y-auto max-w-5xl text-success">Response</div>
                 </div>
-                <div class="overflow-y-auto max-w-5xl txt-warning font-semibold flex flex-row space-x-2 items-center pl-3"
+                <div class="overflow-y-auto max-w-5xl text-warning font-semibold flex flex-row space-x-2 items-center pl-3"
                     v-if="!tool?.response">
                     <LoadingSpinner height="24" width="24"></LoadingSpinner>
                     <div>Executing tool ...</div>
                 </div>
-                <div class="flex flex-grow border-b bord-lighter"></div>
+                <div class="flex grow border-b border-lighter"></div>
             </div>
         </div>
-        <div class="toolcallbg border-r bord-lighter">
-            <div v-if="tab == 'call'" class="border-r bord-lighter p-3">
+        <div class="toolcallbg border-r border-lighter">
+            <div v-if="tab == 'call'" class="border-r border-lighter p-3">
                 <template v-if="tool.call?.arguments">
                     <div v-for="[k, v] in Object.entries(tool.call.arguments)" class="flex flex-col space-y-5">
                         <div>
-                            <span class="font-bold mr-2 txt-accent">{{ k }}</span>
+                            <span class="font-bold mr-2 text-accent">{{ k }}</span>
                             <span v-html="v.replaceAll('\n', '<br />')"></span>
                         </div>
                     </div>

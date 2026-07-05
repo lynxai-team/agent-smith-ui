@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-row space-x-2 items-center max-w-full">
+    <div class="flex flex-row space-x-2 items-center max-w-fit">
         <ToolsIcon width="24" height="24" class="min-w-12 opacity-50" :class="toolIconCls(turn, tool)"
             v-if="tool?.response && tool.type != 'agent'">
         </ToolsIcon>
@@ -16,7 +16,7 @@
                         <ArgumentIcon width="24" height="24"></ArgumentIcon>
                     </div>
                     <div>{{ v }}:</div>
-                    <div class="text-semilight">{{ k.slice(0, 68) }}{{ k.length > 67 ? '(...)' : '' }}</div>
+                    <div class="text-semilight">{{ k.slice(0, 60) }}{{ k.length > 59 ? '(...)' : '' }}</div>
                 </div>
             </div>
         </div>

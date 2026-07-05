@@ -1,9 +1,9 @@
 <template>
-    <div class="flex flex-col w-full">
+    <div class="flex flex-col w-full overflow-y-auto">
         <Popover ref="sidebarDialog">
             <div class="flex flex-row space-x-2">
                 <button v-for="sb in sidebars" class="btn" @click="setSidebar(sb); toggleSidebarsDialog($event)">{{ sb
-                }}</button>
+                    }}</button>
             </div>
         </Popover>
         <button class="btn" @click="toggleSidebarsDialog($event)">

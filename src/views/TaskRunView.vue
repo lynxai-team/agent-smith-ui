@@ -52,8 +52,9 @@
                   <HistoryTurnStatsBar :stats="turn.stats"></HistoryTurnStatsBar>
                 </div>
               </div>
-              <button class="btn flex flex-row items-center text-light hover:secondary pl-3"
-                :disabled="stream.length > 0 || toolCallsState.tcs.length > 0" @click="confirmRestartAtTurn(i + 1)">
+              <button class="btn flex flex-row items-center text-light hover:lighter pl-3"
+                :disabled="taskEvents.isStreaming.value || toolCallsState.tcs.length > 0"
+                @click="confirmRestartAtTurn(i + 1)">
                 <RestartIcon width="24" height="24"></RestartIcon>
                 <div>{{ i + 1 }}</div>
               </button>
@@ -75,7 +76,7 @@
             <ThinkingNode :nodes="thinkingNodes" custom-id="think" :is-strict="true" :from="currentAgent" class="pl-3">
             </ThinkingNode>
           </template>
-          <template v-else>
+          <template v-else-if="toolCallsState.tcs.length == 0">
             <MarkdownRender v-if="uistate.viewMode == 'markdown'" :nodes="nodes" custom-id="main" :is-strict="true"
               class="pl-3 mdr" />
             <div v-else-if="uistate.viewMode == 'text'" v-html="stream.replaceAll('\n', '<br />')" class="pl-3"></div>
@@ -172,7 +173,7 @@ import type { ParsedNode } from 'markstream-vue';
 import MarkdownRender, { CodeBlockNode, enableMermaid, setCustomComponents } from 'markstream-vue';
 import { IftaLabel } from 'primevue';
 import InputText from 'primevue/inputtext';
-import { computed, onBeforeMount, onBeforeUnmount, onMounted, reactive, ref, toRaw, watch } from 'vue';
+import { computed, onBeforeMount, onBeforeUnmount, nextTick, reactive, ref, toRaw, watch } from 'vue';
 import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
 import { confirmDanger, msg } from '../services/notify.js';
@@ -184,7 +185,6 @@ import 'markstream-vue/index.css';
 import { ToolCallSpec, UiHistoryTurn } from '@agent-smith/types';
 import { useClientFeatures } from '@agent-smith/wscli';
 import Popover from 'primevue/popover';
-import { nextTick } from 'process';
 import AgentParamsPicker from '../components/AgentParamsPicker.vue';
 import FormatedToolCallInProgress from '../components/FormatedToolCallInProgress.vue';
 import PromptNavbarLeft from '../components/navbars/PromptNavbarLeft.vue';
@@ -269,7 +269,7 @@ async function exec() {
   state.isLoadingModel = true;
   nUserInteraction.value++;
   const p = prompt.value;
-  const opts: AgentInferenceOptions = toRaw(inferOptions);
+  const opts: AgentInferenceOptions & Record<string, any> = toRaw(inferOptions);
   prompt.value = "";
   let pr = p;
   //state.history = state.uihistory;
@@ -307,7 +307,7 @@ async function exec() {
   // builtin var
   if (srv?.variables?.required) {
     for (const k of Object.keys(toRaw(srv.variables.required))) {
-      console.log("K", k, srv?.agentSpec?.value?.name)
+      //console.log("K", k, srv?.agentSpec?.value?.name)
       if (k == "workspace") {
         if (!state?.currentWorkspace?.name) {
           msg.warn("Workspace required", `To run ${srv.agentSpec.value.name} a workspace must be set`)
@@ -323,7 +323,18 @@ async function exec() {
   if (!opts?.params) {
     opts.params = {}
   }
-  opts.params.extra = { return_progress: true };
+  if (state.backends[inferOptions.backend].type == "llamacpp") {
+    opts.params.extra = { return_progress: true };
+  } else {
+    if (opts.params?.chat_template_kwargs) {
+      if (opts.params.chat_template_kwargs?.enable_thinking) {
+        opts.reasoning = {
+          "effort": "high",
+        }
+      }
+      delete opts.params.chat_template_kwargs
+    }
+  }
   //console.log("EXEC AGENT", p, opts);
   await srv.executeAgent(p, opts);
   //taskEvents.onTaskEnd();

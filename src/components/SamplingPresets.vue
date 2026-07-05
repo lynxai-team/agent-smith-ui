@@ -8,7 +8,7 @@
                         </DeleteIcon>
                     </button>
                     <button class="btn pl-0" @click="editPreset(mp.name)">{{ humanize(mp.name) }}</button>
-                    <button class="btn pl-0 grow flex flex-row justify-end" @click="editPreset(mp.name)">
+                    <button class="btn pl-0 grow flex flex-row justify-end" @click="editPreset(mp.name, true)">
                         <CopyIcon width="24" height="24" class="text-semilight"></CopyIcon>
                     </button>
                 </div>
@@ -25,7 +25,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium mb-1">Backend</label>
-                                <select v-model="backend" :required="true" @change="onSelectBackend()">
+                                <select v-model="backend" @change="onSelectBackend()">
                                     <option v-for="b in Object.keys(state.backends)" :selected="b == backend"
                                         :value="b">
                                         {{ b }}
@@ -160,10 +160,10 @@ async function deletePreset(name: string) {
     })
 }
 
-function editPreset(_name: string) {
+function editPreset(_name: string, copy = false) {
     const preset = state.samplingPresets[_name];
     name.value = preset.name;
-    backend.value = preset.backend ?? uistate.value.backend;
+    backend.value = copy ? '' : preset.backend ?? uistate.value.backend;
     inferenceParams.max_tokens = preset.max_tokens;
     inferenceParams.top_k = preset.top_k;
     inferenceParams.top_p = preset.top_p;

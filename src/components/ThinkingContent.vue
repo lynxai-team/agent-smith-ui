@@ -4,7 +4,7 @@
         <pre>|{{ content.trim() }}|</pre -->
     <div class="flex flex-col" :class="content.trim() == '' ? 'hidden' : ''">
         <button class=" btn flex flex-row space-x-3 text-light items-center w-min text-sm"
-            @click="showThinking = !showThinking">
+            @click="uistate.autoOpenThink = !uistate.autoOpenThink">
             <div>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 36 36">
                     <path fill="currentColor"
@@ -24,7 +24,7 @@
             </div>
             <div class="text-semilight w-max">{{ from }}&nbsp;thinking</div>
         </button>
-        <div v-if="showThinking" class="text-semilight">
+        <div v-if="uistate.autoOpenThink" class="text-semilight">
             <MarkdownRender :content="content" class="mdr" style="padding:0 !important;margin:0 !important;" />
         </div>
     </div>
@@ -46,6 +46,4 @@ const props = defineProps({
         required: true,
     },
 });
-
-const showThinking = ref(uistate.value.autoOpenThink);
 </script>

@@ -295,7 +295,6 @@ const useTaskEvents = (
             state.promptProcessingProgress = progress;
         }
         scrollOutput(true, 50);
-
     }
 
     const onError: AgentInferenceOptions["onError"] = (err: any, from: string) => {
