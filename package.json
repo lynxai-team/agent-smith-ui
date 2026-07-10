@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@agent-smith/app-debate": "file:../agent-smith-apps/debate",
-    "@agent-smith/server": "^0.1.6",
+    "@agent-smith/server": "^0.1.7",
     "@agent-smith/wscli": "^0.0.8",
     "@fontsource/roboto": "^5.2.10",
     "@primeuix/themes": "^2.0.3",
