@@ -34,10 +34,19 @@ const availablePlugins = [
 ];
 
 const themes = new Array<string>(
-    "bluestar",
-    "black",
-    "brown",
     "stone",
+    "black",
+    "navy",
+    "forest",
+    "slate",
+    "royal",
+    "teal",
+    // Neutral/Soft Corporate Themes
+    "pearl",
+    "sandstone",
+    "cloud",
+    "graphite",
+    "airy-soft"
 );
 
 export {
