@@ -324,9 +324,14 @@ async function exec() {
     opts.params = {}
   }
   if (state.backends[inferOptions.backend].type == "llamacpp") {
-    opts.params.extra = { return_progress: true };
+    opts.return_progress = true;
   } else {
     if (opts.params?.chat_template_kwargs) {
+      if (opts.params.extra?.reasoning_effort) {
+        opts.reasoning = {
+          "effort": opts.params.extra.reasoning_effort,
+        }
+      }
       if (opts.params.chat_template_kwargs?.enable_thinking) {
         opts.reasoning = {
           "effort": "high",
