@@ -2,7 +2,8 @@
   <div class="w-full overflow-y-visible h-min">
     <template v-if="isReady">
       <div v-show="showSkills">
-        <Listbox :options="skills" filter optionLabel="name" @update:modelValue="selectSkill($event)" class="w-56" />
+        <Listbox :options="skills" filter optionLabel="name" @update:modelValue="selectSkill($event)" class="w-56"
+          focused />
       </div>
     </template>
     <Textarea v-if="auto" v-model="_data" rows="1" autoResize @focusout="ch()" class="focus:ring-0 border bord-lighter"
@@ -39,7 +40,7 @@ const _data = ref(props.data);
 const isReady = ref(false);
 
 function selectSkill(event: any) {
-  console.log("EVT", event);
+  //console.log("EVT", event);
   _data.value = _data.value + event.name;
   showSkills.value = false
 }
