@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-row h-main">
     <div id="main-output" class="flex flex-col grow h-full overflow-y-auto ">
+      <div v-if="question?.length == 0 && isReady">
+        <ViewAgent :agent="srv.agentSpec.value"></ViewAgent>
+      </div>
       <div class="flex flex-col grow overflow-y-auto p-3">
         <template v-if="state.uihistory.length > 0">
           <div v-for="(turn, i) in state.uihistory" class="flex flex-col">
@@ -200,6 +203,7 @@ import TurnTitle from '../widgets/TurnTitle.vue';
 import ResetIcon from '../widgets/icons/ResetIcon.vue';
 import StopIcon from '../widgets/icons/StopIcon.vue';
 import SendIcon from '../widgets/icons/SendIcon.vue';
+import ViewAgent from '../components/ViewAgent.vue';
 
 const props = defineProps({
   name: {
@@ -323,24 +327,23 @@ async function exec() {
   if (!opts?.params) {
     opts.params = {}
   }
-  if (state.backends[inferOptions.backend].type == "llamacpp") {
-    opts.return_progress = true;
-  } else {
-    if (opts.params?.chat_template_kwargs) {
-      /*if (opts.params.extra?.reasoning_effort) {
-        opts.reasoning = {
-          "effort": opts.params.extra.reasoning_effort,
-        }
-      }*/
-      if (opts.params.chat_template_kwargs?.enable_thinking) {
-        opts.reasoning = {
-          "effort": "high",
-        }
+  //if (state.backends[inferOptions.backend].type == "llamacpp") {
+  opts.return_progress = true;
+  //} else {
+  if (opts.params?.chat_template_kwargs) {
+    /*if (opts.params.extra?.reasoning_effort) {
+      opts.reasoning = {
+        "effort": opts.params.extra.reasoning_effort,
       }
-      delete opts.params.chat_template_kwargs
+    }*/
+    if (opts.params.chat_template_kwargs?.enable_thinking) {
+      opts.reasoning = {
+        "effort": "high",
+      }
     }
+    delete opts.params.chat_template_kwargs
   }
-  //console.log("EXEC AGENT", p, opts);
+  //}
   await srv.executeAgent(p, opts);
   //taskEvents.onTaskEnd();
   //clearInterval(tid);
@@ -546,6 +549,7 @@ onBeforeUnmount(() => resetCurrentFeature())
 watch(props, () => {
   if (props.name != srv.agentSpec.value?.name) {
     //console.log("W", props.name, srv.agentSpec.value?.name)
+    isReady.value = false;
     resetCurrentFeature();
     taskEvents.resetStream();
     srv.isReady.value = false;

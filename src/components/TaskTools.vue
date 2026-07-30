@@ -1,18 +1,18 @@
 <template>
     <div>
-        <template v-if="toolsDef.length > 0">
-            <div class="text-xl">Tools</div>
-            <div v-for="tool in toolsDef" class="flex flex-col space-y-3 mx-3">
+        <template v-if="tools.length > 0">
+            <div v-for="tool in tools" class="flex flex-col space-y-3 mx-3">
+                <div class="text-lg font-semibold pt-5">{{ tool.spec.name }}</div>
                 <div class="flex flex-row space-x-3 items-center btn hover:lighter w-fit"
-                    @click="openTool(tool.def, tool.type)">
-                    <div class="text-lg font-semibold">{{ tool.def.name }}</div>
+                    @click="openTool(tool.spec, tool.type)">
+
                     <div class="text-semilight">{{ tool.type }}</div>
-                    <div v-if="autoTools.includes(tool.def.name)" class="btn success text-sm py-0 px-2 cursor-default">
+                    <div v-if="autoTools.includes(tool.spec.name)" class="btn success text-sm py-0 px-2 cursor-default">
                         Auto</div>
                     <div v-else class="btn danger text-sm py-0 px-2 cursor-default">Confirm</div>
                 </div>
-                <div>{{ tool.def.description }}</div>
-                <div v-for="(arg, name) in tool.def.arguments" class="ml-8 flex flex-col">
+                <div>{{ tool.spec.description }}</div>
+                <div v-for="(arg, name) in tool.spec.arguments" class="ml-8 flex flex-col">
                     <div class="flex flex-row space-x-2">
                         <div class="font-semibold">{{ name }}:</div>
                         <div>{{ arg.description }}</div>
@@ -45,18 +45,18 @@
     </div>
 </template>
 <script setup lang="ts">
-import type { ToolDefSpec } from '@agent-smith/types';
+import type { ToolSpec } from '@agent-smith/types';
 import { useRouter } from 'vue-router';
 
 const props = defineProps<{
-    toolsDef: Array<{ def: ToolDefSpec, type: string }>,
+    tools: Array<{ spec: ToolSpec, type: string }>,
     mcp: Record<string, any>,
     autoTools: Array<string>,
 }>();
 
 const router = useRouter();
 
-function openTool(tool: ToolDefSpec, type: string) {
+function openTool(tool: ToolSpec, type: string) {
     if (type !== "action") {
         //console.warn("")
         router.push(`/${type}/view/${tool.name}`)

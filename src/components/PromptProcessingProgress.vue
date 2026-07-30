@@ -24,9 +24,9 @@
                 <div v-if="promptProcessingStats.percent_progress > 0"
                     :style="`width:${promptProcessingStats.percent_progress}%`" class="flex flex-row overflow-hidden">
                     <div :style="`width:${promptProcessingStats.percent_cache}%`" class="text-success"></div>
-                    <div class="flex-grow text-sky-500"></div>
+                    <div class="grow text-sky-500"></div>
                 </div>
-                <div class="flex-grow text-light overflow-hidden flex flex-row items-center"></div>
+                <div class="grow text-light overflow-hidden flex flex-row items-center"></div>
             </div>
         </div>
     </div>
