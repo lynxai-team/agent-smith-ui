@@ -161,19 +161,22 @@ async function deletePreset(name: string) {
 }
 
 function editPreset(_name: string, copy = false) {
-    const preset = state.samplingPresets[_name];
+    const preset = toRaw(state.samplingPresets[_name]);
     name.value = preset.name;
-    backend.value = copy ? '' : preset.backend ?? uistate.value.backend;
-    inferenceParams.max_tokens = preset.max_tokens;
-    inferenceParams.top_k = preset.top_k;
-    inferenceParams.top_p = preset.top_p;
-    inferenceParams.min_p = preset.min_p;
-    inferenceParams.temperature = preset.temperature;
-    inferenceParams.repeat_penalty = preset.repeat_penalty;
-    inferenceParams.presence_penalty = preset.presence_penalty;
-    inferenceParams.frequency_penalty = preset.frequency_penalty;
-    selectedModel.value = preset?.model ? state.models[backend.value][preset.model] : { id: "", status: "", ctx: 0, hasVision: false };
     //console.log("P", preset)
+    backend.value = copy ? '' : preset?.backend ?? uistate.value.backend;
+    inferenceParams.max_tokens = preset?.max_tokens;
+    inferenceParams.top_k = preset?.top_k;
+    inferenceParams.top_p = preset?.top_p;
+    inferenceParams.min_p = preset?.min_p;
+    inferenceParams.temperature = preset?.temperature;
+    inferenceParams.repeat_penalty = preset?.repeat_penalty;
+    inferenceParams.presence_penalty = preset?.presence_penalty;
+    inferenceParams.frequency_penalty = preset?.frequency_penalty;
+    selectedModel.value =
+        (preset?.model && backend.value) ?
+            state.models[backend.value][preset.model] :
+            { id: "", status: "", ctx: 0, hasVision: false };
     if (preset?.chat_template_kwargs) {
         if (preset.chat_template_kwargs?.enable_thinking) {
             enableThinking.value = true
@@ -208,6 +211,7 @@ function toggleView(v: 'view' | 'create') {
 }
 
 function onSelectBackend() {
+    if (!backend?.value) { return }
     enableBackendModels.value = state.backends[backend.value]?.type !== 'openai';
     if (enableBackendModels.value) {
         loadModels(backend.value)
@@ -221,7 +225,7 @@ function loadModels(backend: string) {
     //console.log("Load models", backend);
     const md: Array<Record<string, any>> = [];
     for (const v of Object.values(state.models[backend])) {
-        const n = { ...v, label: `${v.id} - ${humanizeNumber(v.ctx)})` }
+        const n = { ...v, label: `${v.id} - ${humanizeNumber(v.ctx)}` }
         md.push(toRaw(n))
     }
     modelsData.value = md;

@@ -1,29 +1,11 @@
 <template>
   <div id="params" class="3xl:max-w-[28rem] p-5 w-fit">
-    <InferenceParamsForm :inference-params="inferParams"></InferenceParamsForm>
+    <InferenceParamsForm></InferenceParamsForm>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { InferenceParams } from '@agent-smith/types';
-import { ref, watchEffect } from 'vue';
 import InferenceParamsForm from '../InferenceParamsForm.vue';
-
-const props = defineProps({
-  inferenceParams: {
-    type: Object as () => InferenceParams,
-    required: true
-  }
-});
-
-const emit = defineEmits(["paramchange"]);
-
-//const top_p = ref(0.1);
-const inferParams = ref(props.inferenceParams);
-
-watchEffect(() => {
-  inferParams.value = props.inferenceParams;
-})
 </script>
 
 <style scoped>
@@ -35,7 +17,7 @@ watchEffect(() => {
 <style lang="sass" scoped>
 #params
   & > #pform > div
-    @apply min-w-[8rem]  
+    @apply min-w-32  
   .p-inputtext
     &:not(.w-full)
       width: 4rem !important

@@ -1,4 +1,4 @@
-import type { AgentState, ConfigFile, HistoryTurn, InferenceBackend, SamplingPreset, UiHistoryTurn, Workspace } from "@agent-smith/types";
+import type { AgentState, ConfigFile, HistoryTurn, InferenceBackend, InferenceParams, SamplingPreset, UiHistoryTurn, Workspace } from "@agent-smith/types";
 import { useClientFeatures } from "@agent-smith/wscli";
 import { User } from "@snowind/state";
 import { useStorage } from '@vueuse/core';
@@ -6,6 +6,7 @@ import { reactive, ref, shallowRef } from "vue";
 import type { SidebarType, UiTaskView } from "./interfaces.js";
 import { useUiHistory } from "./services/history.js";
 import { createAwaiter } from "./utils.js";
+import { defaultInferenceParams } from "./conf.js";
 
 const debugInference = ref(true);
 const uihistoryManager = useUiHistory();
@@ -66,6 +67,19 @@ const state = reactive<AgentState>({
     workspaces: {},
     settings: {},
     samplingPresets: {},
+});
+const inferOptions = reactive<{
+    params: InferenceParams,
+    model: string,
+    backend: string,
+    propagateModel: boolean,
+    propagateInferParams: boolean;
+}>({
+    params: defaultInferenceParams,
+    model: "",
+    backend: "",
+    propagateModel: false,
+    propagateInferParams: false,
 });
 const conf = ref<ConfigFile>();
 const srv = useClientFeatures();
@@ -171,6 +185,6 @@ export {
     appSidebar, conf, debugInference, uihistoryManager, initState,
     resetCurrentFeature,
     setCurrentFeature, srv, state,
-    uistate, user, setTheme
+    uistate, user, setTheme, inferOptions
 };
 

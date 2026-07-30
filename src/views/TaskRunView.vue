@@ -180,7 +180,7 @@ import { computed, onBeforeMount, onBeforeUnmount, nextTick, reactive, ref, toRa
 import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
 import { confirmDanger, msg } from '../services/notify.js';
-import { debugInference, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
+import { debugInference, inferOptions, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
 import AutoTextarea from '../widgets/AutoTextarea.vue';
 //import ToolCallNode from '../components/ToolCallNode.vue';
 import 'markstream-vue/index.css';
@@ -244,19 +244,6 @@ const taskEvents = useTaskEvents(
 );
 const mcpArgs = ref("");
 //const tps = ref(0);
-const inferOptions = reactive<{
-  params: InferenceParams,
-  model: string,
-  backend: string,
-  propagateModel: boolean,
-  propagateInferParams: boolean;
-}>({
-  params: defaultInferenceParams,
-  model: "",
-  backend: "",
-  propagateModel: false,
-  propagateInferParams: false,
-});
 
 const srv = useClientFeatures({
   ...taskEvents.events,
@@ -326,6 +313,12 @@ async function exec() {
   }
   if (!opts?.params) {
     opts.params = {}
+  } else {
+    for (const [k, v] of Object.entries(opts.params)) {
+      if (v === undefined) {
+        delete opts.params[k]
+      }
+    }
   }
   //if (state.backends[inferOptions.backend].type == "llamacpp") {
   opts.return_progress = true;
@@ -344,6 +337,7 @@ async function exec() {
     delete opts.params.chat_template_kwargs
   }
   //}
+  //console.log("RUN", opts.params);
   await srv.executeAgent(p, opts);
   //taskEvents.onTaskEnd();
   //clearInterval(tid);
@@ -363,6 +357,7 @@ async function loadTask() {
   //console.log("AS", toRaw(srv.agentSpec.value));
   let hasSettings = props.name in state.agentsSettings;
   let m = "";
+  //console.log("LOAD T OPTS", inferOptions.params);
   if (hasSettings) {
     for (const [k, v] of Object.entries(state.agentsSettings[props.name])) {
       //console.log("S", k, v)
@@ -389,6 +384,7 @@ async function loadTask() {
       inferOptions.params[k] = v
     }
   }
+  //console.log("LOAD T OPTS END", inferOptions.params);
   const b = inferOptions?.backend ?? uistate.value.backend;
   state.onReady.then(() => {
     if (m.length > 0) {
@@ -439,6 +435,7 @@ function useAgentSettings(data: {
   propagateModel: boolean,
   propagateInferParams: boolean;
 }) {
+  console.log("AGENT SETTINGS PARAMS", data.params);
   inferOptions.params = data.params;
   inferOptions.model = data.model;
   inferOptions.backend = data.backend;

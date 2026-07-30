@@ -27,7 +27,7 @@ const useTaskEvents = (
     let isStreaming = ref(false);
     const md = getMarkdown();
     //const perf = useInferencePerfTimer();
-    const debug = true;
+    const debug = false;
     let callerAgents = new Array<string>();
     //let currentStats: InferenceStats | null = null;
 

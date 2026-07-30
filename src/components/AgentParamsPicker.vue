@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col space-y-3 pb-5 max-w-2xl items-center">
-        <InferenceParamsForm :inference-params="inferenceParams" :auto="true"></InferenceParamsForm>
+        <InferenceParamsForm :auto="true"></InferenceParamsForm>
         <div class="flex flex-row space-x-3 justify-center">
             <div>
                 <input type="checkbox" v-model="enableThinking" class="ring-0">&nbsp;Enable thinking</input>
@@ -47,7 +47,7 @@
         <div class="flex flex-wrap gap-2 justify-around">
             <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
             <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{ loadedModel.id
-                }}
+            }}
                 {{ humanizeNumber(loadedModel.ctx) }}</button>
             <button v-for="preset in state.samplingPresets" class="btn soft" @click="applySamplingPreset(preset)">{{
                 preset.name }}</button>
@@ -62,7 +62,7 @@
 </template>
 <script setup lang="ts">
 import type { AgentSettings, AgentSpec, InferenceParams, ModelInfo, SamplingPreset } from '@agent-smith/types';
-import { srv, state, uistate } from '../state.js';
+import { inferOptions, srv, state, uistate } from '../state.js';
 import { computed, onBeforeMount, reactive, ref, toRaw, watch } from 'vue';
 import InferenceParamsForm from './InferenceParamsForm.vue';
 import { humanizeNumber } from '../services/str.js';
@@ -87,18 +87,6 @@ const backend = ref<string>(uistate.value.backend);
 const enableBackendModels = ref(state.backends[backend.value]?.type !== 'openai');
 const showModelPicker = ref(false);
 
-const inferenceParams: InferenceParams = reactive({
-    max_tokens: undefined,
-    top_k: undefined,
-    top_p: undefined,
-    min_p: undefined,
-    temperature: undefined,
-    repeat_penalty: undefined,
-    presence_penalty: undefined,
-    frequency_penalty: undefined,
-    chat_template_kwargs: undefined,
-});
-
 function useAgentSettings() {
     if (!model.value) {
         throw new Error("no model")
@@ -122,7 +110,7 @@ function useAgentSettings() {
     } = {
         model: model.value,
         backend: bk,
-        params: toRaw(inferenceParams),
+        params: toRaw(inferOptions.params),
         propagateModel: switchPropagateModel.value,
         propagateInferParams: switchPropagateIp.value,
     }
@@ -140,15 +128,15 @@ async function saveAgentsSettings() {
         }
         bk = uistate.value.backend
     }
-    if (!inferenceParams?.chat_template_kwargs) {
-        inferenceParams.chat_template_kwargs = {}
+    if (!inferOptions.params?.chat_template_kwargs) {
+        inferOptions.params.chat_template_kwargs = {}
     }
-    inferenceParams.chat_template_kwargs.enable_thinking = enableThinking.value;
-    inferenceParams.chat_template_kwargs.preserve_thinking = preserveThinking.value;
+    inferOptions.params.chat_template_kwargs.enable_thinking = enableThinking.value;
+    inferOptions.params.chat_template_kwargs.preserve_thinking = preserveThinking.value;
     const st: AgentSettings = {
         model: model.value,
         backend: bk,
-        ...inferenceParams,
+        ...inferOptions.params,
         props: {
             propagateModel: switchPropagateModel.value,
             propagateInferParams: switchPropagateIp.value,
@@ -165,9 +153,9 @@ async function saveAgentsSettings() {
 
 function applySamplingPreset(preset: SamplingPreset) {
     //console.log("Apply preset", preset);
-    const ips = Object.keys(toRaw(inferenceParams));
+    const ips = Object.keys(toRaw(inferOptions.params));
     for (const ip of ips) {
-        inferenceParams[ip] = preset[ip] ?? undefined;
+        inferOptions.params[ip] = preset[ip] ?? undefined;
     }
     if (preset?.chat_template_kwargs) {
         if (preset.chat_template_kwargs?.enable_thinking) {
@@ -243,13 +231,13 @@ async function init() {
                 }
             }
             else {
-                inferenceParams[k] = v
+                inferOptions.params[k] = v
             }
         }
     } else {
         if (props.agentSpec.inferParams) {
             for (const [k, v] of Object.entries(props.agentSpec.inferParams)) {
-                inferenceParams[k] = v
+                inferOptions.params[k] = v
             }
         }
     };

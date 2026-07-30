@@ -47,19 +47,21 @@
 import InputNumber from 'primevue/inputnumber';
 import type { InferenceParams } from '@agent-smith/types';
 import { watchEffect, ref } from 'vue';
-import { uistate } from '../state.js';
+import { inferOptions, uistate } from '../state.js';
 
 const props = defineProps<{
-    inferenceParams: InferenceParams,
+    inferenceParams?: InferenceParams,
     auto?: boolean,
 }>();
 const emit = defineEmits(["paramchange"]);
 
 //const top_p = ref(0.1);
-const inferParams = ref<InferenceParams>(props.inferenceParams);
+const inferParams = ref<InferenceParams>(props?.inferenceParams ?? inferOptions.params);
 
 watchEffect(() => {
-    inferParams.value = props.inferenceParams;
+    if (props?.inferenceParams) {
+        inferParams.value = props.inferenceParams;
+    }
 })
 </script>
 

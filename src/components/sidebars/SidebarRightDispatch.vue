@@ -3,14 +3,14 @@
         <Popover ref="sidebarDialog">
             <div class="flex flex-row space-x-2">
                 <button v-for="sb in sidebars" class="btn" @click="setSidebar(sb); toggleSidebarsDialog($event)">{{ sb
-                    }}</button>
+                }}</button>
             </div>
         </Popover>
         <button class="btn" @click="toggleSidebarsDialog($event)">
             <DotsIcon width="24" height="24" class="txt-semilight flex w-full justify-center"></DotsIcon>
         </button>
         <div v-if="uistate.inferenceSidebarName == 'sampling'">
-            <SidebarInferParams :inference-params="inferenceParams" @paramchange="changeInferParam($event)">
+            <SidebarInferParams @paramchange="changeInferParam($event)">
             </SidebarInferParams>
         </div>
         <div v-else>
@@ -26,13 +26,6 @@ import type { InferenceParams } from '@agent-smith/types';
 import DotsIcon from '../../widgets/icons/DotsIcon.vue';
 import Popover from 'primevue/popover';
 import { uistate } from '../../state.js';
-
-const props = defineProps({
-    inferenceParams: {
-        type: Object as () => InferenceParams,
-        required: true
-    }
-});
 
 const emit = defineEmits(["goto-turn", "paramchange"]);
 
