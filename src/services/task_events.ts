@@ -6,6 +6,7 @@ import { uihistoryManager, state, uistate } from "../state.js";
 import { createAwaiter } from "../utils.js";
 import { msg } from "./notify.js";
 
+let isDebug = false;
 let parseScheduled = false;
 const PARSE_INTERVAL_MS = 50; // ~20 parses/sec
 
@@ -27,7 +28,7 @@ const useTaskEvents = (
     let isStreaming = ref(false);
     const md = getMarkdown();
     //const perf = useInferencePerfTimer();
-    const debug = false;
+    const debug = isDebug;
     let callerAgents = new Array<string>();
     //let currentStats: InferenceStats | null = null;
 

@@ -79,7 +79,7 @@
             <ThinkingNode :nodes="thinkingNodes" custom-id="think" :is-strict="true" :from="currentAgent" class="pl-3">
             </ThinkingNode>
           </template>
-          <template v-else-if="toolCallsState.tcs.length == 0">
+          <template v-else>
             <MarkdownRender v-if="uistate.viewMode == 'markdown'" :nodes="nodes" custom-id="main" :is-strict="true"
               class="pl-3 mdr" />
             <div v-else-if="uistate.viewMode == 'text'" v-html="stream.replaceAll('\n', '<br />')" class="pl-3"></div>
@@ -315,7 +315,7 @@ async function exec() {
     opts.params = {}
   } else {
     for (const [k, v] of Object.entries(opts.params)) {
-      if (v === undefined) {
+      if (v === undefined || v === null) {
         delete opts.params[k]
       }
     }
@@ -435,7 +435,7 @@ function useAgentSettings(data: {
   propagateModel: boolean,
   propagateInferParams: boolean;
 }) {
-  console.log("AGENT SETTINGS PARAMS", data.params);
+  //console.log("AGENT SETTINGS PARAMS", data.params);
   inferOptions.params = data.params;
   inferOptions.model = data.model;
   inferOptions.backend = data.backend;
