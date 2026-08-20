@@ -9,10 +9,18 @@
                 <input type="checkbox" v-model="preserveThinking" class="ring-0">&nbsp;Preserve thinking</input>
             </div>
         </div>
+        <div class="flex flex-row space-x-3">
+            <div>Thinking
+                effort</div>
+            <input type="text" v-model="thinkingEffort" class="ring-0" placeholder="medium"></input>
+        </div>
         <div class="w-full flex justify-center">
             <div class="flex flex-col space-y-2 mt-3">
+                <sw-switch v-model:value="switchPropagateBackend" class="switch-success text-sm">
+                    <span class="ml-2">Use this backend for all subagents</span>
+                </sw-switch>
                 <sw-switch v-model:value="switchPropagateModel" class="switch-success text-sm">
-                    <span class="ml-2">Use this model and backend for all subagents</span>
+                    <span class="ml-2">Use this model for all subagents</span>
                 </sw-switch>
                 <sw-switch v-model:value="switchPropagateIp" class="switch-success text-sm">
                     <span class="ml-2">Use this inference params for all subagents</span>
@@ -47,7 +55,7 @@
         <div class="flex flex-wrap gap-2 justify-around">
             <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
             <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{ loadedModel.id
-            }}
+                }}
                 {{ humanizeNumber(loadedModel.ctx) }}</button>
             <button v-for="preset in state.samplingPresets" class="btn soft" @click="applySamplingPreset(preset)">{{
                 preset.name }}</button>
@@ -62,14 +70,14 @@
 </template>
 <script setup lang="ts">
 import type { AgentSettings, AgentSpec, InferenceParams, ModelInfo, SamplingPreset } from '@agent-smith/types';
-import { inferOptions, srv, state, uistate } from '../state.js';
-import { computed, onBeforeMount, reactive, ref, toRaw, watch } from 'vue';
-import InferenceParamsForm from './InferenceParamsForm.vue';
-import { humanizeNumber } from '../services/str.js';
 import SwSwitch from "@snowind/switch";
 import Listbox from 'primevue/listbox';
-import { msg } from '../services/notify.js';
+import { computed, onBeforeMount, ref, toRaw } from 'vue';
 import { api } from '../services/api.js';
+import { msg } from '../services/notify.js';
+import { humanizeNumber } from '../services/str.js';
+import { inferOptions, srv, state, uistate } from '../state.js';
+import InferenceParamsForm from './InferenceParamsForm.vue';
 
 const props = defineProps<{
     agentSpec: AgentSpec;
@@ -79,9 +87,11 @@ const emit = defineEmits(["end"]);
 
 const loadedModel = ref<ModelInfo | null>(null);
 const switchPropagateModel = ref(false);
+const switchPropagateBackend = ref(false);
 const switchPropagateIp = ref(false);
 const enableThinking = ref(false);
 const preserveThinking = ref(false);
+const thinkingEffort = ref("");
 const model = ref<string>("");
 const backend = ref<string>(uistate.value.backend);
 const enableBackendModels = ref(state.backends[backend.value]?.type !== 'openai');
@@ -106,12 +116,14 @@ function useAgentSettings() {
         model: string,
         backend: string,
         propagateModel: boolean,
+        propagateBackend: boolean,
         propagateInferParams: boolean;
     } = {
         model: model.value,
         backend: bk,
         params: toRaw(inferOptions.params),
         propagateModel: switchPropagateModel.value,
+        propagateBackend: switchPropagateBackend.value,
         propagateInferParams: switchPropagateIp.value,
     }
     emit("end", data)
@@ -133,11 +145,13 @@ async function saveAgentsSettings() {
     }
     inferOptions.params.chat_template_kwargs.enable_thinking = enableThinking.value;
     inferOptions.params.chat_template_kwargs.preserve_thinking = preserveThinking.value;
+    inferOptions.params.chat_template_kwargs.thinking_effort = thinkingEffort.value;
     const st: AgentSettings = {
         model: model.value,
         backend: bk,
         ...inferOptions.params,
         props: {
+            propagateBackend: switchPropagateBackend.value,
             propagateModel: switchPropagateModel.value,
             propagateInferParams: switchPropagateIp.value,
         }
@@ -163,6 +177,9 @@ function applySamplingPreset(preset: SamplingPreset) {
         }
         if (preset.chat_template_kwargs?.preserve_thinking) {
             preserveThinking.value = preset.chat_template_kwargs.preserve_thinking
+        }
+        if (preset.chat_template_kwargs?.thinking_effort) {
+            thinkingEffort.value = preset.chat_template_kwargs.thinking_effort
         }
     } else {
         enableThinking.value = false
@@ -221,8 +238,14 @@ async function init() {
                 if (v?.preserve_thinking) {
                     preserveThinking.value = v.preserve_thinking;
                 }
+                if (v?.thinking_effort) {
+                    thinkingEffort.value = v.thinking_effort;
+                }
             } else if (k == "props") {
                 const pv = toRaw(v);
+                if ("propagateBackend" in pv) {
+                    switchPropagateBackend.value = pv["propagateBackend"]
+                }
                 if ("propagateModel" in pv) {
                     switchPropagateModel.value = pv["propagateModel"]
                 }

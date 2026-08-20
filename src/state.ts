@@ -73,12 +73,14 @@ const inferOptions = reactive<{
     model: string,
     backend: string,
     propagateModel: boolean,
+    propagateBackend: boolean,
     propagateInferParams: boolean;
 }>({
     params: defaultInferenceParams,
     model: "",
     backend: "",
     propagateModel: false,
+    propagateBackend: false,
     propagateInferParams: false,
 });
 const conf = ref<ConfigFile>();

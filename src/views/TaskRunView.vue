@@ -273,6 +273,7 @@ async function exec() {
   } else {
     // conversation continues
     opts.history = [...toRaw(state.history)];
+    //console.log("HIST", toRaw(state.history));
     uihistoryManager.newTurn("user", props.name, state.history.length - 1, { user: pr });
   }
   state.history.push({ user: pr });
@@ -350,6 +351,7 @@ async function loadTask() {
   inferOptions.params = defaultInferenceParams;
   inferOptions.model = "";
   inferOptions.backend = "";
+  inferOptions.propagateBackend = false;
   inferOptions.propagateModel = false;
   inferOptions.propagateInferParams = false;
   //console.log("Load task", props.name);
@@ -370,6 +372,9 @@ async function loadTask() {
       } else if (k == "props") {
         if (v?.propagateModel) {
           inferOptions.propagateModel = v.propagateModel
+        }
+        if (v?.propagateBackend) {
+          inferOptions.propagateBackend = v.propagateBackend
         }
         if (v?.propagateInferParams) {
           inferOptions.propagateInferParams = v.propagateInferParams
@@ -433,12 +438,14 @@ function useAgentSettings(data: {
   model: string,
   backend: string,
   propagateModel: boolean,
+  propagateBackend: boolean,
   propagateInferParams: boolean;
 }) {
   //console.log("AGENT SETTINGS PARAMS", data.params);
   inferOptions.params = data.params;
   inferOptions.model = data.model;
   inferOptions.backend = data.backend;
+  inferOptions.propagateBackend = data.propagateBackend;
   inferOptions.propagateModel = data.propagateModel;
   inferOptions.propagateInferParams = data.propagateInferParams;
   state.currentModel = state.backends[data.backend]?.type == "openai" ? { id: data.model, ctx: 8192, status: "", hasVision: false } :

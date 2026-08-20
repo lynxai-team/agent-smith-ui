@@ -111,6 +111,7 @@ const useTaskEvents = (
         uihistoryManager.newTurn("think", from, state.history.length - 1, {
             think: stream.value,
         });
+        state.history.push({ think: stream.value });
         buffer = "";
         stream.value = "";
         //console.log("END T")
@@ -141,6 +142,7 @@ const useTaskEvents = (
                 response: null,
             };
             uihistoryManager.addToolCallToCurrentTurn(t);
+            state.history.push({ tools: [t] });
         } else {
             delete turn.state.confirmToolCalls[tc.id];
         }
@@ -227,6 +229,7 @@ const useTaskEvents = (
             uihistoryManager.newTurn("assistant", from, state.history.length - 1, {
                 assistant: txt,
             });
+            state.history.push({ assistant: txt });
         }
         //console.log("ASSISTANT H", state.history);
         nextTick(async () => { stream.value = ""; });
@@ -251,8 +254,7 @@ const useTaskEvents = (
                     delete ht.user
                 }
             }*/
-            //console.log("************** SH", state.history);
-            state.history.push(ht);
+            //console.log("************** SH", state.history);            
             if (ht?.stats && !(from == "server")) {
                 uihistoryManager.addStatsToCurrentTurn(ht.stats)
             }
