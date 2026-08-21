@@ -111,7 +111,7 @@ const useTaskEvents = (
         uihistoryManager.newTurn("think", from, state.history.length - 1, {
             think: stream.value,
         });
-        state.history.push({ think: stream.value });
+        //state.history.push({ think: stream.value });
         buffer = "";
         stream.value = "";
         //console.log("END T")
@@ -134,18 +134,19 @@ const useTaskEvents = (
     const onToolCall: AgentInferenceOptions["onToolCall"] = (tc: ToolCallSpec, type: string, from: string) => {
         if (debug) { console.log("TOOL CALL", "from=" + from, "type=" + type, tc); }
         let turn = state.uihistory[state.uihistory.length - 1];
+        const t: ToolTurn = {
+            from: from,
+            type: type,
+            call: { id: tc.id, name: tc.name, arguments: tc.arguments },
+            response: null,
+        };
         if (!(tc.id in turn.state.confirmToolCalls)) {
-            const t: ToolTurn = {
-                from: from,
-                type: type,
-                call: { id: tc.id, name: tc.name, arguments: tc.arguments },
-                response: null,
-            };
             uihistoryManager.addToolCallToCurrentTurn(t);
-            state.history.push({ tools: [t] });
+            //state.history.push({ tools: [t] });
         } else {
             delete turn.state.confirmToolCalls[tc.id];
         }
+        //state.history[state.history.length - 1].tools = [t];
         const tcip = toolCallsState.tcs.findIndex(a => a.id == tc.id);
         if (tcip === -1) {
             throw new Error(`tool call in progress ${tc} not found`)
@@ -183,7 +184,15 @@ const useTaskEvents = (
             //console.log("SET CA onToolCallEnd", tc.name, currentAgent.value, "=>", ca);
             //currentAgent.value = ca;
         } else {
-            uihistoryManager.addToolResponseToCurrentTurn(tc, tr, from)
+            uihistoryManager.addToolResponseToCurrentTurn(tc, tr, from);
+            const t: ToolTurn = {
+                from: from,
+                type: type,
+                call: { id: tc.id, name: tc.name, arguments: tc.arguments },
+                response: tr,
+            };
+            //state.history.push({ tools: [t] })
+            //uihistoryManager.newTurn("tools", from, 0, { tools: [t] })
         }
         stream.value = "";
         buffer = "";
@@ -242,23 +251,19 @@ const useTaskEvents = (
         scrollOutput(true, 100)
     };
 
-    const onTurnEnd: AgentInferenceOptions["onTurnEnd"] = (ht: HistoryTurn, from: string) => {
+    const onTurnEnd: AgentInferenceOptions["onTurnEnd"] = (hts: Array<HistoryTurn>, from: string) => {
         isStreaming.value = false;
         if (debug) {
-            console.log("END TURN", from, "/", currentAgent.value, "/", state.currentFeature.name, ht);
+            console.log("END TURN", from, "/", currentAgent.value, "/", state.currentFeature.name, hts);
         };
-        if (from == state.currentFeature.name) {
-            /*if (state.history.length > 0) {
-                // user always has the first turn
-                if (ht?.user) {
-                    delete ht.user
-                }
-            }*/
-            //console.log("************** SH", state.history);            
-            if (ht?.stats && !(from == "server")) {
-                uihistoryManager.addStatsToCurrentTurn(ht.stats)
-            }
-        }
+        console.log("TURN END H", hts)
+        state.history = hts;
+        //if (from == state.currentFeature.name) {
+        //console.log("************** SH", state.history);            
+        /*if (ht?.stats && !(from == "server")) {
+            uihistoryManager.addStatsToCurrentTurn(ht.stats)
+        }*/
+        //}
         resetStream();
         scrollOutput(true, 100);
     }

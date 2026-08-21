@@ -49,11 +49,10 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 | `src/utils.ts` | Utility functions: createAwaiter, transformTasksData |
 | `src/interfaces.ts` | Type definitions: SidebarType, UiTaskView, NotificationMsg |
 | `src/views/*.vue` | Page components: HomeView, ConfigView, ConfigInitView, AppView, WorkflowView, TaskRunView, TaskViewView |
-| `src/components/sidebars/*.vue` | Sidebar navigation: tasks, agents, workflows, inference params, dispatch |
+| `src/components/sidebars/*.vue` | Sidebar navigation: tasks, agents, workflows, inference params, dispatch (7 sidebars) |
 | `src/components/navbars/*.vue` | Prompt input toolbars (PromptNavbarLeft, NavbarTask) |
-| `src/components/*.vue` | Core UI: TheHeader, tool call rendering, thinking nodes, settings, backend management |
-| `src/components/vibe/toast/*` | Toast notification system (SwToast, SwToastItem, composable) |
-| `src/widgets/icons/*.vue` | 30+ icon components (PascalCase + Icon suffix) |
+| `src/components/*.vue` | Core UI: TheHeader, tool call rendering, thinking nodes, settings, backend management (16 components) |
+| `src/widgets/icons/*.vue` | 32 icon components (PascalCase + Icon suffix) |
 | `src/widgets/*.vue` | Reusable widgets: ToolCallDetails, AutoTextarea, LoadingSpinner, HistoryTurnStatsBar, TurnTitle |
 | `src/services/api.ts` | REST API client via restmix library |
 | `src/services/history.ts` | Conversation turn management and tool call tracking |
@@ -62,14 +61,14 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 | `src/services/template.ts` | Prompt template application via server API |
 | `src/services/str.ts` | String utilities: humanize, humanizeNumber, formatDuration |
 | `src/services/perf.ts` | Inference performance timer (tokens/sec tracking) |
-| `src/scss/*.scss` | 12+ SCSS themes (default: bluestar) with CSS custom properties for runtime switching |
+| `src/scss/*.scss` | 14 SCSS themes (default: bluestar) with CSS custom properties for runtime switching |
 | `src/apps/debate.js` | Debate app plugin demonstrating route extension pattern |
 
 ## Architecture
 - **Component-Based Layout**: App.vue orchestrates TheHeader, SidebarsDispatch (collapsible sidebar system), and router-view with responsive fixed positioning
 - **Centralized Reactive State**: Single `state` object (AgentState) managed via Vue `reactive()` + `@snowind/state` `User` class; UI preferences persisted separately via `@vueuse/core` `useStorage()`
 - **Service Layer**: Modular services (api, history, notify, task_events, perf, stats, str, template) provide isolated concerns; task_events handles real-time streaming with markdown parsing at ~20 parses/sec
-- **Theme System**: 12+ SCSS themes switchable at runtime via CSS class toggling on `<html>` element
+- **Theme System**: 14 SCSS themes switchable at runtime via CSS class toggling on `<html>` element
 - **Plugin System**: Apps in `src/apps/` dynamically extend routes via server-side import; debate app demonstrates the pattern
 
 ## Related
@@ -77,3 +76,10 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 - See `@agent-smith/wscli` — Supplies client-side WebSocket features for real-time communication
 - See `@agent-smith/app-debate` — Example plugin demonstrating route extension pattern
 - See `@agent-smith/types` — Shared TypeScript type definitions used throughout the UI
+
+## Documentation
+- `.agents/documentation/decision-tree.md` — Quick guide: find the right doc for your task
+- `.agents/documentation/project-overview.md` — Concise project overview (~1 page)
+- `.agents/documentation/project-nav.md` — Detailed navigation map with dependency graph
+- `.agents/documentation/code_style_guidelines.md` — UI code style guidelines
+- `.agents/documentation/css-style-guide.md` — CSS/theming style guide

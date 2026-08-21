@@ -37,7 +37,6 @@ import "highlight.js/styles/stackoverflow-light.css";
 import yaml from "yaml";
 import { onBeforeMount, ref, toRaw } from "vue";
 import type { ConfigFile } from "@agent-smith/types";
-import ViewConf from '../components/ViewConf.vue';
 import { conf } from '../state.js';
 import { useRouter } from 'vue-router';
 import EditSettings from '../components/EditSettings.vue';

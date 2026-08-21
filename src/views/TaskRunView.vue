@@ -255,6 +255,7 @@ const question = ref("");
 const nUserInteraction = ref(0);
 
 async function exec() {
+  console.log("EXEC");
   currentAgent.value = props.name;
   //view.value = "conversation";
   state.isLoadingModel = true;
@@ -273,7 +274,7 @@ async function exec() {
   } else {
     // conversation continues
     opts.history = [...toRaw(state.history)];
-    //console.log("HIST", toRaw(state.history));
+    console.log("HIST", toRaw(state.history));
     uihistoryManager.newTurn("user", props.name, state.history.length - 1, { user: pr });
   }
   state.history.push({ user: pr });

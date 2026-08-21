@@ -55,7 +55,7 @@
         <div class="flex flex-wrap gap-2 justify-around">
             <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
             <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{ loadedModel.id
-                }}
+            }}
                 {{ humanizeNumber(loadedModel.ctx) }}</button>
             <button v-for="preset in state.samplingPresets" class="btn soft" @click="applySamplingPreset(preset)">{{
                 preset.name }}</button>
@@ -285,7 +285,7 @@ async function init() {
 
 function onSelectBackend() {
     enableBackendModels.value = state.backends[backend.value]?.type !== 'openai';
-    if (enableBackendModels) {
+    if (enableBackendModels.value) {
         srv.loadModels(backend.value).then(() => getLoadedModel(backend.value));
     }
 }

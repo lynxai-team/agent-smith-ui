@@ -4,26 +4,6 @@
 
 A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model configurations, with an optional Node.js server binary (`lmui`) that serves the frontend and bridges to the Agent Smith backend.
 
-## Structure
-
-| Directory | Purpose |
-|-----------|---------|
-| `src/main.ts` | Vue app bootstrap: PrimeVue Aura theme, router, toast/confirmation services |
-| `src/App.vue` | Root layout: header, sidebar dispatch, router-view, toast/confirmation dialogs |
-| `src/router.ts` | Vue Router config — 9 routes (home, config, init, workflow, app, task run/view, agent run/view) |
-| `src/state.ts` | Central reactive state: agent state, models, backends, workspaces, UI preferences (persisted via `useStorage`) |
-| `src/views/` | Page components: HomeView, ConfigView, ConfigInitView, AppView, WorkflowView, TaskRunView, TaskViewView |
-| `src/components/` | 16 core UI components (TheHeader, AgentParamsPicker, InferenceParamsForm, SamplingPresets, TaskTools, ViewAgent, toast, tool call rendering, thinking nodes) |
-| `src/components/sidebars/` | 7 sidebar components: tasks, agents, history, workflows, inference params, right dispatch, SidebarsDispatch |
-| `src/components/navbars/` | 2 prompt input toolbars (PromptNavbarLeft, NavbarTask) |
-| `src/widgets/icons/` | 32 icon components (PascalCase + Icon suffix) |
-| `src/widgets/` | Reusable widgets: ToolCallDetails, AutoTextarea, LoadingSpinner, HistoryTurnStatsBar, TurnTitle |
-| `src/services/` | Service layer: api (REST via restmix), history, task_events, notify, stats, perf, str, template |
-| `src/scss/` | 14 SCSS theme files (default: bluestar) with CSS custom properties for runtime switching |
-| `src/bin/` | Node.js server binary entry point: HTTP server with static asset serving and dynamic route loading |
-| `src/apps/` | Plugin apps (e.g., debate) — dynamically extend routes via server-side import |
-| `public/img/` | Static assets served by the dev/prod server |
-
 ## Conventions (for AI Agents)
 
 - **Vue 3 + TypeScript**: Use Composition API with `<script setup>` where possible; all relative TS imports must use `.js` extension (even though source files are `.ts`)
@@ -38,14 +18,16 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 
 ## Quick Start for AI Agents
 
-1. Read `.agents/documentation/codebase-summary.md` for technical module details
-2. Read `.agents/documentation/code_style_guidelines.md` for UI coding standards
-3. Read `.agents/documentation/css-style-guide.md` for CSS/theming conventions
-4. Read `../../AGENTS.md` for project-wide context and conventions
+1. Read `.agents/documentation/decision-tree.md` to find the right doc for your task
+2. Read `.agents/documentation/project-overview.md` for high-level context
+3. Read `.agents/documentation/project-nav.md` for detailed navigation and dependency graph
+4. Read `.agents/documentation/codebase-summary.md` for technical module details
 
 ## Documentation
 
+- `.agents/documentation/decision-tree.md` — Quick guide: find the right doc for your task
+- `.agents/documentation/project-overview.md` — Concise project overview (~1 page)
+- `.agents/documentation/project-nav.md` — Detailed navigation map with dependency graph
 - `.agents/documentation/codebase-summary.md` — Structured technical summary (7-section format)
-- `.agents/documentation/code_style_guidelines.md` — UI code style guidelines (17.7KB)
-- `.agents/documentation/css-style-guide.md` — CSS/theming style guide (27KB)
-- `../../AGENTS.md` — Project-wide context, conventions, and documentation map (workspace root)
+- `.agents/documentation/code_style_guidelines.md` — UI code style guidelines
+- `.agents/documentation/css-style-guide.md` — CSS/theming style guide
