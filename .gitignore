@@ -12,3 +12,4 @@ yarn-error.log
 .vscode
 package-lock.json
 .gzipper
+.agents/tasks
