@@ -27,6 +27,12 @@
             <div class="text-xl">Theme</div>
             <ThemeSwitcher></ThemeSwitcher>
         </div>
+        <div class="flex flex-col space-y-3">
+            <div class="text-xl">Debug</div>
+            <sw-switch v-model:value="uistate.saveLastPrompt" class="switch-success text-sm">
+                <div class="ml-2">Save the last prompt</div>
+            </sw-switch>
+        </div>
     </div>
 </template>
 <script setup lang="ts">

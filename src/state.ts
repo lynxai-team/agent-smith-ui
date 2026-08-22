@@ -13,6 +13,8 @@ const uihistoryManager = useUiHistory();
 const user = new User();
 const appSidebar = shallowRef();
 const uistate = useStorage<{
+    lastPrompt: string,
+    saveLastPrompt: boolean,
     sidebar: SidebarType,
     taskView: UiTaskView,
     autoscroll: boolean,
@@ -26,6 +28,8 @@ const uistate = useStorage<{
     inferenceSidebarName: string,
     theme: string,
 }>('uistate', {
+    lastPrompt: "",
+    saveLastPrompt: false,
     sidebar: "agents",
     taskView: "view",
     autoscroll: true,

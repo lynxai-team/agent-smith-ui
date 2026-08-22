@@ -255,7 +255,7 @@ const question = ref("");
 const nUserInteraction = ref(0);
 
 async function exec() {
-  console.log("EXEC");
+  //console.log("EXEC");
   currentAgent.value = props.name;
   //view.value = "conversation";
   state.isLoadingModel = true;
@@ -264,6 +264,9 @@ async function exec() {
   const opts: AgentInferenceOptions & Record<string, any> = toRaw(inferOptions);
   prompt.value = "";
   let pr = p;
+  if (uistate.value.saveLastPrompt) {
+    uistate.value.lastPrompt = p
+  }
   //state.history = state.uihistory;
   if (nUserInteraction.value < 2) {
     // conversation starts
@@ -402,6 +405,9 @@ async function loadTask() {
     }
   });
   setCurrentFeature(props.name, "agent");
+  if (uistate.value.saveLastPrompt) {
+    prompt.value = uistate.value.lastPrompt
+  }
   isReady.value = true;
 };
 

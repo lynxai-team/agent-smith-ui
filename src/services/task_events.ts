@@ -259,10 +259,11 @@ const useTaskEvents = (
         console.log("TURN END H", hts)
         state.history = hts;
         //if (from == state.currentFeature.name) {
-        //console.log("************** SH", state.history);            
-        /*if (ht?.stats && !(from == "server")) {
+        //console.log("************** SH", state.history);   
+        const ht = hts[hts.length - 1];
+        if (ht?.stats && !(from == "server")) {
             uihistoryManager.addStatsToCurrentTurn(ht.stats)
-        }*/
+        }
         //}
         resetStream();
         scrollOutput(true, 100);

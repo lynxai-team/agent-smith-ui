@@ -17,6 +17,9 @@ const useUiHistory = () => {
         };
         //console.log("TURN A", turn.type);
         if (ht) {
+            if (ht?.stats) {
+                turn.stats = ht.stats
+            }
             if (ht?.user) {
                 turn.user = ht.user;
             }

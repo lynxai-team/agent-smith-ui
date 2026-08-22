@@ -10,9 +10,9 @@
             </div>
         </div>
         <div class="flex flex-row space-x-3">
-            <div>Thinking
+            <div>Reasoning
                 effort</div>
-            <input type="text" v-model="thinkingEffort" class="ring-0" placeholder="medium"></input>
+            <input type="text" v-model="reasoningEffort" class="ring-0" placeholder="medium"></input>
         </div>
         <div class="w-full flex justify-center">
             <div class="flex flex-col space-y-2 mt-3">
@@ -91,7 +91,7 @@ const switchPropagateBackend = ref(false);
 const switchPropagateIp = ref(false);
 const enableThinking = ref(false);
 const preserveThinking = ref(false);
-const thinkingEffort = ref("");
+const reasoningEffort = ref("");
 const model = ref<string>("");
 const backend = ref<string>(uistate.value.backend);
 const enableBackendModels = ref(state.backends[backend.value]?.type !== 'openai');
@@ -145,7 +145,7 @@ async function saveAgentsSettings() {
     }
     inferOptions.params.chat_template_kwargs.enable_thinking = enableThinking.value;
     inferOptions.params.chat_template_kwargs.preserve_thinking = preserveThinking.value;
-    inferOptions.params.chat_template_kwargs.thinking_effort = thinkingEffort.value;
+    inferOptions.params.chat_template_kwargs.reasoning_effort = reasoningEffort.value;
     const st: AgentSettings = {
         model: model.value,
         backend: bk,
@@ -178,8 +178,8 @@ function applySamplingPreset(preset: SamplingPreset) {
         if (preset.chat_template_kwargs?.preserve_thinking) {
             preserveThinking.value = preset.chat_template_kwargs.preserve_thinking
         }
-        if (preset.chat_template_kwargs?.thinking_effort) {
-            thinkingEffort.value = preset.chat_template_kwargs.thinking_effort
+        if (preset.chat_template_kwargs?.reasoning_effort) {
+            reasoningEffort.value = preset.chat_template_kwargs.reasoning_effort
         }
     } else {
         enableThinking.value = false
@@ -238,8 +238,8 @@ async function init() {
                 if (v?.preserve_thinking) {
                     preserveThinking.value = v.preserve_thinking;
                 }
-                if (v?.thinking_effort) {
-                    thinkingEffort.value = v.thinking_effort;
+                if (v?.reasoning_effort) {
+                    reasoningEffort.value = v.reasoning_effort;
                 }
             } else if (k == "props") {
                 const pv = toRaw(v);

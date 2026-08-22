@@ -46,12 +46,12 @@
             <div class="flex flex-row text-sm w-1/2 rounded-sm">
                 <div v-if="bar.cachePercentWidth > 0" :style="`width:${bar.cachePercentWidth}%`"
                     class="bg-green-400 overflow-hidden"></div>
-                <div class="flex-grow bg-orange-300 overflow-hidden flex flex-row items-center"></div>
+                <div class="grow bg-orange-300 overflow-hidden flex flex-row items-center"></div>
             </div>
             <div class="overflow-hidden flex flex-row items-center w-1/2 rounded-sm">
                 <div v-if="bar.draftPercentWidth > 0" :style="`width:${bar.draftPercentWidth}%`"
                     class="bg-green-500 overflow-hidden">&nbsp;</div>
-                <div class="bg-sky-300 flex-grow">&nbsp;</div>
+                <div class="bg-sky-300 grow">&nbsp;</div>
             </div>
         </div>
     </div>
