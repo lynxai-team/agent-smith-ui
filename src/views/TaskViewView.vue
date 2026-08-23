@@ -16,7 +16,7 @@
             <div class="flex flex-row space-x-3">
                 <!-- button class="btn w-max" :class="hasCodeChanged ? 'success' : 'border-lighter text-light'" @click="save()"
                 :disabled="!hasCodeChanged">Save</button -->
-                <button class="btn w-max secondary hover:primary"
+                <button class="btn w-max sec hover:prim"
                     @click="uistate.taskView = 'run'; router.push(runLink)">Run</button>
             </div>
         </template>

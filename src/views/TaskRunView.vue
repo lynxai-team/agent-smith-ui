@@ -132,7 +132,7 @@
                   <AgentParamsPicker :agent-spec="srv.agentSpec.value" @end="useAgentSettings($event);">
                   </AgentParamsPicker>
                 </Popover>
-                <button class="btn p-0 hover:secondary" @click="modelsPopover.toggle($event);">{{
+                <button class="btn p-0 hover:sec" @click="modelsPopover.toggle($event);">{{
                   inferOptions.model != "" ?
                     inferOptions.model :
                     srv.agentSpec.value?.model

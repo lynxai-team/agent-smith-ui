@@ -256,7 +256,7 @@ const useTaskEvents = (
         if (debug) {
             console.log("END TURN", from, "/", currentAgent.value, "/", state.currentFeature.name, hts);
         };
-        console.log("TURN END H", hts)
+        //console.log("TURN END H", hts)
         state.history = hts;
         //if (from == state.currentFeature.name) {
         //console.log("************** SH", state.history);   

@@ -25,7 +25,7 @@ const toastClass = {
   success: 'success',
   error: 'danger',
   warning: 'warning',
-  info: 'sec border bord-light',
+  info: 'sec border border-light',
 }[props.type];
 
 const isVisible = ref(false);

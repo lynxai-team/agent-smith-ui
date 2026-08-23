@@ -1,28 +1,28 @@
 <template>
     <div class="h-full">
         <div class="flex flex-col border border-lighter h-full border-t-0" v-if="!appSidebar">
-            <div class="flex flex-row txt-light">
+            <div class="flex flex-row text-light">
                 <!--div class="p-2 border-r border-lighter cursor-pointer"
-                    :class="uistate.sidebar == 'agents' ? ['txt-semilight'] : ['border-b']"
+                    :class="uistate.sidebar == 'agents' ? ['text-semilight'] : ['border-b']"
                     @click="toggleSidebar('agents')">
                     <AgentIcon width="32" height="32"></AgentIcon>
                 </div>
                 <div class="p-2 border-r border-lighter cursor-pointer"
-                    :class="uistate.sidebar == 'tasks' ? ['txt-semilight'] : ['border-b']"
+                    :class="uistate.sidebar == 'tasks' ? ['text-semilight'] : ['border-b']"
                     @click="toggleSidebar('tasks')">
                     <TaskIcon width="32" height="32"></TaskIcon>
                 </div>
                 <div class="p-2 border-r border-lighter cursor-pointer"
-                    :class="uistate.sidebar == 'workflows' ? ['txt-semilight'] : ['border-b']"
+                    :class="uistate.sidebar == 'workflows' ? ['text-semilight'] : ['border-b']"
                     @click="toggleSidebar('workflows')">
                     <WorkflowIcon width="32" height="32"></WorkflowIcon >
                 </div-->
                 <!-- div class="p-2 border-r cursor-pointer"
-                :class="uistate.sidebar == 'tools' ? ['txt-semilight'] : ['border-b']" @click="toggleSidebar('tools')">
+                :class="uistate.sidebar == 'tools' ? ['text-semilight'] : ['border-b']" @click="toggleSidebar('tools')">
                 <ToolsIcon width="32" height="32"></ToolsIcon>
             </div>
             <div class="p-2 cursor-pointer border-t-0"
-                :class="uistate.sidebar == 'mcp' ? ['txt-semilight'] : ['border-b']" @click="toggleSidebar('mcp')">
+                :class="uistate.sidebar == 'mcp' ? ['text-semilight'] : ['border-b']" @click="toggleSidebar('mcp')">
                 <McpIcon width="32" height="32"></McpIcon>
             </div -->
                 <div class="grow border-b border-lighter"></div>

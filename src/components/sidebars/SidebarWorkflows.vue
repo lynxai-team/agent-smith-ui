@@ -1,7 +1,7 @@
 <template>
     <div class="p-3">
         <div v-if="isReady" class="flex flex-col items-start">
-            <button class="btn hover:secondary" v-for="workflow in workflows" @click="open(workflow.name)">
+            <button class="btn hover:sec" v-for="workflow in workflows" @click="open(workflow.name)">
                 {{ humanize(workflow.name) }}
             </button>
         </div>

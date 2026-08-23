@@ -28,7 +28,7 @@ import InferenceParamsForm from '../InferenceParamsForm.vue';
   .p-slider-range
     @apply light
   .p-slider-handle
-    @apply border border-primary
+    @apply border border-prim
 .dark
   #params
     .p-inputnumber-button

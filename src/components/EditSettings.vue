@@ -2,8 +2,8 @@
     <div class="flex flex-col space-y-3 p-3">
         <div class="text-xl">Agents config</div>
         <div class="flex flex-row items-center space-x-3">
-            <button class="btn bord-light text-semilight hover:primary text-sm py-1" @click="expandAll">Expand</button>
-            <button class="btn bord-light text-semilight hover:primary text-sm py-1"
+            <button class="btn border-light text-semilight hover:prim text-sm py-1" @click="expandAll">Expand</button>
+            <button class="btn border-light text-semilight hover:prim text-sm py-1"
                 @click="collapseAll">Collapse</button>
         </div>
         <div v-if="isReady" class="flex flex-col items-start">

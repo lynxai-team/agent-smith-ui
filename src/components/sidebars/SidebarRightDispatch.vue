@@ -7,7 +7,7 @@
             </div>
         </Popover>
         <button class="btn" @click="toggleSidebarsDialog($event)">
-            <DotsIcon width="24" height="24" class="txt-semilight flex w-full justify-center"></DotsIcon>
+            <DotsIcon width="24" height="24" class="text-semilight flex w-full justify-center"></DotsIcon>
         </button>
         <div v-if="uistate.inferenceSidebarName == 'sampling'">
             <SidebarInferParams @paramchange="changeInferParam($event)">

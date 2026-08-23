@@ -4,41 +4,41 @@
             <div class="flex flex-row px-2 space-x-2 w-1/2">
                 <div>
                     <span class="opacity-70">{{ stats.prefillTokensPerSecond.toFixed(1) }}</span>
-                    <span class="txt-light"> tps </span>
+                    <span class="text-light"> tps </span>
                     <span class="text-orange-400">{{ stats.nPrefillProcessedTokens }}</span>
-                    <span class="txt-light">/ </span>
+                    <span class="text-light">/ </span>
                     <span class="opacity-75">{{ stats.nPrefillTotalTokens }}</span>
                 </div>
                 <div v-if="stats.percentCache > 0">
-                    <span class="txt-semilight">cache </span>
+                    <span class="text-semilight">cache </span>
                     <span class="text-green-500">{{ stats.percentCache.toFixed(1) }}% </span>
-                    <span class="txt-semilight">{{ stats.nPrefillCacheTokens }}</span>
+                    <span class="text-semilight">{{ stats.nPrefillCacheTokens }}</span>
                 </div>
                 <div>
-                    <span class="txt-semilight" v-html="formatDuration(stats.prefilDuration, 'txt-light')"></span>
+                    <span class="text-semilight" v-html="formatDuration(stats.prefilDuration, 'text-light')"></span>
                 </div>
             </div>
             <div class="flex flex-row px-2 space-x-2 justify-end w-1/2">
                 <div>
-                    <span class="txt-semilight">Ctx </span>
+                    <span class="text-semilight">Ctx </span>
                     <span class="opacity-75">{{ humanizeNumber(stats.nTotalTokens) }}</span>
-                    <span class="txt-semilight"> / </span>
-                    <span class="txt-semilight" v-html="humanizeNumber(state.currentModel.ctx, true)"></span>
+                    <span class="text-semilight"> / </span>
+                    <span class="text-semilight" v-html="humanizeNumber(state.currentModel.ctx, true)"></span>
                 </div>
                 <div>
                     <span class="opacity-75">{{ stats.emittedTokensPerSecond.toFixed(1) }}</span>
-                    <span class="txt-light"> tps </span>
+                    <span class="text-light"> tps </span>
                     <span class="text-sky-500">{{ stats.nEmittedTokens }}</span>
                 </div>
                 <div v-if="stats.percentDraft > 0">
-                    <span class="txt-semilight">draft </span>
+                    <span class="text-semilight">draft </span>
                     <span class="text-green-500">
                         {{ stats.percentDraft.toFixed(1) }}%
                     </span>
-                    <span class="txt-semilight">{{ stats.nDraftTokensAccepted }}</span>
+                    <span class="text-semilight">{{ stats.nDraftTokensAccepted }}</span>
                 </div>
                 <div>
-                    <span class="txt-semilight" v-html="formatDuration(stats.emitDuration, 'txt-light')"></span>
+                    <span class="text-semilight" v-html="formatDuration(stats.emitDuration, 'text-light')"></span>
                 </div>
             </div>
         </div>

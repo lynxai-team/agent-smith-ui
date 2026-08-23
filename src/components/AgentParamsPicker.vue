@@ -28,7 +28,7 @@
                 <div class="flex flex-row space-x-2 pt-2 items-center">
                     <div class="text-semilight">Backend:</div>&nbsp;
                     <div>
-                        <select v-model="backend" :required="true" class="ring-0 px-3 py-2 border bord-lighter"
+                        <select v-model="backend" :required="true" class="ring-0 px-3 py-2 border border-lighter"
                             @change="onSelectBackend()">
                             <option v-for="b in Object.keys(state.backends)" :selected="uistate.backend == b"
                                 :value="b">
@@ -61,7 +61,7 @@
                 preset.name }}</button>
         </div>
         <div class="w-full flex flex-row justify-center pt-3 space-x-2">
-            <button class="btn text-primary font-semibold hover:primary py-1 text-sm" :disabled="!isValid"
+            <button class="btn font-semibold hover:prim py-1 text-sm" :disabled="!isValid"
                 @click="useAgentSettings()">Use agent settings</button>
             <button class="btn success py-1 text-sm" :disabled="!isValid" @click="saveAgentsSettings()">Save agent
                 settings</button>

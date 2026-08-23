@@ -6,9 +6,9 @@
           focused />
       </div>
     </template>
-    <Textarea v-if="auto" v-model="_data" rows="1" autoResize @focusout="ch()" class="focus:ring-0 border bord-lighter"
+    <Textarea v-if="auto" v-model="_data" rows="1" autoResize @focusout="ch()" class="focus:ring-0 border border-lighter"
       fluid />
-    <Textarea v-else v-model="_data" rows="8" @focusout="ch()" class="focus:ring-0 border bord-light" fluid />
+    <Textarea v-else v-model="_data" rows="8" @focusout="ch()" class="focus:ring-0 border border-light" fluid />
   </div>
 </template>
 

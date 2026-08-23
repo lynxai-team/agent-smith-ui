@@ -90,20 +90,20 @@ onBeforeMount(() => {
 .dark .p-tree-node-label
     color: white !important
 .p-inputtext, .p-overlaypanel-content
-  @apply background bord-lighter
+  @apply background border-lighter
 .p-overlaypanel-content
-  @apply dark:bord-lighter border
+  @apply dark:border-lighter border
 .h-main
   height: calc( 100% -  4rem)
 .p-confirmdialog-accept-button
-  @apply success bord-success
+  @apply success border-success
 .p-confirmdialog-reject-button
-  @apply bord-danger danger p-3
+  @apply border-danger danger p-3
 .dark .p-textarea
   background: transparent
   color: white
 .dark .p-inputnumber-increment-button, .dark .p-inputnumber-decrement-button
   border: transparent
 .btn.soft
-  @apply border bord-lighter txt-light hover:primary
+  @apply border border-lighter text-light hover:prim
 </style>
