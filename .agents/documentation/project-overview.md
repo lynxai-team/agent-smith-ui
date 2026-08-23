@@ -37,7 +37,7 @@ Agent Smith UI is a Vue 3 web dashboard for managing AI agents, workflows, tasks
 | `src/components/navbars/` | 2 prompt input toolbars (PromptNavbarLeft, NavbarTask) |
 | `src/widgets/icons/` | 32 icon components (PascalCase + Icon suffix) |
 | `src/widgets/` | Reusable widgets: ToolCallDetails, AutoTextarea, LoadingSpinner, HistoryTurnStatsBar, TurnTitle |
-| `src/services/` | Service layer: api, history, task_events, notify, stats, perf, str, template |
+| `src/services/` | Service layer: api, history, task_events, notify, perf, str, template (stats handling moved to history.ts) |
 | `src/scss/` | 14 SCSS theme files (default: bluestar) with CSS custom properties |
 | `src/bin/` | Node.js server binary entry point: HTTP server with static asset serving |
 | `src/apps/` | Plugin apps (e.g., debate) — dynamically extend routes via server-side import |
@@ -52,6 +52,7 @@ Agent Smith UI is a Vue 3 web dashboard for managing AI agents, workflows, tasks
 - **Service Layer**: Modular services provide isolated concerns; task_events handles real-time streaming with markdown parsing at ~20 parses/sec
 - **Theme System**: 14 SCSS themes switchable at runtime via CSS class toggling on `<html>` element
 - **Plugin System**: Apps in `src/apps/` dynamically extend routes via server-side import
+- **User Settings**: `EditSettings.vue` exposes a "Save last prompt" toggle persisted via `saveLastPrompt` state; inference params use `reasoning_effort` (renamed from `thinking_effort`)
 
 ---
 

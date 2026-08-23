@@ -82,7 +82,7 @@
 
 ### src/services/ — Service Layer
 - **Purpose**: Isolated concerns for API, history, notifications, streaming
-- **Services**: api, history, notify, task_events, perf, stats, str, template
+- **Services**: api, history, notify, task_events, perf, str, template (stats handling moved to history.ts)
 - **Key patterns**: task_events handles real-time streaming with markdown parsing (~20 parses/sec)
 
 ### src/scss/ — Theme System
@@ -220,4 +220,5 @@ export default {
 | Theme Switching | CSS class toggling on `<html>` element |
 | Import Order | third-party → relative (grouped by directory) → global |
 | Build Process | `vite build` for app, `tsc -p tsconfig_bin.json` for server binary |
+| Tailwind 4 Styling | Config-free; utility classes via CSS `@import`/`@reference` in `<style lang="css">`; no `tailwind.config` file |
 | Plugin Pattern | Server-side import for dynamic route extension |

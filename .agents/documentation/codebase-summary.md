@@ -52,10 +52,11 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 | `src/components/sidebars/*.vue` | Sidebar navigation: tasks, agents, workflows, inference params, dispatch (7 sidebars) |
 | `src/components/navbars/*.vue` | Prompt input toolbars (PromptNavbarLeft, NavbarTask) |
 | `src/components/*.vue` | Core UI: TheHeader, tool call rendering, thinking nodes, settings, backend management (16 components) |
+| `src/components/EditSettings.vue` | Settings panel: theme switcher + "Save last prompt" toggle (`saveLastPrompt` state) |
 | `src/widgets/icons/*.vue` | 32 icon components (PascalCase + Icon suffix) |
 | `src/widgets/*.vue` | Reusable widgets: ToolCallDetails, AutoTextarea, LoadingSpinner, HistoryTurnStatsBar, TurnTitle |
 | `src/services/api.ts` | REST API client via restmix library |
-| `src/services/history.ts` | Conversation turn management and tool call tracking |
+| `src/services/history.ts` | Conversation turn management, tool call tracking, and stats transfer between history items |
 | `src/services/task_events.ts` | Real-time task event handling with streaming markdown parsing |
 | `src/services/notify.ts` | Toast/confirmation notification service |
 | `src/services/template.ts` | Prompt template application via server API |
@@ -67,7 +68,7 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 ## Architecture
 - **Component-Based Layout**: App.vue orchestrates TheHeader, SidebarsDispatch (collapsible sidebar system), and router-view with responsive fixed positioning
 - **Centralized Reactive State**: Single `state` object (AgentState) managed via Vue `reactive()` + `@snowind/state` `User` class; UI preferences persisted separately via `@vueuse/core` `useStorage()`
-- **Service Layer**: Modular services (api, history, notify, task_events, perf, stats, str, template) provide isolated concerns; task_events handles real-time streaming with markdown parsing at ~20 parses/sec
+- **Service Layer**: Modular services (api, history, notify, task_events, perf, str, template) provide isolated concerns; stats handling moved into history.ts; task_events handles real-time streaming with markdown parsing at ~20 parses/sec
 - **Theme System**: 14 SCSS themes switchable at runtime via CSS class toggling on `<html>` element
 - **Plugin System**: Apps in `src/apps/` dynamically extend routes via server-side import; debate app demonstrates the pattern
 

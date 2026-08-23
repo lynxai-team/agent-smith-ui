@@ -2,7 +2,7 @@
 
 ## Overview
 
-Agent Smith UI uses **Tailwind CSS 3.4** with custom plugins for semantic color utilities and PrimeVue integration. The styling system combines:
+Agent Smith UI uses **Tailwind CSS 4** (config-free, via the `@tailwindcss/vite` plugin) with custom plugins for semantic color utilities and PrimeVue integration. Styling is configured in `/workspace/src/styles/global.css` through CSS `@import` directives; there is **no `tailwind.config` file**. The styling system combines:
 
 1. **Tailwind CSS** - Utility-first CSS framework
 2. **tailwindcss-semantic-colors** - Plugin for semantic color classes
@@ -55,7 +55,7 @@ Each theme file defines CSS custom properties (variables) for semantic colors. E
 
 ### Configuration
 
-Semantic colors are defined in `/workspace/tailwind.config.cjs` using the `semanticColors` extension:
+Semantic colors are loaded via `@import "tailwindcss-semantic-colors";` in `/workspace/src/styles/global.css` (Tailwind 4 config-free approach). The color structure they provide is:
 
 ```javascript
 theme: {
@@ -207,7 +207,7 @@ Focus variants are also enabled by default.
 
 ### Configuring Variants
 
-Variants can be configured in `tailwind.config.cjs`:
+Variants are enabled through the semantic-colors plugin (no config file in Tailwind 4):
 
 ```javascript
 variants: {

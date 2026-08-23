@@ -15,6 +15,7 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 - **Import order**: third-party → relative (grouped by directory) → global; always use `.js` extension for relative TS imports
 - **Build**: Vue app built with `vite build`; server binary compiled with `tsc -p tsconfig_bin.json`; output to `dist/`
 - **Plugin pattern**: Apps in `src/apps/` can dynamically extend routes via server-side import; the debate app demonstrates this pattern
+- **Tailwind 4 styling**: Config-free utility classes applied via CSS `@import`/`@reference` inside `<style lang="css">`; there is no `tailwind.config` file (config was removed during the Tailwind 4 migration)
 
 ## Quick Start for AI Agents
 

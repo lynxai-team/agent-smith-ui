@@ -13,8 +13,9 @@
 - **Vue components** → `.agents/documentation/codebase-summary.md` → Key Files section
 - **State management** → `src/state.ts` (central reactive state)
 - **Routing** → `src/router.ts` (9 routes: home, config, init, workflow, app, task run/view, agent run/view)
-- **Services layer** → `src/services/` (api, history, notify, task_events, perf, stats, str, template)
+- **Services layer** → `src/services/` (api, history, notify, task_events, perf, str, template; stats handling moved to history.ts)
 - **Theme system** → `src/scss/` (14 SCSS themes with CSS custom properties)
+- **User settings** → `src/components/EditSettings.vue` (theme switcher, "Save last prompt" toggle)
 - **Server binary** → `src/bin/index.ts` (HTTP server with static asset serving)
 - **Plugin apps** → `src/apps/` (dynamically extend routes via server-side import)
 
