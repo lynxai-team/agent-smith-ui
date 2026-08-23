@@ -308,7 +308,8 @@ const useTaskEvents = (
 
     const onError: AgentInferenceOptions["onError"] = (err: any, from: string) => {
         console.error(from, err);
-        msg.error(`Error running ${from}`, `${err}`)
+        const m = typeof err == "string" ? err : err.message;
+        msg.error(`Error running ${from}`, m)
     }
 
     const resetStream = () => {
