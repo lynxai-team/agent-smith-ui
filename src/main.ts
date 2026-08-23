@@ -5,7 +5,6 @@ import PrimeVue from 'primevue/config';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import Aura from '@primeuix/themes/aura';
-import './assets/index.css';
 import 'primeicons/primeicons.css';
 
 const app = createApp(App);

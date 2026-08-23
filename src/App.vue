@@ -79,31 +79,43 @@ onBeforeMount(() => {
 }
 </style>
 
-<style lang="sass">
-.p-tree, .p-tree-filter-input
-    background-color: transparent !important
-    border-top: 0
-    border-right: 0
-    border-left: 0
-    box-shadow: none
-    border-radius: 0
-.dark .p-tree-node-label
-    color: white !important
-.p-inputtext, .p-overlaypanel-content
-  @apply background border-lighter
-.p-overlaypanel-content
-  @apply dark:border-lighter border
-.h-main
-  height: calc( 100% -  4rem)
-.p-confirmdialog-accept-button
-  @apply success border-success
-.p-confirmdialog-reject-button
-  @apply border-danger danger p-3
-.dark .p-textarea
-  background: transparent
-  color: white
-.dark .p-inputnumber-increment-button, .dark .p-inputnumber-decrement-button
-  border: transparent
-.btn.soft
-  @apply border border-lighter text-light hover:prim
+<style lang="css">
+@reference "./styles/global.css";
+
+.p-tree, .p-tree-filter-input {
+    background-color: transparent !important;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    box-shadow: none;
+    border-radius: 0;
+}
+.dark .p-tree-node-label {
+    color: white !important;
+}
+.p-inputtext, .p-overlaypanel-content {
+    @apply background border-lighter;
+}
+.p-overlaypanel-content {
+    @apply dark:border-lighter border;
+}
+.h-main {
+    height: calc(100% - 4rem);
+}
+.p-confirmdialog-accept-button {
+    @apply success border-success;
+}
+.p-confirmdialog-reject-button {
+    @apply border-danger danger p-3;
+}
+.dark .p-textarea {
+    background: transparent;
+    color: white;
+}
+.dark .p-inputnumber-increment-button, .dark .p-inputnumber-decrement-button {
+    border: transparent;
+}
+.btn.soft {
+    @apply border border-lighter text-light hover:prim;
+}
 </style>

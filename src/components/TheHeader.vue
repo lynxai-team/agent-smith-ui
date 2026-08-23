@@ -171,9 +171,13 @@ const backendCls = computed(() => {
 onBeforeMount(() => redirOpts())
 </script>
 
-<style lang="sass">
-#mobile-menu
-  @apply absolute left-0 z-40 flex flex-col w-full space-y-3 text-xl top-16 lighter
-*
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0)
+<style lang="css">
+@reference "../styles/global.css";
+
+#mobile-menu {
+    @apply absolute left-0 z-40 flex flex-col w-full space-y-3 text-xl top-16 lighter;
+}
+* {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
 </style>

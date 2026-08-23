@@ -61,7 +61,10 @@ watchEffect(() => {
 })
 </script>
 
-<style lang="sass">
-.toolcallbg
-    @apply bg-sky-50 dark:bg-stone-800 bg-opacity-50
+<style lang="css">
+@reference "../styles/global.css";
+
+.toolcallbg {
+    @apply bg-sky-50/50 dark:bg-stone-800/50;
+}
 </style>

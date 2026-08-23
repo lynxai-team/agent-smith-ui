@@ -18,7 +18,6 @@ import Textarea from 'primevue/textarea';
 import { watchDebounced } from '@vueuse/core';
 import Listbox from 'primevue/listbox';
 import { onKeyStroke } from '@vueuse/core';
-import "../assets/index.css";
 import { api } from '../services/api.js';
 
 const props = defineProps({

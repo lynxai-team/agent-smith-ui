@@ -8,9 +8,6 @@
     color: inherit;
 }
 
-@tailwind components;
-@tailwind utilities;
-
 /* CSS variables for theme colors */
 .markstream-vue {
     --border: 214.3 31.8% 91.4%;
