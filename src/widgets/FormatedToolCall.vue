@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-row space-x-2 items-center max-w-fit">
         <ToolsIcon width="24" height="24" class="min-w-12 opacity-50" :class="toolIconCls(turn, tool)"
-            v-if="tool?.response && tool.type != 'agent'">
+            v-if="tool?.response !== undefined && tool?.response !== null && tool.type != 'agent'">
         </ToolsIcon>
         <ExecuteIcon v-else width="24" height="24" class="min-w-12 opacity-50 font-semibold"
             :class="tool.type == 'agent' ? 'text-success' : 'text-warning'"></ExecuteIcon>
@@ -44,7 +44,7 @@ function toolIconCls(turn: UiHistoryTurn, tool: ToolTurn): string {
     if (tool.call.id in turn.state.confirmToolCalls) {
         return 'text-warning'
     }
-    if (tool?.response) {
+    if (tool?.response !== undefined && tool?.response !== null) {
         if (tool.response == "tool execution denied" ||
             tool.response.toString().startsWith("[Error]")
         ) {

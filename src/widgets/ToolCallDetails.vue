@@ -15,7 +15,7 @@
                     <div class="overflow-y-auto max-w-5xl text-success">Response</div>
                 </div>
                 <div class="overflow-y-auto max-w-5xl text-warning font-semibold flex flex-row space-x-2 items-center pl-3"
-                    v-if="!tool?.response">
+                    v-if="tool?.response === undefined || tool?.response === null">
                     <LoadingSpinner height="24" width="24"></LoadingSpinner>
                     <div>Executing tool ...</div>
                 </div>
@@ -34,7 +34,7 @@
                 </template>
             </div>
             <div v-else class="p-3">
-                <div v-if="tool?.response" v-html="tool?.response.replaceAll('\n', '<br />')"></div>
+                <div v-if="tool?.response !== undefined && tool?.response !== null" v-html="tool?.response.replaceAll('\n', '<br />')"></div>
                 <div v-else-if="!(tool?.type == 'agent')">Tool call in progress ...</div>
             </div>
         </div>
@@ -52,11 +52,11 @@ const props = defineProps({
     },
 });
 
-const tab = ref<"call" | "response">(props.tool?.response ? "response" : "call");
+const tab = ref<"call" | "response">(props.tool?.response !== undefined && props.tool?.response !== null ? "response" : "call");
 
 watchEffect(() => {
-    if (props.tool?.response) {
-        tab.value = props.tool.response
+    if (props.tool?.response !== undefined && props.tool?.response !== null) {
+        tab.value = "response"
     }
 })
 </script>
