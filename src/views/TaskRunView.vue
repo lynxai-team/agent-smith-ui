@@ -7,11 +7,12 @@
       <div class="flex flex-col grow overflow-y-auto p-3">
         <template v-if="state.uihistory.length > 0">
           <div v-for="(turn, i) in state.uihistory" class="flex flex-col">
-            <div class="flex flex-row">
+            <div class="flex flex-row" v-if="canViewHistoryTurn(turn)">
               <a :id="`turn-${i}`"></a>
               <div class="grow">
                 <TurnTitle name="user" v-if="i == 0"></TurnTitle>
-                <TurnTitle :name="turn.from" v-else-if="state.uihistory[i - 1].from != turn.from" class="pt-3">
+                <TurnTitle :name="turn.from" v-else-if="((state.uihistory[i - 1].from != turn.from) && (uistate.historyViewMode == 'plain'))
+                  || i == 1" class="pt-3">
                 </TurnTitle>
                 <div v-if="turn?.user" class="p-3">
                   <!-- MarkdownRender :content="turn.user" v-if="uistate.viewMode == 'markdown'" / -->
@@ -180,7 +181,7 @@ import { computed, onBeforeMount, onBeforeUnmount, nextTick, reactive, ref, toRa
 import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
 import { confirmDanger, msg } from '../services/notify.js';
-import { debugInference, inferOptions, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
+import { agentHistoryManager, debugInference, inferOptions, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
 import AutoTextarea from '../widgets/AutoTextarea.vue';
 //import ToolCallNode from '../components/ToolCallNode.vue';
 import 'markstream-vue/index.css';
@@ -230,6 +231,7 @@ const nodes = ref<ParsedNode[]>([]);
 const thinkingNodes = ref<ParsedNode[]>([]);
 const hasThinking = ref(false);
 const currentAgent = ref(props.name);
+const topLevelAgent = props.name;
 //const customHtmlTags = new Array<string>("think");
 //const toolCallRequest = ref(false);
 const toolCallsState = reactive<{ tcs: Array<ToolCallSpec>, from: string }>({
@@ -272,13 +274,16 @@ async function exec() {
     // conversation starts
     question.value = p;
     pr = srv.agentSpec.value.prompt.replace("{prompt}", p);
+    agentHistoryManager.reset();
     uihistoryManager.newTurn("user", props.name, 0, { user: pr });
+    agentHistoryManager.newTurn("user", props.name, { user: pr });
     opts.history = [];
   } else {
     // conversation continues
     opts.history = [...toRaw(state.history)];
     //console.log("HIST", toRaw(state.history));
     uihistoryManager.newTurn("user", props.name, state.history.length - 1, { user: pr });
+    agentHistoryManager.newTurn("user", props.name, { user: pr });
   }
   state.history.push({ user: pr });
   nodes.value = [];
@@ -396,6 +401,8 @@ async function loadTask() {
   //console.log("LOAD T OPTS END", inferOptions.params);
   const b = inferOptions?.backend ?? uistate.value.backend;
   state.onReady.then(() => {
+    //console.log("B", b);
+    //console.log("M", state.models)
     if (m.length > 0) {
       inferOptions.model = state.models[b][m].id;
       state.currentModel = state.models[b][m];
@@ -410,6 +417,18 @@ async function loadTask() {
   }
   isReady.value = true;
 };
+
+function canViewHistoryTurn(turn: UiHistoryTurn) {
+  if (["user", topLevelAgent].includes(turn.from)) {
+    return true
+  }
+  if (uistate.value.historyViewMode == "plain") {
+    return true
+  }
+  if (turn.from != topLevelAgent) {
+    return false
+  }
+}
 
 function restartAtTurn(n: number) {
   //console.log("Restart at", n);
@@ -472,6 +491,7 @@ function confirmDelHistory() {
       taskEvents.resetStream();
       state.history = [];
       state.uihistory = [];
+      agentHistoryManager.reset();
       restartAtTurn(-1)
     }
   )

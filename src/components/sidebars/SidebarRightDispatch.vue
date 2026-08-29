@@ -3,7 +3,7 @@
         <Popover ref="sidebarDialog">
             <div class="flex flex-row space-x-2">
                 <button v-for="sb in sidebars" class="btn" @click="setSidebar(sb); toggleSidebarsDialog($event)">{{ sb
-                }}</button>
+                    }}</button>
             </div>
         </Popover>
         <button class="btn" @click="toggleSidebarsDialog($event)">
@@ -14,7 +14,8 @@
             </SidebarInferParams>
         </div>
         <div v-else>
-            <SidebarHistory @moveto-turn="moveToTurn($event)"></SidebarHistory>
+            <!-- SidebarHistory @moveto-turn="moveToTurn($event)"></SidebarHistory -->
+            <SidebarAgentHistory></SidebarAgentHistory>
         </div>
     </div>
 </template>
@@ -22,7 +23,7 @@
 import { ref } from 'vue';
 import SidebarInferParams from './SidebarInferParams.vue';
 import SidebarHistory from './SidebarHistory.vue';
-import type { InferenceParams } from '@agent-smith/types';
+import SidebarAgentHistory from './SidebarAgentHistory.vue';
 import DotsIcon from '../../widgets/icons/DotsIcon.vue';
 import Popover from 'primevue/popover';
 import { uistate } from '../../state.js';

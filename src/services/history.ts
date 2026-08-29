@@ -1,7 +1,9 @@
 import type { HistoryTurn, InferenceStats, PromptProcessingInProgressStats, ToolCallSpec, ToolTurn, UiHistoryTurn, UiHistoryTurnType } from "@agent-smith/types";
 import { state } from "../state.js";
+import { toRaw } from "vue";
 
 const useUiHistory = () => {
+    const callerTurns: Record<string, number> = {};
     const newTurn = (_type: UiHistoryTurnType, from: string, n: number, ht?: HistoryTurn) => {
         //console.log("NEW TURN", state.uihistory.length, from, _type, JSON.stringify(ht, null, 2));
         const turn: UiHistoryTurn = {
@@ -45,7 +47,7 @@ const useUiHistory = () => {
     }
 
     const _currentTurn = (): UiHistoryTurn => {
-        return state.uihistory[state.uihistory.length - 1];
+        return toRaw(state.uihistory[state.uihistory.length - 1]);
     }
 
     const addStatsToCurrentTurn = (s: InferenceStats) => {
@@ -61,17 +63,34 @@ const useUiHistory = () => {
     }
 
     const addToolCallToCurrentTurn = (tt: ToolTurn) => {
+        //console.log("TTA", tt);
         const ct = _currentTurn();
         if (!ct?.tools) {
             ct.tools = []
         }
-        ct.tools.push(tt)
+        ct.tools.push(tt);
+        if (tt.type == "agent" || tt.call.name == "run-agent") {
+            callerTurns[tt.call.id] = state.uihistory.length - 1;
+        }
+        //console.log("TC CT", ct);
+        //console.log("TC CALLERS", callerTurns)
     }
 
     const addToolResponseToCurrentTurn = (tc: ToolCallSpec, tr: any, from: string) => {
         let tindex: number | null = null;
         let i = 0;
-        const ct = _currentTurn();
+        let ct: UiHistoryTurn;
+        if (tc.id in callerTurns) {
+            const n = callerTurns[tc.id];
+            delete callerTurns[tc.id];
+            const t = state.uihistory.at(n);
+            if (!t) {
+                throw new Error(`addToolResponseToCurrentTurn: caller ${from} not found in callers turns ${callerTurns}`)
+            }
+            ct = t;
+        } else {
+            ct = _currentTurn();
+        }
         if (!ct?.tools) {
             throw new Error(`${from} addToolResponseToCurrentTurn: no tools in current turn: ${tc.name} ${tr}`,)
         }

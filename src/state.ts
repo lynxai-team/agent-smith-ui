@@ -3,14 +3,17 @@ import { useClientFeatures } from "@agent-smith/wscli";
 import { User } from "@snowind/state";
 import { useStorage } from '@vueuse/core';
 import { reactive, ref, shallowRef } from "vue";
-import type { SidebarType, UiTaskView } from "./interfaces.js";
+import { type SidebarType, type UiTaskView } from "./interfaces.js";
 import { useUiHistory } from "./services/history.js";
 import { createAwaiter } from "./utils.js";
 import { defaultInferenceParams } from "./conf.js";
+import { useAgentHistory } from "./services/agent-history.js";
 
 const debugInference = ref(true);
 const uihistoryManager = useUiHistory();
+const agentHistoryManager = useAgentHistory();
 const user = new User();
+const { mainAgent } = agentHistoryManager;
 const appSidebar = shallowRef();
 const uistate = useStorage<{
     lastPrompt: string,
@@ -21,6 +24,7 @@ const uistate = useStorage<{
     autoOpenThink: boolean,
     autoOpenTools: boolean,
     viewMode: "text" | "markdown" | "raw",
+    historyViewMode: "plain" | "toplevel",
     title: string,
     backend: string,
     availableAgents: Record<string, boolean>,
@@ -36,6 +40,7 @@ const uistate = useStorage<{
     autoOpenThink: false,
     autoOpenTools: false,
     viewMode: "markdown",
+    historyViewMode: "plain",
     title: "",
     backend: "",
     availableAgents: {},
@@ -191,6 +196,6 @@ export {
     appSidebar, conf, debugInference, uihistoryManager, initState,
     resetCurrentFeature,
     setCurrentFeature, srv, state,
-    uistate, user, setTheme, inferOptions
+    uistate, user, setTheme, inferOptions, mainAgent, agentHistoryManager,
 };
 
