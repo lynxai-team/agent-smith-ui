@@ -34,7 +34,7 @@
 ├── @agent-smith/wscli — WebSocket client features
 ├── @agent-smith/types — Shared TypeScript types
 ├── primevue (4.5) — UI component library
-├── vue-router (5.0) — Application routing
+├── vue-router (5.2) — Application routing
 ├── @snowind/state — Reactive state management
 ├── @vueuse/core — Vue utilities (useStorage)
 ├── restmix — REST API client
@@ -71,24 +71,24 @@
 - **Components**: HomeView, ConfigView, ConfigInitView, AppView, WorkflowView, TaskRunView, TaskViewView
 
 ### src/components/ — Core UI Components
-- **Purpose**: Reusable UI components (16 components total)
+- **Purpose**: Reusable UI components (15 core components)
 - **Key components**: AgentParamsPicker, InferenceParamsForm, SamplingPresets, TaskTools, ViewAgent, TheHeader
-- **Subdirectories**: `sidebars/` (7 sidebars), `navbars/` (2 toolbars), `vibe/toast/` (toast system)
+- **Subdirectories**: `sidebars/` (9 components: 7 named sidebars + SidebarsDispatch orchestrator + AgentHistoryNode helper), `navbars/` (2 toolbars), `vibe/toast/` (toast system)
 
 ### src/widgets/ — Reusable Widgets
 - **Purpose**: Small reusable UI elements
 - **Components**: ToolCallDetails, AutoTextarea, LoadingSpinner, HistoryTurnStatsBar, TurnTitle
-- **Subdirectory**: `icons/` (32 icon components with `*Icon.vue` suffix)
+- **Subdirectory**: `icons/` (34 icon components with `*Icon.vue` suffix)
 
 ### src/services/ — Service Layer
 - **Purpose**: Isolated concerns for API, history, notifications, streaming
-- **Services**: api, history, notify, task_events, perf, str, template (stats handling moved to history.ts)
+- **Services**: agent-history, api, history, notify, task_events, perf, str, template (stats handling moved to history.ts)
 - **Key patterns**: task_events handles real-time streaming with markdown parsing (~20 parses/sec)
 
 ### src/scss/ — Theme System
 - **Purpose**: 14 SCSS themes with CSS custom properties for runtime switching
-- **Themes**: airy-soft, black, cloud, default, forest, graphite, navy, pearl, royal, sandstone, slate, stone, teal, main
-- **Default**: bluestar (referenced in conf.ts)
+- **Themes** (registered in `src/conf.ts`): airy-soft, black, cloud, default, forest, graphite, navy, pearl, royal, sandstone, slate, stone, teal
+- **Entry point**: `main.scss` aggregates 13 theme files; `default.scss` is an alias theme
 
 ### src/bin/index.ts — Server Binary
 - **Purpose**: Node.js HTTP server (`lmui`) with static asset serving and dynamic route loading
@@ -116,10 +116,10 @@
 ### Theme System
 - **Mechanism**: CSS class toggling on `<html>` element (`theme-<name>`)
 - **Implementation**: SCSS files with CSS custom properties
-- **Count**: 14 themes available at runtime
+- **Files**: 14 SCSS files in src/scss/ (main.scss aggregates; conf.ts registers 12 for runtime switching)
 
 ### Routing
-- **Library**: vue-router (5.0)
+- **Library**: vue-router (5.2)
 - **Routes**: 9 total (home, config, init, workflow, app, task run/view, agent run/view)
 - **Pattern**: Route meta with sidebar association for dynamic sidebar loading
 

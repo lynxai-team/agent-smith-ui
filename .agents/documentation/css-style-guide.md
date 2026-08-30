@@ -2,536 +2,264 @@
 
 ## Overview
 
-Agent Smith UI uses **Tailwind CSS 4** (config-free, via the `@tailwindcss/vite` plugin) with custom plugins for semantic color utilities and PrimeVue integration. Styling is configured in `/workspace/src/styles/global.css` through CSS `@import` directives; there is **no `tailwind.config` file**. The styling system combines:
+Agent Smith UI uses **Tailwind CSS 4** (config-free, via the `@tailwindcss/vite` plugin) with custom
+plugins for semantic color utilities and PrimeVue integration. Styling is configured in
+`/workspace/src/styles/global.css` through CSS `@import` directives; there is **no `tailwind.config`
+file** (config was removed during the Tailwind 4 migration).
 
-1. **Tailwind CSS** - Utility-first CSS framework
-2. **tailwindcss-semantic-colors** - Plugin for semantic color classes
-3. **@snowind/plugin** - Vue state-driven styling helper
-4. **SCSS Themes** - Custom theme files with CSS custom properties
-5. **PrimeVue** - UI component library with Aura theme
+The styling system combines:
+
+1. **Tailwind CSS** — Utility-first CSS framework (v4, config-free)
+2. **tailwindcss-semantic-colors** — CSS-only plugin for semantic color utilities (`prim`, `sec`, `ter`…)
+3. **Snowind CSS** — Utility classes defined manually in `src/styles/snowind.css` (`.btn`, `.slide-*`)
+4. **@snowind/header** — `SwTopbar` responsive header component
+5. **SCSS Themes** — Custom theme files under `src/scss/` with CSS custom properties
+6. **PrimeVue** — UI component library with Aura theme
+
+### The styling stack (`global.css`)
+
+```css
+@import "tailwindcss";
+@import "tailwindcss-semantic-colors";   /* semantic color utilities (prim/sec/ter…) */
+@import "tailwindcss-primeui";            /* PrimeVue component integration */
+@import "./snowind.css";                  /* .btn, .slide-x, .slide-y, .slidedown, .slideup */
+```
 
 ## Theme System
 
 ### Available Themes
 
-The project supports multiple themes defined in SCSS files under `/workspace/src/scss/`:
+13 SCSS files live under `/workspace/src/scss/`. `main.scss` aggregates them; `conf.ts` registers the
+12 switchable themes for the runtime switcher. `default.scss` provides the base `:root` variables
+(always active); every other file overrides them via a `.theme-{name}` class. **`stone` is the default
+theme** (set in `src/state.ts` as `uistate.theme`).
 
-| Theme | Class | Description | Dark Mode |
-|-------|-------|-------------|-----------|
-| Default | `theme-default` | Cyan/teal color scheme | ✅ Full support |
-| Bluestar | `theme-bluestar` | Blue color scheme | ⚠️ Light mode only |
-| Brown | `theme-brown` | Brown/stone color scheme | ⚠️ Light mode only |
-| Pink-Black | `theme-pink-black` | Dark with pink accents | ⚠️ Light mode only |
-| Lime-Black | `theme-lime-black` | Black with lime green accents | ⚠️ Light mode only |
-| Black | `theme-black` | Dark theme | ⚠️ Light mode only |
+| Theme | Class | Description |
+|-------|-------|-------------|
+| default | `:root` (base) | Base `:root` variables — always active, not switchable |
+| stone | `theme-stone` | **Default** switchable theme (oklch neutrals) |
+| black | `theme-black` | Dark slate theme |
+| navy | `theme-navy` | Classic navy blue (full 24-variable theme) |
+| forest | `theme-forest` | Green-dark |
+| slate | `theme-slate` | Gray-blue |
+| royal | `theme-royal` | Royal blue |
+| teal | `theme-teal` | Teal accent |
+| pearl | `theme-pearl` | Light pearl |
+| sandstone | `theme-sandstone` | Warm stone |
+| cloud | `theme-cloud` | Light gray |
+| graphite | `theme-graphite` | Dark graphite |
+| airy-soft | `theme-airy-soft` | Soft light |
+
+> Note: older docs referenced non-existent themes (`bluestar`, `brown`, `pink-black`, `lime-black`).
+> No such `.scss` files exist in the current codebase.
 
 ### Theme Activation
 
-Themes are applied via CSS class on the root element:
+Themes are applied via a CSS class on the root `<html>` element (managed by `setTheme()` in
+`src/state.ts`):
 
 ```vue
-<div :class="`theme-${theme}`">
-  <!-- Application content -->
-</div>
+<!-- the class is toggled on <html>, not on a local element -->
 ```
 
-The default theme is **bluestar** (set in `src/state.ts`).
-
-### Theme Files Structure
-
-Each theme file defines CSS custom properties (variables) for semantic colors. Example from `default.scss`:
-
-```scss
-:root {
-    --primary-light-bg: #0e7490;
-    --primary-light-txt: white;
-    --secondary-light-bg: #06b6d4;
-    --secondary-light-txt: white;
-    // ... more variables
-}
+```ts
+import { setTheme } from '@/state.js';
+setTheme('navy'); // removes .theme-<old>, adds .theme-navy to <html>
 ```
 
-## Semantic Colors
+### Theme Variable Naming
 
-### Configuration
+Each theme defines CSS custom properties following the pattern
+`--{color}-{mode}-{property}`:
 
-Semantic colors are loaded via `@import "tailwindcss-semantic-colors";` in `/workspace/src/styles/global.css` (Tailwind 4 config-free approach). The color structure they provide is:
+| Token | Meaning | Example |
+|-------|---------|---------|
+| `--{color}-light-bg` | light-mode background | `--prim-light-bg: #0e7490` |
+| `--{color}-light-txt` | light-mode text | `--prim-light-txt: white` |
+| `--{color}-dark-bg` | dark-mode background | `--prim-dark-bg: #0a0a0a` |
+| `--{color}-dark-txt` | dark-mode text | `--prim-dark-txt: #f5f5f5` |
 
-```javascript
-theme: {
-  extend: {
-    semanticColors: {
-      accent: {
-        light: { bg: colors.yellow[600], txt: colors.black },
-        dark: { bg: colors.yellow[700], txt: colors.white }
-      },
-      primary: {
-        light: { bg: 'var(--primary-light-bg)', txt: 'var(--primary-light-txt)' },
-        dark: { bg: 'var(--primary-dark-bg)', txt: 'var(--primary-dark-txt)' }
-      },
-      // ... other colors
-    }
-  }
-}
-```
+`color` ∈ `prim, sec, ter, background, light, semilight, lighter, superlight, success, warning,
+danger, info`. Only override the variables that differ from `default.scss`; unspecified variables
+fall back to the base defaults.
 
-### Available Semantic Colors
+## Semantic Colors (`tailwindcss-semantic-colors`)
 
-| Color | Light Mode (Light/Dark) | Dark Mode (Light/Dark) | Source |
-|-------|------------------------|------------------------|--------|
-| **accent** | `bg-yellow-600` / `text-black` | `bg-yellow-700` / `text-white` | Direct Tailwind colors |
-| **primary** | CSS variable | CSS variable | Theme-dependent |
-| **secondary** | CSS variable | CSS variable | Theme-dependent |
-| **background** | CSS variable | CSS variable | Theme-dependent |
-| **foreground** | CSS variable | CSS variable | Theme-dependent |
-| **light** | CSS variable | CSS variable | Theme-dependent |
-| **lighter** | CSS variable | CSS variable | Theme-dependent |
-| **semilight** | CSS variable | CSS variable | Theme-dependent |
-| **secondary-strong** | CSS variable | CSS variable | Theme-dependent |
+### How the plugin works
 
-### Color Variants in Themes
+`tailwindcss-semantic-colors` (v0.6.0) is a **CSS-only** Tailwind v4 plugin — no JavaScript entry
+point. Its single `style.css` uses native Tailwind v4 directives:
 
-Themes may also define additional semantic colors (not exposed as Tailwind utilities):
+- **`@theme`** — maps Tailwind color tokens to the SCSS theme variables, e.g.
+  `--color-prim: var(--prim-light-bg); --color-on-prim: var(--prim-light-txt);`
+- **`@layer base`** — the `.dark, [data-theme="dark"]` block re-maps the same tokens to the
+  `--{color}-dark-*` variables for dark mode (proper cascade priority)
+- **`@utility`** — 16 utility classes that set both `background-color` and `color`
 
-- `success` - Green color for success states
-- `warning` - Amber/yellow color for warnings
-- `danger` - Red color for errors/danger states
+Because the tokens live in Tailwind's `--color-*` namespace, Tailwind auto-generates the
+`bg-*` / `text-*` / `border-*` / `on-*` variants — you never write them by hand.
 
-## Utility Classes
+### Full-color utilities (background + text)
 
-### Background and Text Utilities
+Each utility applies **both** background and text color by default:
 
-The `semanticColors` plugin generates utility classes that support dark mode automatically.
+| Utility | Reads (light) | Reads (dark) |
+|---------|---------------|--------------|
+| `prim` | `--prim-light-bg` / `--prim-light-txt` | `--prim-dark-bg` / `--prim-dark-txt` |
+| `sec` | `--sec-light-bg` / `--sec-light-txt` | `--sec-dark-bg` / `--sec-dark-txt` |
+| `ter` | `--ter-light-bg` / `--ter-light-txt` | `--ter-dark-bg` / `--ter-dark-txt` |
+| `background` | `--background-light-bg` / `--background-light-txt` | `--background-dark-bg` / `--background-dark-txt` |
+| `light` | `--light-light-bg` / `--light-light-txt` | `--light-dark-bg` / `--light-dark-txt` |
+| `semilight` | `--semilight-light-bg` / `--semilight-light-txt` | `--semilight-dark-bg` / `--semilight-dark-txt` |
+| `lighter` | `--lighter-light-bg` / `--lighter-light-txt` | `--lighter-dark-bg` / `--lighter-dark-txt` |
+| `superlight` | `--superlight-light-bg` / `--superlight-light-txt` | `--superlight-dark-bg` / `--superlight-dark-txt` |
+| `success` | `--success-light-bg` / `--success-light-txt` | `--success-dark-bg` / `--success-dark-txt` |
+| `warning` | `--warning-light-bg` / `--warning-light-txt` | `--warning-dark-bg` / `--warning-dark-txt` |
+| `danger` | `--danger-light-bg` / `--danger-light-txt` | `--danger-dark-bg` / `--danger-dark-txt` |
+| `info` | `--info-light-bg` / `--info-light-txt` | `--info-dark-bg` / `--info-dark-txt` |
 
-#### Full Color Utility (Background + Text)
+**Aliases** (identical output to their base utility): `l1` → `light`, `l2` → `semilight`,
+`l3` → `lighter`, `l4` → `superlight`.
 
 ```html
-<div class="primary">Primary block</div>
-<!-- Expands to: -->
-<div class="text-[var(--primary-light-txt)] bg-[var(--primary-light-bg)] 
-           dark:text-[var(--primary-dark-txt)] dark:bg-[var(--primary-dark-bg)]">
+<div class="prim p-4 rounded">Primary block</div>
+<!-- expands to: -->
+<div class="text-[var(--prim-light-txt)] bg-[var(--prim-light-bg)]
+           dark:text-[var(--prim-dark-txt)] dark:bg-[var(--prim-dark-bg)]">
   Primary block
 </div>
 ```
 
-#### Available Full Color Classes
+### Background / text / border variants
 
-- `accent` - Accent color (yellow)
-- `primary` - Primary color (theme-dependent)
-- `secondary` - Secondary color (theme-dependent)
-- `background` - Background color (theme-dependent)
-- `foreground` - Foreground color (theme-dependent)
-- `light` - Light color (theme-dependent)
-- `lighter` - Lighter color (theme-dependent)
-- `semilight` - Semi-light color (theme-dependent)
-- `secondary-strong` - Strong secondary color (theme-dependent)
-
-### Background Only Utilities
+Tailwind's automatic color prefixes let you apply only one side of the pairing:
 
 ```html
-<div class="block-primary">Primary background block</div>
-<!-- Expands to: -->
-<div class="bg-[var(--primary-light-bg)] dark:bg-[var(--primary-dark-bg)]">
-  Primary background block
-</div>
+<div class="bg-prim">Primary background only</div>      <!-- bg-[var(--prim-light-bg)] -->
+<div class="text-prim">Primary text only</div>           <!-- text-[var(--prim-light-txt)] -->
+<div class="border border-prim">Primary border only</div><!-- border-[var(--prim-light-bg)] -->
+<div class="bg-on-prim">Uses the on-* token</div>
 ```
 
-#### Available Background Classes
+### Variants
 
-- `block-accent`
-- `block-primary`
-- `block-secondary`
-- `block-background`
-- `block-foreground`
-- `block-light`
-- `block-lighter`
-- `block-semilight`
-- `block-secondary-strong`
-
-### Text Only Utilities
+`hover:` / `focus:` / etc. work automatically on every utility — **no config file** is needed:
 
 ```html
-<div class="txt-primary">Primary text block</div>
-<!-- Expands to: -->
-<div class="text-[var(--primary-light-txt)] dark:text-[var(--primary-dark-txt)]">
-  Primary text block
-</div>
-```
-
-#### Available Text Classes
-
-- `txt-accent`
-- `txt-primary`
-- `txt-secondary`
-- `txt-background`
-- `txt-foreground`
-- `txt-light`
-- `txt-lighter`
-- `txt-semilight`
-- `txt-secondary-strong`
-
-### Border Utilities
-
-```html
-<div class="border bord-primary">Block with border</div>
-<!-- Expands to: -->
-<div class="border border-[var(--primary-light-bg)] dark:border-[var(--primary-dark-bg)]">
-  Block with border
-</div>
-```
-
-#### Available Border Classes
-
-- `bord-accent`
-- `bord-primary`
-- `bord-secondary`
-- `bord-background`
-- `bord-foreground`
-- `bord-light`
-- `bord-lighter`
-- `bord-semilight`
-- `bord-secondary-strong`
-
-## Variants
-
-### Hover Variant
-
-```html
-<div class="primary hover:warning">Primary hover block</div>
-<!-- Expands to include hover states with appropriate colors -->
-```
-
-### Focus Variant
-
-Focus variants are also enabled by default.
-
-### Configuring Variants
-
-Variants are enabled through the semantic-colors plugin (no config file in Tailwind 4):
-
-```javascript
-variants: {
-  semanticColors: ['focus', 'hover']
-}
+<button class="bg-prim hover:warning border border-prim">Save</button>
 ```
 
 ## Theme Color Reference
 
-### Default Theme (`default.scss`)
+### Base theme (`default.scss` — `:root`, always active)
 
-| Variable | Light Mode | Dark Mode |
-|----------|-----------|-----------|
-| `--primary-light-bg` | `#0e7490` (cyan-700) | `#0a0a0a` |
-| `--primary-light-txt` | `white` | `#f5f5f5` |
-| `--secondary-light-bg` | `#06b6d4` (cyan-500) | `#475569` (slate-600) |
-| `--secondary-light-txt` | `white` | `#f5f5f5` |
-| `--success-light-bg` | `#16a34a` (green-600) | `#16a34a` |
-| `--warning-light-bg` | `#f59e0b` (amber-500) | `#f59e0b` |
-| `--danger-light-bg` | `#ef4444` (red-500) | `#ef4444` |
-| `--light-light-bg` | `#6b7280` (gray-500) | `#9ca3af` (gray-400) |
-| `--lighter-light-bg` | `#e2e8f0` (slate-200) | `#525252` (zinc-700) |
-| `--semilight-light-bg` | `#94a3b8` (slate-400) | `#525252` |
-| `--background-light-bg` | `white` | `#272822` |
-| `--foreground-light-bg` | `white` | `black` |
+| Variable | Light | Dark |
+|----------|-------|------|
+| `--prim-light-bg` / `--prim-dark-bg` | `#0e7490` (cyan-700) | `#0a0a0a` |
+| `--prim-light-txt` / `--prim-dark-txt` | `white` | `#f5f5f5` |
+| `--sec-light-bg` / `--sec-dark-bg` | `#06b6d4` (cyan-500) | `#475569` (slate-600) |
+| `--sec-light-txt` / `--sec-dark-txt` | `white` | `#f5f5f5` |
+| `--ter-light-bg` / `--ter-dark-bg` | `#4cdaf3` | `#8f959d` |
+| `--success-light-bg` / `--success-dark-bg` | `#16a34a` (green-600) | `#16a34a` |
+| `--warning-light-bg` / `--warning-dark-bg` | `#f59e0b` (amber-500) | `#f59e0b` |
+| `--danger-light-bg` / `--danger-dark-bg` | `#ef4444` (red-500) | `#ef4444` |
+| `--info-light-bg` / `--info-dark-bg` | `#4758ef` | `#0b0b13` |
+| `--background-light-bg` / `--background-dark-bg` | `white` | `#272822` |
+| `--background-light-txt` / `--background-dark-txt` | `#1f2937` | `#d4d4d4` |
+| `--light-light-bg` / `--light-dark-bg` | `#6b7280` (gray-500) | `#9ca3af` (gray-400) |
+| `--lighter-light-bg` / `--lighter-dark-bg` | `#e2e8f0` (slate-200) | `#3f3f46` |
+| `--semilight-light-bg` / `--semilight-dark-bg` | `#94a3b8` (slate-400) | `#525252` |
+| `--superlight-light-bg` / `--superlight-dark-bg` | `#e9ecf0` | `#1d1c1c` |
 
-### Bluestar Theme (`bluestar.scss`)
+### Example override (`black.scss`)
 
-| Variable | Light Mode | Dark Mode |
-|----------|-----------|-----------|
-| `--primary-light-bg` | `#0e599a` (custom blue) | *Not defined* |
-| `--primary-light-txt` | `white` | *Not defined* |
-| `--secondary-light-bg` | `#dbecfe` (light blue) | *Not defined* |
-| `--secondary-light-txt` | `#0e599a` | *Not defined* |
-| `--success-light-bg` | `#01DA97` (custom green) | *Not defined* |
-| `--warning-light-bg` | `#FAC165` (custom amber) | *Not defined* |
-| `--danger-light-bg` | `#FE606C` (custom red) | *Not defined* |
-| `--light-light-bg` | `#c2d3e5` (light blue-gray) | *Not defined* |
-| `--lighter-light-bg` | `#dbecfe` | *Not defined* |
-| `--background-light-bg` | `#eff7ff` (very light blue) | *Not defined* |
+Minimal themes only override what changes:
 
-### Brown Theme (`brown.scss`)
+```scss
+.theme-black {
+    --prim-light-bg: #1e293b;   /* slate-800 */
+    --sec-light-bg:  #475569;   /* slate-600 */
+    --background-light-bg: #f5f5f4; /* stone-50 */
+}
+```
 
-| Variable | Light Mode |
-|----------|-----------|
-| `--primary-light-bg` | `#57534e` (stone-600) |
-| `--secondary-light-bg` | `#78716c` (stone-500) |
-| `--background-light-bg` | `#f5f5f4` (stone-50) |
-| `--secondary-strong-light-bg` | `#78716c` |
+### Example full theme (`navy.scss`)
 
-### Pink-Black Theme (`pink-black.scss`)
-
-| Variable | Light Mode |
-|----------|-----------|
-| `--primary-light-bg` | `#1e293b` (slate-800) |
-| `--secondary-light-bg` | `#EB03B7` (magenta) |
-| `--background-light-bg` | `#f5f5f4` |
-| `--secondary-strong-light-bg` | `#EB03B7` |
-
-### Lime-Black Theme (`lime-black.scss`)
-
-| Variable | Light Mode |
-|----------|-----------|
-| `--primary-light-bg` | `#000` (black) |
-| `--primary-light-txt` | `white` |
-| `--secondary-light-bg` | `#a3e635` (lime-400) |
-| `--background-light-bg` | `#f5f5f4` |
-| `--secondary-strong-light-bg` | `#4d7c0f` (lime-700) |
-
-### Black Theme (`black.scss`)
-
-| Variable | Light Mode |
-|----------|-----------|
-| `--primary-light-bg` | `#1e293b` (slate-800) |
-| `--secondary-light-bg` | `#475569` (slate-600) |
-| `--background-light-bg` | `#f5f5f4` |
+A complete theme defines all 24 variables (12 light + 12 dark) — use as the template for new themes.
 
 ## Usage Examples
 
-### Basic Component with Semantic Colors
-
 ```vue
 <template>
-  <div class="primary p-4 rounded">
-    <h2 class="txt-secondary-strong text-lg font-bold">
-      Primary Section
-    </h2>
-    <p class="text-sm opacity-90">
-      Content with primary background and secondary-strong text on hover
-    </p>
+  <!-- semantic color + Snowind .btn + Tailwind layout -->
+  <div class="prim p-4 rounded shadow">
+    <h2 class="text-lg font-bold text-prim">Primary Section</h2>
+    <p class="text-sm text-semilight">Muted text via the semilight token</p>
+    <button class="btn mt-3 bg-prim hover:warning border border-prim text-sm">
+      Save changes
+    </button>
   </div>
 </template>
 ```
 
-### Interactive Element with Variants
+## Codestyle / Best Practices
+
+1. **Prefer semantic color utilities** over hardcoded Tailwind colors for theme compatibility:
+   `class="prim"` instead of `class="bg-cyan-700 text-white"`.
+2. **Always ship light + dark** — dark variants are applied automatically via the `.dark`/
+   `[data-theme="dark"]` layer; theme variables carry both modes.
+3. **Use Tailwind color prefixes** for one-sided needs: `bg-prim`, `text-prim`, `border-prim`.
+4. **Use variants** (`hover:`, `focus:`) for interactive elements — no config required.
+5. **When adding a theme**, override only the variables that differ from `default.scss` in a new
+   `src/scss/{name}.scss` with a `.theme-{name}` class, register it in `main.scss`, and add the name
+   to the `themes` array in `src/conf.ts`.
+6. **Keep contrast** (WCAG AA ≥ 4.5:1) between each `{color}-bg` and its `{color}-txt`.
+
+## Snowind CSS Utilities (`src/styles/snowind.css`)
+
+These utility classes are defined manually in `src/styles/snowind.css` (imported last in
+`global.css`):
+
+| Class | Purpose |
+|-------|---------|
+| `.btn` | Base button: 1px border, rounded, padded, pointer cursor; `:hover` → 0.9 opacity, `:disabled` → 0.75 |
+| `.slide-x` | Horizontal slide (width transition, overflow hidden, 300ms) |
+| `.slide-y` | Vertical slide (max-height transition, overflow hidden, 300ms) |
+| `.slidedown` | Expanded state (`max-height: 1000px`) |
+| `.slideup` | Collapsed state (`max-height: 0`) |
 
 ```vue
 <template>
-  <button 
-    class="block-primary hover:accent border bord-primary"
-  >
-    Click me
-  </button>
-</template>
-```
-
-### Theme Switching
-
-```vue
-<template>
-  <div :class="`theme-${currentTheme}`">
-    <!-- Content adapts to theme -->
-    <div class="primary">Uses current theme's primary color</div>
+  <button class="btn bg-prim hover:warning border border-prim">Action</button>
+  <div class="slide-y" :class="open ? 'slidedown' : 'slideup'">
+    <div class="p-4">Collapsible content</div>
   </div>
 </template>
-
-<script setup>
-import { ref } from 'vue';
-const currentTheme = ref('bluestar'); // or 'default', 'brown', etc.
-</script>
 ```
-
-## Best Practices
-
-1. **Use semantic color classes** instead of direct Tailwind colors when possible for theme compatibility
-2. **Always test in both light and dark modes** - the default theme has full dark mode support
-3. **When creating new themes**, ensure all required CSS variables are defined
-4. **Use variants** (`hover:`, `focus:`) for interactive elements
-5. **Combine utilities** for complex styling (e.g., `block-primary hover:accent`)
-
-## Plugin Dependencies
-
-- `@tailwindcss/forms` - Form element styling
-- `@snowind/plugin` - Vue state-driven styling
-- `tailwindcss-semantic-colors` - Semantic color utilities
-- `tailwindcss-primeui` - PrimeVue component integration
-
----
-
-# Snowind Custom Classes and Components
-
-## Overview
-
-Snowind is a Vue 3 component library that provides custom UI components with Tailwind CSS integration. The project uses three main Snowind packages:
-
-- **@snowind/plugin** - Tailwind CSS plugin with utility classes
-- **@snowind/header** - Responsive header with mobile menu (`SwTopbar`)
-- **@snowind/sidebar** - Collapsible sidebar widget (`SwSidebar`)
-- **@snowind/switch** - Toggle switch component (`SwSwitch`)
-- **@snowind/state** - State management primitives for Vue
-
-## Snowind Plugin Classes
-
-The `@snowind/plugin` Tailwind CSS plugin provides the following custom classes:
-
-### Layout and Animation Classes
-
-| Class | Description | Example Usage |
-|-------|-------------|---------------|
-| `.slide-x` | Horizontal slide with overflow hidden and width transition | `<div class="slide-x">` |
-| `.slide-y` | Vertical slide with overflow hidden and max-height transition | `<div class="slide-y">` |
-| `.slidedown` | Sets `maxHeight: 1000px` for expanded state | `<div :class="isOpen ? 'slidedown' : 'slideup'">` |
-| `.slideup` | Sets `maxHeight: 0` for collapsed state | `<div :class="isOpen ? 'slidedown' : 'slideup'">` |
-
-#### Example: Collapsible Content
-
-```vue
-<template>
-  <div class="slide-y" :class="showContent ? 'slidedown' : 'slideup'">
-    <p>This content slides open/closed</p>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-const showContent = ref(false);
-</script>
-```
-
-### Button Component
-
-The `.btn` class provides a standardized button style:
-
-```css
-.btn {
-  borderWidth: 1px;
-  borderRadius: 0.25rem;
-  paddingLeft: 1rem;
-  paddingRight: 1rem;
-  paddingTop: 0.25rem;
-  paddingBottom: 0.25rem;
-  letterSpacing: 0.05em;
-  cursor: pointer;
-  borderColor: transparent;
-}
-
-.btn:hover { opacity: 0.9; }
-.btn:disabled { opacity: 0.75; cursor: not-allowed; }
-```
-
-#### Example: Styled Buttons
-
-```vue
-<template>
-  <button class="btn primary">Primary Button</button>
-  <button class="btn secondary">Secondary Button</button>
-  <button class="btn danger" disabled>Disabled Button</button>
-</template>
-```
-
-### Sidebar Component (`.sw-sidebar`)
-
-The `.sw-sidebar` class provides a collapsible sidebar with two states:
-
-| State | Width | Class |
-|-------|-------|-------|
-| Closed | 80px (`w-20`) | `.sw-sidebar` |
-| Opened | 208px (`w-52`) | `.sw-sidebar.opened` |
-
-#### Example: Sidebar Usage
-
-```vue
-<template>
-  <div class="sw-sidebar" :class="{ opened: isSidebarOpen }">
-    <div class="p-4">
-      <p>Sidebar content</p>
-    </div>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-const isSidebarOpen = ref(false);
-</script>
-
-<style scoped>
-/* Optional: Override default width */
-.opened.sw-sidebar {
-  width: 24rem; /* Custom width when opened */
-}
-</style>
-```
-
-### Stepper Component (`.sw-stepper`)
-
-The `.sw-stepper` class provides a step-by-step progress indicator with semantic colors. Each semantic color has its own stepper variant:
-
-| Class | Description |
-|-------|-------------|
-| `.stepper-primary` | Primary colored stepper |
-| `.stepper-secondary` | Secondary colored stepper |
-| `.stepper-success` | Success (green) colored stepper |
-| `.stepper-warning` | Warning (amber) colored stepper |
-| `.stepper-danger` | Danger (red) colored stepper |
-| `.stepper-light` | Light colored stepper |
-| `.stepper-lighter` | Lighter colored stepper |
-| `.stepper-semilight` | Semi-light colored stepper |
-| `.stepper-background` | Background colored stepper |
-| `.stepper-accent` | Accent (yellow) colored stepper |
-
-#### Stepper Structure
-
-```html
-<div class="sw-stepper stepper-primary">
-  <div class="step-wrapper">
-    <div class="stepper-step done">1</div>
-    <div class="stepper-label">Step 1</div>
-    <div class="stepper-line done"></div>
-    <div class="stepper-step active">2</div>
-    <div class="stepper-label">Step 2</div>
-    <div class="stepper-line"></div>
-    <div class="stepper-step">3</div>
-    <div class="stepper-label">Step 3</div>
-  </div>
-</div>
-```
-
-#### Stepper States
-
-| State | Class | Appearance |
-|-------|-------|------------|
-| Completed | `.done` | Filled with color, label colored |
-| Active | `.active` | Colored border and text |
-| Pending | (none) | Default state |
 
 ## Snowind Vue Components
 
 ### SwTopbar (`@snowind/header`)
 
-A responsive header component with mobile menu support.
+Responsive header with a mobile menu. Uses `useTopbar(router)` for state.
 
-#### Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| `topbar` | `TopbarState` | Reactive topbar state from `useTopbar()` |
-| `breakpoint` | `string` | Mobile breakpoint (e.g., 'lg', 'md') |
-
-#### Slots
-
-| Slot | Description |
-|------|-------------|
-| `#mobile-back` | Back button for mobile view |
-| `#mobile-branding` | Branding in mobile menu |
-| `#branding` | Main branding/logo area |
+| Prop / Slot | Description |
+|-------------|-------------|
+| `:topbar` | Reactive topbar state from `useTopbar()` |
+| `:breakpoint` | Mobile breakpoint, e.g. `'lg'` |
+| `#branding` | Main logo/branding area |
 | `#menu` | Menu items and actions |
-| `#mobile-menu` | Mobile menu content |
-
-#### Example: Header with Topbar
+| `#mobile-menu` / `#mobile-back` / `#mobile-branding` | Mobile-view slots |
 
 ```vue
 <template>
   <sw-topbar :topbar="topBar" class="z-10 flex items-center w-full h-16" breakpoint="lg">
     <template #branding>
-      <div class="flex items-center">
-        <img src="@/assets/logo.png" class="h-8 mr-2" />
-        <span class="text-2xl txt-semilight">My App</span>
-      </div>
+      <img src="@/assets/logo.png" class="h-8 mr-2" />
+      <span class="text-2xl text-prim">My App</span>
     </template>
     <template #menu>
-      <div class="flex items-center space-x-4">
-        <button class="btn primary">Login</button>
-        <button class="btn secondary">Sign Up</button>
-      </div>
+      <button class="btn bg-prim hover:warning text-sm">Login</button>
     </template>
   </sw-topbar>
 </template>
@@ -539,445 +267,37 @@ A responsive header component with mobile menu support.
 <script setup>
 import { SwTopbar, useTopbar } from '@snowind/header';
 import { useRouter } from 'vue-router';
-
 const router = useRouter();
 const topBar = useTopbar(router);
 </script>
 ```
 
-### SwSidebar (`@snowind/sidebar`)
-
-A collapsible sidebar component with v-model binding.
-
-#### Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| `opened` (v-model) | `boolean` | Sidebar open/close state |
-| `name` | `string` | Unique sidebar identifier |
-
-#### Example: Collapsible Sidebar
-
-```vue
-<template>
-  <sw-sidebar 
-    v-model:opened="sidebarOpen" 
-    name="main-sidebar"
-    class="z-30 flex flex-col h-full border bord-secondary"
-  >
-    <div class="p-4">
-      <h3 class="txt-semilight text-lg">Sidebar Title</h3>
-      <nav class="mt-4 space-y-2">
-        <button class="btn w-full text-left">Item 1</button>
-        <button class="btn w-full text-left">Item 2</button>
-      </nav>
-    </div>
-    <div 
-      class="flex items-center justify-center h-12 cursor-pointer txt-semilight"
-      @click="sidebarOpen = !sidebarOpen"
-    >
-      <i-fa-solid:angle-left v-if="sidebarOpen" />
-      <i-fa-solid:angle-right v-else />
-    </div>
-  </sw-sidebar>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-import SwSidebar from '@snowind/sidebar';
-
-const sidebarOpen = ref(true);
-</script>
-```
-
-### SwSwitch (`@snowind/switch`)
-
-A toggle switch component with semantic color support.
-
-#### Props
-
-| Prop | Type | Description |
-|------|------|-------------|
-| `value` (v-model) | `boolean` | Switch state |
-
-#### Color Variants
-
-| Class | Description |
-|-------|-------------|
-| `.switch-primary` | Primary colored switch |
-| `.switch-secondary` | Secondary colored switch |
-| `.switch-success` | Success (green) colored switch |
-| `.switch-warning` | Warning (amber) colored switch |
-| `.switch-danger` | Danger (red) colored switch |
-| `.switch-light` | Light colored switch |
-| `.switch-lighter` | Lighter colored switch |
-| `.switch-semilight` | Semi-light colored switch |
-| `.switch-background` | Background colored switch |
-| `.switch-accent` | Accent (yellow) colored switch |
-
-#### Size Variants
-
-| Class | Description |
-|-------|-------------|
-| (default) | Standard size (w-10 h-6, dot w-4 h-4) |
-| `.big` | Large size (w-14 h-8, dot w-6 h-6) |
-
-#### Example: Toggle Switches
-
-```vue
-<template>
-  <div class="space-y-3">
-    <sw-switch v-model:value="enabled" class="switch-success text-sm">
-      <span class="ml-2">Enable feature</span>
-    </sw-switch>
-    
-    <sw-switch v-model:value="notifications" class="switch-primary big">
-      <span class="ml-2">Large switch</span>
-    </sw-switch>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-import SwSwitch from '@snowind/switch';
-
-const enabled = ref(true);
-const notifications = ref(false);
-</script>
-```
-
 ## State-Driven Styling
 
-Snowind provides state management primitives that enable reactive styling. The `@snowind/state` package exports a `User` class that manages application state including dark mode, themes, and UI preferences.
-
-### User State
-
-```typescript
-import { user } from '@/state.js';
-
-// Check dark mode
-if (user.isDarkMode.value) {
-  // Apply dark mode styles
-}
-
-// Toggle dark mode
-user.toggleDarkMode();
-```
-
-### Theme State
-
-```typescript
-import { state } from '@/state.js';
-
-// Current theme name
-const currentTheme = state.theme; // e.g., 'bluestar', 'default'
-
-// Apply theme class
-<div :class="`theme-${currentTheme}`">
-  <!-- Content adapts to theme -->
-</div>
-```
-
-## Codestyle Guidelines
-
-### 1. Use Semantic Color Classes
-
-Always prefer semantic color classes over direct color values for theme compatibility:
-
-```vue
-<!-- ✅ Good: Uses semantic colors -->
-<div class="primary p-4 rounded">
-  <h2 class="txt-secondary-strong">Title</h2>
-</div>
-
-<!-- ❌ Bad: Hardcoded colors -->
-<div class="bg-cyan-700 text-white p-4 rounded">
-  <h2 class="text-cyan-500">Title</h2>
-</div>
-```
-
-### 2. Combine Snowind Components with Tailwind
-
-Use Snowind components as wrappers and Tailwind for layout:
-
-```vue
-<!-- ✅ Good: Clean separation -->
-<sw-sidebar v-model:opened="isOpen" name="sidebar">
-  <div class="flex flex-col h-full p-4 space-y-3">
-    <button class="btn primary w-full">Action</button>
-  </div>
-</sw-sidebar>
-
-<!-- ❌ Bad: Overly complex inline classes -->
-<sw-sidebar v-model:opened="isOpen" name="sidebar" class="z-30 flex flex-col h-full border bord-secondary bg-[#f1f2f4] dark:background bg-opacity-50 min-w-24">
-```
-
-### 3. Use Slide Classes for Animations
-
-Use `.slide-y` and `.slidedown`/`.slideup` for collapsible content:
-
-```vue
-<!-- ✅ Good: Proper animation -->
-<div class="slide-y" :class="showDetails ? 'slidedown' : 'slideup'">
-  <div class="p-4">
-    <!-- Details content -->
-  </div>
-</div>
-
-<!-- ❌ Bad: Manual transition handling -->
-<div v-show="showDetails" class="transition-all duration-300">
-```
-
-### 4. Theme-Aware Styling
-
-Always provide both light and dark mode styles when possible:
-
-```vue
-<!-- ✅ Good: Theme-aware -->
-<div class="background lighter dark:background-dark">
-  <p class="txt-foreground dark:text-foreground-dark">Content</p>
-</div>
-
-<!-- ❌ Bad: Only light mode -->
-<div class="bg-white text-gray-800">
-```
-
-### 5. Button Styling Pattern
-
-Use the `.btn` class with semantic colors:
-
-```vue
-<!-- ✅ Good: Standard button pattern -->
-<button class="btn primary" @click="handleClick">
-  Primary Action
-</button>
-
-<button class="btn secondary hover:danger" :disabled="isLoading">
-  {{ isLoading ? 'Loading...' : 'Secondary Action' }}
-</button>
-
-<!-- ❌ Bad: Manual button styling -->
-<button 
-  class="px-4 py-2 rounded border border-transparent hover:opacity-90 disabled:opacity-75"
-  style="background-color: #0e7490; color: white;"
->
-```
-
-### 6. Sidebar Pattern
-
-Use the `.sw-sidebar` class with proper state management:
-
-```vue
-<!-- ✅ Good: Proper sidebar pattern -->
-<template>
-  <sw-sidebar 
-    v-model:opened="sidebarOpen" 
-    name="main-sidebar"
-    class="z-30 flex flex-col h-full border bord-secondary"
-  >
-    <div class="flex-1 p-4 overflow-y-auto">
-      <!-- Sidebar content -->
-    </div>
-    <div 
-      class="h-12 flex items-center justify-center cursor-pointer txt-semilight"
-      @click="sidebarOpen = !sidebarOpen"
-    >
-      <i-fa-solid:angle-left v-if="sidebarOpen" />
-      <i-fa-solid:angle-right v-else />
-    </div>
-  </sw-sidebar>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-import SwSidebar from '@snowind/sidebar';
-
-const sidebarOpen = ref(true);
-</script>
-```
-
-### 7. Switch Component Pattern
-
-Use switches for boolean toggles with appropriate semantic colors:
-
-```vue
-<!-- ✅ Good: Appropriate color usage -->
-<sw-switch v-model:value="enabled" class="switch-success text-sm">
-  <span class="ml-2">Enable feature</span>
-</sw-switch>
-
-<sw-switch v-model:value="dangerMode" class="switch-danger text-sm">
-  <span class="ml-2">Danger mode (use with caution)</span>
-</sw-switch>
-
-<!-- ❌ Bad: Wrong color for context -->
-<sw-switch v-model:value="enabled" class="switch-danger text-sm">
-  <span class="ml-2">Enable feature</span>
-</sw-switch>
-```
-
-### 8. Responsive Design
-
-Use Tailwind's responsive prefixes with Snowind components:
-
-```vue
-<!-- ✅ Good: Responsive header -->
-<sw-topbar 
-  :topbar="topBar" 
-  class="z-10 flex items-center w-full h-16"
-  breakpoint="lg"
->
-  <!-- Content -->
-</sw-topbar>
-
-<!-- ❌ Bad: Fixed widths -->
-<div class="w-96">
-```
-
-### 9. Dark Mode Classes
-
-Use Tailwind's `dark:` prefix for dark mode variations:
-
-```vue
-<!-- ✅ Good: Proper dark mode support -->
-<div class="background lighter dark:background-dark">
-  <h2 class="txt-foreground dark:text-foreground-dark">Title</h2>
-  <p class="txt-light dark:text-lighter">Content</p>
-</div>
-
-<!-- ❌ Bad: No dark mode support -->
-<div class="bg-white text-gray-800">
-```
-
-### 10. State Management Integration
-
-Integrate with Snowind's state management for reactive UI:
-
-```vue
-<!-- ✅ Good: Reactive state -->
-<template>
-  <div :class="`theme-${state.theme}`">
-    <sw-switch v-model:value="user.isDarkMode.value" class="switch-primary">
-      <span class="ml-2">{{ user.isDarkMode.value ? 'Light Mode' : 'Dark Mode' }}</span>
-    </sw-switch>
-  </div>
-</template>
-
-<script setup>
-import { state, user } from '@/state.js';
-</script>
-
-<!-- ❌ Bad: Local state without integration -->
-<template>
-  <div :class="isDarkMode ? 'dark' : ''">
-    <button @click="isDarkMode = !isDarkMode">Toggle</button>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-const isDarkMode = ref(false);
-</script>
-```
-
-## Common Patterns and Anti-Patterns
-
-### Pattern: Collapsible Card
-
-```vue
-<template>
-  <div class="border bord-lighter rounded p-4">
-    <div 
-      class="flex items-center justify-between cursor-pointer txt-semilight"
-      @click="isOpen = !isOpen"
-    >
-      <h3 class="text-lg">Card Title</h3>
-      <i-fa-solid:chevron-down :class="{ 'rotate-180': isOpen }" />
-    </div>
-    <div class="slide-y mt-3" :class="isOpen ? 'slidedown' : 'slideup'">
-      <p>Card content here</p>
-    </div>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-const isOpen = ref(false);
-</script>
-```
-
-### Pattern: Sidebar with Toggle
-
-```vue
-<template>
-  <div class="flex h-screen">
-    <sw-sidebar v-model:opened="sidebarOpen" name="main" class="z-30">
-      <div class="p-4 space-y-3">
-        <button class="btn primary w-full">Dashboard</button>
-        <button class="btn secondary w-full">Settings</button>
-      </div>
-    </sw-sidebar>
-    <div class="flex-1 p-6">
-      <button 
-        class="btn primary mb-4"
-        @click="sidebarOpen = !sidebarOpen"
-      >
-        {{ sidebarOpen ? 'Close Sidebar' : 'Open Sidebar' }}
-      </button>
-    </div>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-import SwSidebar from '@snowind/sidebar';
-const sidebarOpen = ref(true);
-</script>
-```
-
-### Anti-Pattern: Mixing Direct Colors with Semantic Classes
-
-```vue
-<!-- ❌ Bad: Inconsistent styling -->
-<div class="bg-cyan-700 primary p-4">
-  <h2 class="text-white txt-secondary-strong">Title</h2>
-</div>
-
-<!-- ✅ Good: Consistent semantic styling -->
-<div class="primary p-4">
-  <h2 class="txt-secondary-strong">Title</h2>
-</div>
-```
-
-### Anti-Pattern: Manual Transition Management
-
-```vue
-<!-- ❌ Bad: Complex manual transitions -->
-<transition name="fade">
-  <div v-show="show" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out" :class="{ 'max-h-screen': show }">
-  </div>
-</transition>
-
-<!-- ✅ Good: Use slide classes -->
-<div class="slide-y" :class="show ? 'slidedown' : 'slideup'">
-  <div>Content</div>
-</div>
+`@snowind/state` provides the `User` class that manages dark mode; `src/state.ts` holds the active
+theme. The theme class is toggled on `<html>` by `setTheme()`.
+
+```ts
+import { user, uistate, setTheme } from '@/state.js';
+
+user.isDarkMode.value          // current dark-mode flag
+uistate.value.theme            // e.g. 'stone' (default), 'navy', 'black'...
+setTheme('navy');              // switch theme (persists via useStorage)
+user.toggleDarkMode();         // toggle dark mode
 ```
 
 ## Component Quick Reference
 
-| Component | Import | Class Prefix | Color Variants |
-|-----------|--------|--------------|----------------|
-| Topbar | `@snowind/header` | `sw-topbar` | N/A (uses slots) |
-| Sidebar | `@snowind/sidebar` | `sw-sidebar` | N/A (uses semantic borders) |
-| Switch | `@snowind/switch` | `sw-switch` | `.switch-{color}` |
-| Stepper | Plugin | `sw-stepper` | `.stepper-{color}` |
-| Button | Plugin | `.btn` | `.primary`, `.secondary`, etc. |
-| Slide X | Plugin | `.slide-x` | N/A |
-| Slide Y | Plugin | `.slide-y` | N/A |
+| Component / Utility | Source | Class | Color Variants |
+|---------------------|--------|-------|----------------|
+| Semantic colors | `tailwindcss-semantic-colors` | `prim`, `sec`, `ter`, `background`, `light`, `semilight`, `lighter`, `superlight`, `success`, `warning`, `danger`, `info` (+ `l1`–`l4`) | `bg-*`, `text-*`, `border-*`, `hover:*` |
+| `.btn` | `src/styles/snowind.css` | `.btn` | combine with `bg-prim`, `hover:warning`, `border-prim` |
+| Slide animations | `src/styles/snowind.css` | `.slide-x`, `.slide-y`, `.slidedown`, `.slideup` | N/A |
+| SwTopbar | `@snowind/header` | `<sw-topbar>` | via slots + semantic classes |
 
 ## Further Reading
 
+- [tailwindcss-semantic-colors README](https://github.com/synw/tailwindcss-semantic-colors) (installed at `node_modules/tailwindcss-semantic-colors/README.md`)
 - [Snowind Documentation](https://synw.github.io/snowind/)
-- [Tailwind CSS Semantic Colors](https://github.com/synw/tailwindcss-semantic-colors)
 - [PrimeVue Components](https://primefaces.org/primevue/)
+- `.agents/documentation/code_style_guidelines.md` — UI code style guidelines

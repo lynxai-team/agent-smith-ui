@@ -33,12 +33,12 @@ Agent Smith UI is a Vue 3 web dashboard for managing AI agents, workflows, tasks
 | `src/state.ts` | Central reactive state: agent state, models, backends, workspaces, UI preferences |
 | `src/views/` | Page components: HomeView, ConfigView, ConfigInitView, AppView, WorkflowView, TaskRunView, TaskViewView |
 | `src/components/` | Core UI components (TheHeader, AgentParamsPicker, InferenceParamsForm, SamplingPresets, TaskTools, ViewAgent, etc.) |
-| `src/components/sidebars/` | 7 sidebar components: tasks, agents, history, workflows, inference params, right dispatch |
+| `src/components/sidebars/` | 9 sidebar components: 7 named sidebars (tasks, agents, history, workflows, inference params, right dispatch) + SidebarsDispatch orchestrator + AgentHistoryNode helper |
 | `src/components/navbars/` | 2 prompt input toolbars (PromptNavbarLeft, NavbarTask) |
-| `src/widgets/icons/` | 32 icon components (PascalCase + Icon suffix) |
+| `src/widgets/icons/` | 34 icon components (PascalCase + Icon suffix) |
 | `src/widgets/` | Reusable widgets: ToolCallDetails, AutoTextarea, LoadingSpinner, HistoryTurnStatsBar, TurnTitle |
-| `src/services/` | Service layer: api, history, task_events, notify, perf, str, template (stats handling moved to history.ts) |
-| `src/scss/` | 14 SCSS theme files (default: bluestar) with CSS custom properties |
+| `src/services/` | Service layer: agent-history, api, history, task_events, notify, perf, str, template (stats handling moved to history.ts) |
+| `src/scss/` | 14 SCSS files (main.scss aggregates; conf.ts registers 12 for runtime switching) with CSS custom properties |
 | `src/bin/` | Node.js server binary entry point: HTTP server with static asset serving |
 | `src/apps/` | Plugin apps (e.g., debate) — dynamically extend routes via server-side import |
 | `src/styles/` | Global CSS files (global.css, snowind.css) |

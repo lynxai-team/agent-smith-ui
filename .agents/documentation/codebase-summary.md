@@ -7,12 +7,15 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 - `@agent-smith/server` — Backend server integration and base routes
 - `@agent-smith/wscli` — WebSocket client features for server communication
 - `@agent-smith/types` — Shared TypeScript types (AgentState, HistoryTurn, etc.)
+- `@agent-smith/app-debate` — Example plugin app (file dependency) demonstrating route extension
 - `primevue` (4.5) — UI component library with Aura theme
-- `vue-router` (5.0) — Application routing
+- `@primevue/themes` (4.5) — PrimeVue 4.5 theme system
+- `vue-router` (5.2) — Application routing
 - `@snowind/state` — Reactive state management (User class)
 - `@vueuse/core` — Vue utilities (useStorage for persisted UI preferences)
 - `restmix` — REST API client for server communication
 - `markstream-vue` — Streaming markdown renderer for agent output
+- `stream-markdown` — Streaming markdown utilities
 - `stream-monaco` — Streaming code editor integration
 - `mermaid` — Diagram/chart rendering in agent responses
 - `highlight.js` — Syntax highlighting for code blocks
@@ -26,7 +29,7 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 - `primeicons` — Icon font library
 - `@primeuix/themes` — PrimeVue theme system
 - `@fontsource/roboto` — Roboto font
-- External: `tailwindcss` (4.3), `sass`, `vite` (8), `unplugin-icons`
+- External: `tailwindcss` (4.3), `sass`, `vite` (8)
 
 ## Used By
 - End users — Primary interface for Agent Smith AI framework
@@ -51,25 +54,27 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 | `src/views/*.vue` | Page components: HomeView, ConfigView, ConfigInitView, AppView, WorkflowView, TaskRunView, TaskViewView |
 | `src/components/sidebars/*.vue` | Sidebar navigation: tasks, agents, workflows, inference params, dispatch (7 sidebars) |
 | `src/components/navbars/*.vue` | Prompt input toolbars (PromptNavbarLeft, NavbarTask) |
-| `src/components/*.vue` | Core UI: TheHeader, tool call rendering, thinking nodes, settings, backend management (16 components) |
+| `src/components/*.vue` | Core UI: TheHeader, tool call rendering, thinking nodes, settings, backend management (15 components) |
 | `src/components/EditSettings.vue` | Settings panel: theme switcher + "Save last prompt" toggle (`saveLastPrompt` state) |
-| `src/widgets/icons/*.vue` | 32 icon components (PascalCase + Icon suffix) |
+| `src/widgets/icons/*.vue` | 34 icon components (PascalCase + Icon suffix) |
 | `src/widgets/*.vue` | Reusable widgets: ToolCallDetails, AutoTextarea, LoadingSpinner, HistoryTurnStatsBar, TurnTitle |
 | `src/services/api.ts` | REST API client via restmix library |
 | `src/services/history.ts` | Conversation turn management, tool call tracking, and stats transfer between history items |
+| `src/services/agent-history.ts` | Agent conversation history tree: hierarchical agent history nodes & navigation |
 | `src/services/task_events.ts` | Real-time task event handling with streaming markdown parsing |
 | `src/services/notify.ts` | Toast/confirmation notification service |
 | `src/services/template.ts` | Prompt template application via server API |
 | `src/services/str.ts` | String utilities: humanize, humanizeNumber, formatDuration |
 | `src/services/perf.ts` | Inference performance timer (tokens/sec tracking) |
-| `src/scss/*.scss` | 14 SCSS themes (default: bluestar) with CSS custom properties for runtime switching |
+| `src/scss/*.scss` | 14 SCSS files (main.scss is the aggregator entry point; default.scss is an alias theme) with CSS custom properties for runtime switching |
+| `src/conf.ts` | `themes` array registers 12 themes for the runtime switcher |
 | `src/apps/debate.js` | Debate app plugin demonstrating route extension pattern |
 
 ## Architecture
 - **Component-Based Layout**: App.vue orchestrates TheHeader, SidebarsDispatch (collapsible sidebar system), and router-view with responsive fixed positioning
 - **Centralized Reactive State**: Single `state` object (AgentState) managed via Vue `reactive()` + `@snowind/state` `User` class; UI preferences persisted separately via `@vueuse/core` `useStorage()`
-- **Service Layer**: Modular services (api, history, notify, task_events, perf, str, template) provide isolated concerns; stats handling moved into history.ts; task_events handles real-time streaming with markdown parsing at ~20 parses/sec
-- **Theme System**: 14 SCSS themes switchable at runtime via CSS class toggling on `<html>` element
+- **Service Layer**: Modular services (agent-history, api, history, notify, task_events, perf, str, template) provide isolated concerns; stats handling moved into history.ts; task_events handles real-time streaming with markdown parsing at ~20 parses/sec
+- **Theme System**: 14 SCSS files in src/scss/ (main.scss aggregates 13 themes; conf.ts registers 12 for runtime switching) toggleable via CSS class on `<html>` element
 - **Plugin System**: Apps in `src/apps/` dynamically extend routes via server-side import; debate app demonstrates the pattern
 
 ## Related
