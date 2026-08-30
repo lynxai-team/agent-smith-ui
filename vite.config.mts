@@ -7,6 +7,12 @@ export default defineConfig({
     vue(),
     tailwindcss(),
   ],
+  server: {
+    watch: {
+      // Use glob patterns to ignore directories
+      ignored: ['**/node_modules/**', '**/dist/**', '**/.git/**', '**/.agents/**']
+    }
+  },
   resolve: {
     alias: [
       { find: '@/', replacement: '/src/' },
