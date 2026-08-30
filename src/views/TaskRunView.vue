@@ -181,7 +181,7 @@ import { computed, onBeforeMount, onBeforeUnmount, nextTick, reactive, ref, toRa
 import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
 import { confirmDanger, msg } from '../services/notify.js';
-import { agentHistoryManager, debugInference, inferOptions, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
+import { agentHistoryManager, debugInference, inferOptions, onModelsReady, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
 import AutoTextarea from '../widgets/AutoTextarea.vue';
 //import ToolCallNode from '../components/ToolCallNode.vue';
 import 'markstream-vue/index.css';
@@ -403,13 +403,19 @@ async function loadTask() {
   state.onReady.then(() => {
     //console.log("B", b);
     //console.log("M", state.models)
-    if (m.length > 0) {
-      inferOptions.model = state.models[b][m].id;
-      state.currentModel = state.models[b][m];
-    }
-    if (state.currentModel?.id == "") {
-      state.currentModel = state.models[b][srv.agentSpec.value.model];
-    }
+    onModelsReady.then(() => {
+      if (b in state.models) {
+        if (m.length > 0) {
+          inferOptions.model = state.models[b][m].id;
+          state.currentModel = state.models[b][m];
+        }
+        if (state.currentModel?.id == "") {
+          state.currentModel = state.models[b][srv.agentSpec.value.model];
+        }
+      } else {
+        console.log(`Backend ${b} is down, can't load models`)
+      }
+    })
   });
   setCurrentFeature(props.name, "agent");
   if (uistate.value.saveLastPrompt) {

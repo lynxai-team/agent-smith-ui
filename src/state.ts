@@ -49,6 +49,8 @@ const uistate = useStorage<{
     theme: "stone"
 });
 const { awaiter, unblock } = createAwaiter<boolean>();
+const modelsAwaiter = createAwaiter<boolean>();
+const onModelsReady = modelsAwaiter.awaiter;
 const state = reactive<AgentState>({
     isReady: false,
     isLoadingModel: false,
@@ -137,7 +139,11 @@ async function initTaskData() {
                     const loadModels = b?.type !== "openai" ? true : false;
                     //console.log("Load models", v, loadModels)
                     if (loadModels) {
-                        srv.loadModels(k).then(bks => state.models[k] = bks);
+                        srv.loadModels(k).then(bks => {
+                            state.models[k] = bks;
+                            console.log("Models ready");
+                            modelsAwaiter.unblock(true)
+                        });
                     }
                 } catch (e) {
                     console.error(`Can not load models from ${k}`, `Check you backend server`)
@@ -195,7 +201,7 @@ function setTheme(t?: string) {
 export {
     appSidebar, conf, debugInference, uihistoryManager, initState,
     resetCurrentFeature,
-    setCurrentFeature, srv, state,
+    setCurrentFeature, srv, state, onModelsReady,
     uistate, user, setTheme, inferOptions, mainAgent, agentHistoryManager,
 };
 
