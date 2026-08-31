@@ -129,10 +129,10 @@
                 <button class="btn" @click="applyTemplateToPrompt(prompt, srv, inferOptions)">T</button>
               </div -->
               <div class="text-semilight text-sm mr-2" v-if="srv.isReady">
-                <Popover ref="modelsPopover">
+                <SwPopover ref="modelsPopover">
                   <AgentParamsPicker :agent-spec="srv.agentSpec.value" @end="useAgentSettings($event);">
                   </AgentParamsPicker>
-                </Popover>
+                </SwPopover>
                 <button class="btn p-0 hover:sec" @click="modelsPopover.toggle($event);">{{
                   inferOptions.model != "" ?
                     inferOptions.model :
@@ -188,7 +188,6 @@ import 'markstream-vue/index.css';
 //import "../assets/markstream.css";
 import { ToolCallSpec, UiHistoryTurn } from '@agent-smith/types';
 import { useClientFeatures } from '@agent-smith/wscli';
-import Popover from 'primevue/popover';
 import AgentParamsPicker from '../components/AgentParamsPicker.vue';
 import FormatedToolCallInProgress from '../components/FormatedToolCallInProgress.vue';
 import PromptNavbarLeft from '../components/navbars/PromptNavbarLeft.vue';
@@ -205,6 +204,7 @@ import ResetIcon from '../widgets/icons/ResetIcon.vue';
 import StopIcon from '../widgets/icons/StopIcon.vue';
 import SendIcon from '../widgets/icons/SendIcon.vue';
 import ViewAgent from '../components/ViewAgent.vue';
+import SwPopover from '../components/vibe/popover/SwPopover.vue';
 
 const props = defineProps({
   name: {

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Popover ref="wspopover">
+        <SwPopover ref="wspopover">
             <div v-if="view == 'view'" class="flex flex-col space-y-3">
                 <button v-for="workspace in state.workspaces" class="btn flex flex-row space-x-2"
                     @click="updateDefaultWorkspace(workspace)">
@@ -28,7 +28,7 @@
                     <button class="btn text-warning" @click="view = 'view'">Cancel</button>
                 </form>
             </div>
-        </Popover>
+        </SwPopover>
         <button class="btn" @click="wspopover.toggle($event)">
             <template v-if="state?.currentWorkspace">
                 <template v-if="state?.currentWorkspace?.name == ''">
@@ -52,7 +52,7 @@
 </template>
 <script setup lang="ts">
 import type { Workspace } from '@agent-smith/types';
-import Popover from 'primevue/popover';
+import SwPopover from '../components/vibe/popover/SwPopover.vue';
 import { computed, ref } from 'vue';
 import { api } from '../services/api.js';
 import { humanize } from '../services/str.js';

@@ -1,11 +1,11 @@
 <template>
     <div class="flex flex-col w-full overflow-y-auto">
-        <Popover ref="sidebarDialog">
+        <SwPopover ref="sidebarDialog">
             <div class="flex flex-row space-x-2">
                 <button v-for="sb in sidebars" class="btn" @click="setSidebar(sb); toggleSidebarsDialog($event)">{{ sb
                     }}</button>
             </div>
-        </Popover>
+        </SwPopover>
         <button class="btn" @click="toggleSidebarsDialog($event)">
             <DotsIcon width="24" height="24" class="text-semilight flex w-full justify-center"></DotsIcon>
         </button>
@@ -22,10 +22,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import SidebarInferParams from './SidebarInferParams.vue';
-import SidebarHistory from './SidebarHistory.vue';
 import SidebarAgentHistory from './SidebarAgentHistory.vue';
 import DotsIcon from '../../widgets/icons/DotsIcon.vue';
-import Popover from 'primevue/popover';
+import SwPopover from '../vibe/popover/SwPopover.vue';
 import { uistate } from '../../state.js';
 
 const emit = defineEmits(["goto-turn", "paramchange"]);

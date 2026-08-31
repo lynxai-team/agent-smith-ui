@@ -54,21 +54,21 @@
           <button class="btn" :class="backendCls" @click="toggleBackends($event)">
             <BackendIcon width="32" height="32"></BackendIcon>
           </button>
-          <Popover ref="backends" @hide="showBackends = false">
+          <SwPopover ref="backends" @hide="showBackends = false">
             <ManageBackends class="min-w-[18rem]" @end="toggleBackends($event)"></ManageBackends>
-          </Popover>
+          </SwPopover>
         </div>
         <div v-if="conf?.apps">
           <button class="btn" :class="showApps ? 'text-semilight' : ''" @click="toggleApps($event)">
             <apps-icon width="32" height="32"></apps-icon>
           </button>
-          <Popover ref="apps" @hide="showApps = false">
+          <SwPopover ref="apps" @hide="showApps = false">
             <div class="flex flex-col space-y-2">
               <button class="btn" v-for="(v, k) in conf.apps" @click="goApp(k)">
                 {{ humanize(k) }}
               </button>
             </div>
-          </Popover>
+          </SwPopover>
         </div>
       </template>
       <button class="border-none btn " @click="router.push('/config')">
@@ -100,7 +100,7 @@ import NavbarTask from './navbars/NavbarTask.vue';
 import TaskIcon from '../widgets/icons/TaskIcon.vue';
 import AgentIcon from '../widgets/icons/AgentIcon.vue';
 import AppsIcon from '../widgets/icons/AppsIcon.vue';
-import Popover from 'primevue/popover';
+import SwPopover from '../components/vibe/popover/SwPopover.vue';
 import WorkflowIcon from '../widgets/icons/WorkflowIcon.vue';
 import BackendIcon from '../widgets/icons/BackendIcon.vue';
 import ManageBackends from './ManageBackends.vue';

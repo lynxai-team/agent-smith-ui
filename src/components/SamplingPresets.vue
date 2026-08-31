@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Popover ref="mpopover" @hide="reset()">
+        <SwPopover ref="mpopover" @hide="reset()">
             <div v-if="view == 'view'" class="flex flex-col space-y-2">
                 <div v-for="mp in state.samplingPresets" class="flex flex-row">
                     <button class="btn" @click="deletePreset(mp.name)">
@@ -66,7 +66,7 @@
                     <button class="btn text-warning" @click="reset()">Cancel</button>
                 </form>
             </div>
-        </Popover>
+        </SwPopover>
         <button class="btn flex flex-row space-x-2 items-center" @click="mpopover.toggle($event);">
             <ModelsPresetsIcon width="32" height="32" class=" text-light"></ModelsPresetsIcon>
         </button>
@@ -76,7 +76,7 @@
 <script setup lang="ts">
 import type { InferenceParams, ModelInfo, SamplingPreset } from '@agent-smith/types';
 import Listbox from 'primevue/listbox';
-import Popover from 'primevue/popover';
+import SwPopover from '../components/vibe/popover/SwPopover.vue';
 import { computed, reactive, ref, toRaw } from 'vue';
 import { api } from '../services/api.js';
 import { confirmDanger, msg } from '../services/notify.js';

@@ -1,11 +1,13 @@
 <template>
     <div class="flex flex-row text-light">
-        <button class="btn pl-1! pr-1!" v-if="uistate.autoscroll" @click="toggleAutoscroll(false)">
-            <ScrollIcon height="32" width="32"></ScrollIcon>
-        </button>
-        <button class="btn pl-1! pr-1!" v-else>
-            <NoScrollIcon height="32" width="32" @click="toggleAutoscroll(true)"></NoScrollIcon>
-        </button>
+        <SwTooltip text="Autoscroll">
+            <button class="btn pl-1! pr-1!" @click="toggleAutoscroll(false)" v-if="uistate.autoscroll">
+                <ScrollIcon height="32" width="32"></ScrollIcon>
+            </button>
+            <button class="btn pl-1! pr-1!" v-else>
+                <NoScrollIcon height="32" width="32" @click="toggleAutoscroll(true)"></NoScrollIcon>
+            </button>
+        </SwTooltip>
         <button class="btn pl-1! pr-1!" v-if="uistate.viewMode == 'markdown'" @click="toggleTextViewMode('text')">
             <MarkdownIcon height="32" width="32"></MarkdownIcon>
         </button>
@@ -36,6 +38,7 @@ import { toast } from '../../components/vibe/toast/composable.js';
 import TextFormatIcon from '../../widgets/icons/TextFormatIcon.vue';
 import HistoryFull from '../../widgets/icons/HistoryFull.vue';
 import HistoryCompact from '../../widgets/icons/HistoryCompact.vue';
+import SwTooltip from '@/components/vibe/tooltip/SwTooltip.vue';
 
 function toggleTextViewMode(mode: "text" | "markdown" | "raw") {
     uistate.value.viewMode = mode;
