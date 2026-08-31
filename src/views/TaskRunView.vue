@@ -279,6 +279,10 @@ async function exec() {
     agentHistoryManager.newTurn("user", props.name, { user: pr });
     opts.history = [];
   } else {
+    if (srv.agentSpec.value?.workflow) {
+      // remove inline workflows for agentic turns
+      delete srv.agentSpec.value.workflow
+    }
     // conversation continues
     opts.history = [...toRaw(state.history)];
     //console.log("HIST", toRaw(state.history));

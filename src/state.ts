@@ -2,7 +2,7 @@ import type { AgentState, ConfigFile, HistoryTurn, InferenceBackend, InferencePa
 import { useClientFeatures } from "@agent-smith/wscli";
 import { User } from "@snowind/state";
 import { useStorage } from '@vueuse/core';
-import { reactive, ref, shallowRef } from "vue";
+import { reactive, ref, shallowRef, toRaw } from "vue";
 import { type SidebarType, type UiTaskView } from "./interfaces.js";
 import { useUiHistory } from "./services/history.js";
 import { createAwaiter } from "./utils.js";
@@ -137,13 +137,14 @@ async function initTaskData() {
                 try {
                     const b = v as InferenceBackend;
                     const loadModels = b?.type !== "openai" ? true : false;
-                    //console.log("Load models", v, loadModels)
+                    //console.log("Load models", toRaw(b), loadModels);
                     if (loadModels) {
+                        //console.log("Loading models for", k);
                         srv.loadModels(k).then(bks => {
                             state.models[k] = bks;
-                            console.log("Models ready");
+                            console.log(`Models are ready for backend ${k}`);
                             modelsAwaiter.unblock(true)
-                        });
+                        }).catch(e => console.log("Failed to load models from", k + ", the backend is probably down"));
                     }
                 } catch (e) {
                     console.error(`Can not load models from ${k}`, `Check you backend server`)
