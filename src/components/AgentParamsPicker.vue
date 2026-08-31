@@ -16,15 +16,9 @@
         </div>
         <div class="w-full flex justify-center">
             <div class="flex flex-col space-y-2 mt-3">
-                <sw-switch v-model:value="switchPropagateBackend" class="switch-success text-sm">
-                    <span class="ml-2">Use this backend for all subagents</span>
-                </sw-switch>
-                <sw-switch v-model:value="switchPropagateModel" class="switch-success text-sm">
-                    <span class="ml-2">Use this model for all subagents</span>
-                </sw-switch>
-                <sw-switch v-model:value="switchPropagateIp" class="switch-success text-sm">
-                    <span class="ml-2">Use this inference params for all subagents</span>
-                </sw-switch>
+                <sw-switch v-model:value="switchPropagateBackend" class="text-sm">Use this backend for all subagents</sw-switch>
+                <sw-switch v-model:value="switchPropagateModel" class="text-sm">Use this model for all subagents</sw-switch>
+                <sw-switch v-model:value="switchPropagateIp" class="text-sm">Use this inference params for all subagents</sw-switch>
                 <div class="flex flex-row space-x-2 pt-2 items-center">
                     <div class="text-semilight">Backend:</div>&nbsp;
                     <div>
@@ -70,7 +64,6 @@
 </template>
 <script setup lang="ts">
 import type { AgentSettings, AgentSpec, InferenceParams, ModelInfo, SamplingPreset } from '@agent-smith/types';
-import SwSwitch from "@snowind/switch";
 import Listbox from 'primevue/listbox';
 import { computed, onBeforeMount, ref, toRaw } from 'vue';
 import { api } from '../services/api.js';
@@ -78,6 +71,7 @@ import { msg } from '../services/notify.js';
 import { humanizeNumber } from '../services/str.js';
 import { inferOptions, srv, state, uistate } from '../state.js';
 import InferenceParamsForm from './InferenceParamsForm.vue';
+import SwSwitch from './vibe/switch/SwSwitch.vue';
 
 const props = defineProps<{
     agentSpec: AgentSpec;

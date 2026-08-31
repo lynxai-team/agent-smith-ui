@@ -12,9 +12,8 @@
                 <template #default="slotProps">
                     <div class="flex flex-row items-center space-x-3">
                         <sw-switch v-if="!slotProps.node?.children"
-                            v-model:value="uistate.availableAgents[slotProps.node.key]" class="switch-success text-sm">
-                            <div class="ml-2">{{ slotProps.node.label }}</div>
-                        </sw-switch>
+                            v-model:value="uistate.availableAgents[slotProps.node.key]" class="text-sm">{{
+                                slotProps.node.label }}</sw-switch>
                         <div v-else>
                             {{ slotProps.node.label }}
                         </div>
@@ -29,14 +28,12 @@
         </div>
         <div class="flex flex-col space-y-3">
             <div class="text-xl">Debug</div>
-            <sw-switch v-model:value="uistate.saveLastPrompt" class="switch-success text-sm">
-                <div class="ml-2">Save the last prompt</div>
-            </sw-switch>
+            <sw-switch v-model:value="uistate.saveLastPrompt" class="text-sm" color="semilight">Save the last
+                prompt</sw-switch>
         </div>
     </div>
 </template>
 <script setup lang="ts">
-import SwSwitch from "@snowind/switch";
 import { onBeforeMount, ref, toRaw } from "vue";
 import { uistate } from "../state.js";
 import { api } from "../services/api.js";
@@ -45,6 +42,7 @@ import type { TreeNode } from 'primevue/treenode';
 import Tree from 'primevue/tree';
 import { useRouter } from "vue-router";
 import ThemeSwitcher from "./ThemeSwitcher.vue";
+import SwSwitch from "./vibe/switch/SwSwitch.vue";
 
 const isReady = ref(false);
 const noDisplay = new Array<string>("subagent");
