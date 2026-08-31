@@ -28,7 +28,7 @@
         </div>
         <div class="flex flex-col space-y-3">
             <div class="text-xl">Debug</div>
-            <sw-switch v-model:value="uistate.saveLastPrompt" class="text-sm" color="semilight">Save the last
+            <sw-switch v-model:value="uistate.saveLastPrompt" class="text-sm">Save the last
                 prompt</sw-switch>
         </div>
     </div>

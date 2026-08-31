@@ -7,7 +7,6 @@
       <span aria-hidden="true"
         :class="[big ? 'h-6 w-6 peer-checked:translate-x-6' : 'h-4 w-4 peer-checked:translate-x-4', 'absolute top-1 left-1 rounded-xl bg-on-light transition-transform duration-300']"></span>
     </span>
-    c={{ color }}
     <slot />
   </label>
 </template>
