@@ -1,9 +1,7 @@
 <template>
     <div>
         <div v-if="isReady" class="flex flex-col items-start">
-            <Tree :value="nodes" :filter="true" filterMode="lenient" class="p-0 m-0" selectionMode="single"
-                @nodeSelect="onNodeSelect">
-            </Tree>
+            <SwTree :nodes="nodes" :filter="true" @nodeSelect="onNodeSelect"></SwTree>
         </div>
     </div>
 </template>
@@ -14,13 +12,13 @@ import { api } from '../../services/api.js';
 import { uistate } from '../../state.js';
 import { useRouter } from 'vue-router';
 import { transformTasksData } from '../../utils.js';
-import type { TreeNode } from 'primevue/treenode';
-import Tree from 'primevue/tree';
+import SwTree from '../vibe/tree/SwTree.vue';
+import type { SwTreeNode } from '../vibe/tree/SwTree.vue';
 
 const agents = ref<Record<string, any>>();
 const isReady = ref(false);
 const router = useRouter();
-const nodes = ref<Array<TreeNode>>([]);
+const nodes = ref<Array<SwTreeNode>>([]);
 const noDisplay = new Array<string>("subagent");
 
 async function loadAgents() {
@@ -39,7 +37,7 @@ async function loadAgents() {
         }
     }
     //console.log("TS", transformTasksData(ts))
-    nodes.value = transformTasksData(ts) as Array<TreeNode>;
+    nodes.value = transformTasksData(ts) as Array<SwTreeNode>;
     agents.value = data.data;
     //console.log("SB", agents.value);
     isReady.value = true;
@@ -53,7 +51,7 @@ function open(tn: string) {
     }
 }
 
-const onNodeSelect = (node: TreeNode) => {
+const onNodeSelect = (node: SwTreeNode) => {
     if (!node?.children) {
         const k = node.key;
         //console.log("Open k", k);
