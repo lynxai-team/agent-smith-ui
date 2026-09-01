@@ -53,7 +53,7 @@
                                     No model selected
                                 </template>
                             </label>
-                            <Listbox v-if="enableBackendModels" v-model="selectedModel" :options="modelsData" filter
+                            <SwListbox v-if="enableBackendModels" v-model="selectedModel" :options="modelsData" filter
                                 optionLabel="label" class="w-56" />
                             <input v-else type="text" v-model="selectedModel.id" />
                         </div>
@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import type { InferenceParams, ModelInfo, SamplingPreset } from '@agent-smith/types';
-import Listbox from 'primevue/listbox';
+import SwListbox from './vibe/listbox/SwListbox.vue';
 import SwPopover from '../components/vibe/popover/SwPopover.vue';
 import { computed, reactive, ref, toRaw } from 'vue';
 import { api } from '../services/api.js';

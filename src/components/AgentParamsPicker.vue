@@ -41,7 +41,7 @@
             </div>
         </div>
         <div class="flex justify-center" v-if="showModelPicker">
-            <Listbox v-if="enableBackendModels" :options="Object.values(state.models[backend])" filter optionLabel="id"
+            <SwListbox v-if="enableBackendModels" :options="Object.values(state.models[backend])" filter optionLabel="id"
                 @update:modelValue="$event?.id ? model = $event.id : model = ''; showModelPicker = false"
                 class="w-56" />
             <input v-else type="text" v-model="model" />
@@ -64,13 +64,13 @@
 </template>
 <script setup lang="ts">
 import type { AgentSettings, AgentSpec, InferenceParams, ModelInfo, SamplingPreset } from '@agent-smith/types';
-import Listbox from 'primevue/listbox';
 import { computed, onBeforeMount, ref, toRaw } from 'vue';
 import { api } from '../services/api.js';
 import { msg } from '../services/notify.js';
 import { humanizeNumber } from '../services/str.js';
 import { inferOptions, srv, state, uistate } from '../state.js';
 import InferenceParamsForm from './InferenceParamsForm.vue';
+import SwListbox from './vibe/listbox/SwListbox.vue';
 import SwSwitch from './vibe/switch/SwSwitch.vue';
 
 const props = defineProps<{

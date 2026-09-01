@@ -2,7 +2,7 @@
   <div class="w-full overflow-y-visible h-min">
     <template v-if="isReady">
       <div v-show="showSkills">
-        <Listbox :options="skills" filter optionLabel="name" @update:modelValue="selectSkill($event)" class="w-56"
+        <SwListbox :options="skills" filter optionLabel="name" @update:modelValue="selectSkill($event)" class="w-56"
           focused />
       </div>
     </template>
@@ -16,9 +16,9 @@
 import { computed, onBeforeMount, ref, watch } from 'vue';
 import Textarea from 'primevue/textarea';
 import { watchDebounced } from '@vueuse/core';
-import Listbox from 'primevue/listbox';
 import { onKeyStroke } from '@vueuse/core';
 import { api } from '../services/api.js';
+import SwListbox from '../components/vibe/listbox/SwListbox.vue';
 
 const props = defineProps({
   data: {
