@@ -7,19 +7,19 @@
                 @click="collapseAll">Collapse</button>
         </div>
         <div v-if="isReady" class="flex flex-col items-start">
-            <Tree :value="nodes" v-model:expandedKeys="expandedKeys" class="p-0 m-0" selectionMode="single"
+            <SwTree :nodes="nodes" v-model:expandedKeys="expandedKeys" class="p-0 m-0" selectionMode="single"
                 @nodeSelect="onNodeSelect">
-                <template #default="slotProps">
+                <template #default="{ node }">
                     <div class="flex flex-row items-center space-x-3">
-                        <sw-switch v-if="!slotProps.node?.children"
-                            v-model:value="uistate.availableAgents[slotProps.node.key]" class="text-sm">{{
-                                slotProps.node.label }}</sw-switch>
+                        <sw-switch v-if="!node?.children"
+                            v-model:value="uistate.availableAgents[node.key]" class="text-sm">{{
+                                node.label }}</sw-switch>
                         <div v-else>
-                            {{ slotProps.node.label }}
+                            {{ node.label }}
                         </div>
                     </div>
                 </template>
-            </Tree>
+            </SwTree>
             <button class="btn mt-5 success" @click="redirectReload()">Apply changes</button>
         </div>
         <div class="flex flex-col space-y-3 w-min">
@@ -38,8 +38,8 @@ import { onBeforeMount, ref, toRaw } from "vue";
 import { uistate } from "../state.js";
 import { api } from "../services/api.js";
 import { transformTasksData } from "../utils.js";
-import type { TreeNode } from 'primevue/treenode';
-import Tree from 'primevue/tree';
+import SwTree from "./vibe/tree/SwTree.vue";
+import type { SwTreeNode } from "./vibe/tree/SwTree.vue";
 import { useRouter } from "vue-router";
 import ThemeSwitcher from "./ThemeSwitcher.vue";
 import SwSwitch from "./vibe/switch/SwSwitch.vue";
@@ -47,8 +47,8 @@ import SwSwitch from "./vibe/switch/SwSwitch.vue";
 const isReady = ref(false);
 const noDisplay = new Array<string>("subagent");
 const agents = ref<Record<string, any>>({});
-const nodes = ref<Array<TreeNode>>([]);
-const expandedKeys = ref({});
+const nodes = ref<Array<SwTreeNode>>([]);
+const expandedKeys = ref<Record<string, boolean>>({});
 const router = useRouter();
 
 async function loadAgents() {
@@ -63,19 +63,19 @@ async function loadAgents() {
         }
     }
     //console.log("TS", transformTasksData(ts))
-    nodes.value = transformTasksData(ts) as Array<TreeNode>;
+    nodes.value = transformTasksData(ts) as Array<SwTreeNode>;
     agents.value = data.data;
     //console.log("AGENTS 1", agents.value);
     //console.log(agents.value);
 }
 
-const onNodeSelect = (node: TreeNode) => {
+const onNodeSelect = (node: SwTreeNode) => {
     if (!node?.children) {
         //open(node.key)
     }
 };
 
-const expandNode = (node) => {
+const expandNode = (node: SwTreeNode) => {
     if (node.children && node.children.length) {
         expandedKeys.value[node.key] = true;
 
