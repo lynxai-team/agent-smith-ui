@@ -1,41 +1,36 @@
-import { ToastSeverity, ToastSeverityOptions } from '@primevue/core/api';
-import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-import { ToastServiceMethods } from 'primevue/toastservice';
 import { ConfirmationOptions } from 'primevue/confirmationoptions';
 import type { NotificationMsg } from '../interfaces.js';
+import { addNotification } from '@/components/vibe/notification/composable.js';
+import type { NotificationSeverity } from '@/components/vibe/notification/composable.js';
 
-let prtoast: ToastServiceMethods;
 let confirm: {
   require: (option: ConfirmationOptions) => void;
   close: () => void;
 }
 
 function initNotifyService() {
-  prtoast = useToast();
   confirm = useConfirm();
 }
 
-function _msg(severity: unknown, title: string, body: string, lifeTime = 3000): void {
-  console.log(severity, title, body);
-  // @ts-ignore
-  prtoast.add({ severity: severity as ToastSeverityOptions, summary: title, detail: body, life: lifeTime });
+function _msg(severity: NotificationSeverity, title: string, body: string, lifeTime = 3000): void {
+  addNotification({ severity, title, detail: body, life: lifeTime });
 }
 
-function info(title, body: string, lifeTime = 3000): void {
-  _msg(ToastSeverity.INFO, title, body, lifeTime);
+function info(title: string, body: string, lifeTime = 3000): void {
+  _msg('info', title, body, lifeTime);
 };
 
 function success(title: string, body: string, lifeTime = 3000): void {
-  _msg(ToastSeverity.SUCCESS, title, body, lifeTime);
+  _msg('success', title, body, lifeTime);
 };
 
 function warn(title: string, body: string, lifeTime = 5000): void {
-  _msg(ToastSeverity.WARN, title, body, lifeTime);
+  _msg('warn', title, body, lifeTime);
 };
 
 function error(title: string, body: string, lifeTime = 8000): void {
-  _msg(ToastSeverity.ERROR, title, body, lifeTime);
+  _msg('error', title, body, lifeTime);
 };
 
 function _confirmation(

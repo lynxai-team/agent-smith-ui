@@ -8,7 +8,7 @@
       </div>
     </template>
     <router-view v-else class="container mx-auto w-full h-full"></router-view>
-    <Toast />
+    <SwNotification />
     <ConfirmDialog>
       <template #message="slotProps">
         <div class="flex flex-row items-center p-4">
@@ -27,8 +27,8 @@
 import { onBeforeMount } from 'vue';
 import TheHeader from "@/components/TheHeader.vue";
 import ConfirmDialog from "primevue/confirmdialog";
-import Toast from "primevue/toast";
-import { initNotifyService } from "@/services/notify.js";
+import SwNotification from './components/vibe/notification/SwNotification.vue';
+import { initNotifyService, msg } from "@/services/notify.js";
 import { initState, state } from './state.js';
 // @ts-ignore
 import "@fontsource/roboto";
@@ -82,40 +82,52 @@ onBeforeMount(() => {
 <style lang="css">
 @reference "./styles/global.css";
 
-.p-tree, .p-tree-filter-input {
-    background-color: transparent !important;
-    border-top: 0;
-    border-right: 0;
-    border-left: 0;
-    box-shadow: none;
-    border-radius: 0;
+.p-tree,
+.p-tree-filter-input {
+  background-color: transparent !important;
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  box-shadow: none;
+  border-radius: 0;
 }
+
 .dark .p-tree-node-label {
-    color: white !important;
+  color: white !important;
 }
-.p-inputtext, .p-overlaypanel-content {
-    @apply background border-lighter;
-}
+
+.p-inputtext,
 .p-overlaypanel-content {
-    @apply dark:border-lighter border;
+  @apply background border-lighter;
 }
+
+.p-overlaypanel-content {
+  @apply dark:border-lighter border;
+}
+
 .h-main {
-    height: calc(100% - 4rem);
+  height: calc(100% - 4rem);
 }
+
 .p-confirmdialog-accept-button {
-    @apply success border-success;
+  @apply success border-success;
 }
+
 .p-confirmdialog-reject-button {
-    @apply border-danger danger p-3;
+  @apply border-danger danger p-3;
 }
+
 .dark .p-textarea {
-    background: transparent;
-    color: white;
+  background: transparent;
+  color: white;
 }
-.dark .p-inputnumber-increment-button, .dark .p-inputnumber-decrement-button {
-    border: transparent;
+
+.dark .p-inputnumber-increment-button,
+.dark .p-inputnumber-decrement-button {
+  border: transparent;
 }
+
 .btn.soft {
-    @apply border border-lighter text-light hover:prim;
+  @apply border border-lighter text-light hover:prim;
 }
 </style>
