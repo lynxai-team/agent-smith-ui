@@ -117,11 +117,6 @@ onBeforeMount(() => {
   @apply border-danger danger p-3;
 }
 
-.dark .p-textarea {
-  background: transparent;
-  color: white;
-}
-
 .btn.soft {
   @apply border border-lighter text-light hover:prim;
 }

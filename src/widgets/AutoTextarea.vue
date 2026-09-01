@@ -6,15 +6,14 @@
           focused />
       </div>
     </template>
-    <Textarea v-if="auto" v-model="_data" rows="1" autoResize @focusout="ch()" class="focus:ring-0 border border-lighter"
-      fluid />
-    <Textarea v-else v-model="_data" rows="8" @focusout="ch()" class="focus:ring-0 border border-light" fluid />
+    <SwTextarea v-if="auto" v-model="_data" :rows="1" autoResize @focusout="ch()" />
+    <SwTextarea v-else v-model="_data" :rows="8" borderClass="border-light" @focusout="ch()" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onBeforeMount, ref, watch } from 'vue';
-import Textarea from 'primevue/textarea';
+import SwTextarea from '../components/vibe/textarea/SwTextarea.vue';
 import { watchDebounced } from '@vueuse/core';
 import { onKeyStroke } from '@vueuse/core';
 import { api } from '../services/api.js';
