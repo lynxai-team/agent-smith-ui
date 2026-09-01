@@ -100,22 +100,19 @@
       <div id="prompt-input" class="px-3 pb-5 flex flex-col z-20">
         <div class="flex flex-wrap gap-3 mb-3" v-if="srv.isReady">
           <div v-for="(v, k) in srv.variables?.required" class="w-[49%] success">
-            <IftaLabel v-if="k != 'workspace'">
-              <InputText :id="k" v-model="srv.variables.values.required[k]" variant="filled" class="w-full" />
-              <label :for="k">{{ v.description }}</label>
-            </IftaLabel>
+            <SwIftaLabel v-if="k != 'workspace'" :label-for="k" :label="v.description">
+              <SwInputText :id="k" v-model="srv.variables.values.required[k]" class="w-full pt-6" />
+            </SwIftaLabel>
           </div>
           <div v-for="(v, k) in srv.variables?.optional" class="w-[49%] success">
-            <IftaLabel v-if="k != 'workspace'">
-              <InputText :id="k" v-model="srv.variables.values.optional[k]" variant="filled" class="w-full" />
-              <label :for="k">{{ v.description }}</label>
-            </IftaLabel>
+            <SwIftaLabel v-if="k != 'workspace'" :label-for="k" :label="v.description">
+              <SwInputText :id="k" v-model="srv.variables.values.optional[k]" class="w-full pt-6" />
+            </SwIftaLabel>
           </div>
           <div v-for="(v, k) in srv?.mcp.servers" class="w-[49%] success">
-            <IftaLabel v-if="k != 'workspace'">
-              <InputText :id="k" v-model="mcpArgs" variant="filled" class="w-full" />
-              <label :for="k">Mcp arguments</label>
-            </IftaLabel>
+            <SwIftaLabel v-if="k != 'workspace'" :label-for="k" label="Mcp arguments">
+              <SwInputText :id="k" v-model="mcpArgs" class="w-full pt-6" />
+            </SwIftaLabel>
           </div>
         </div>
         <div class="flex flex-col" v-if="isReady">
@@ -175,8 +172,6 @@ import type { AgentInferenceOptions, InferenceParams } from '@agent-smith/types'
 // @ts-ignore
 import type { ParsedNode } from 'markstream-vue';
 import MarkdownRender, { CodeBlockNode, enableMermaid, setCustomComponents } from 'markstream-vue';
-import { IftaLabel } from 'primevue';
-import InputText from 'primevue/inputtext';
 import { computed, onBeforeMount, onBeforeUnmount, nextTick, reactive, ref, toRaw, watch } from 'vue';
 import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
@@ -204,6 +199,8 @@ import ResetIcon from '../widgets/icons/ResetIcon.vue';
 import StopIcon from '../widgets/icons/StopIcon.vue';
 import SendIcon from '../widgets/icons/SendIcon.vue';
 import ViewAgent from '../components/ViewAgent.vue';
+import SwIftaLabel from '../components/vibe/iftalabel/SwIftaLabel.vue';
+import SwInputText from '../components/vibe/inputtext/SwInputText.vue';
 import SwPopover from '../components/vibe/popover/SwPopover.vue';
 
 const props = defineProps({

@@ -96,7 +96,6 @@ onBeforeMount(() => {
   color: white !important;
 }
 
-.p-inputtext,
 .p-overlaypanel-content {
   @apply background border-lighter;
 }
