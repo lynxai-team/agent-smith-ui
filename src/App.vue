@@ -122,11 +122,6 @@ onBeforeMount(() => {
   color: white;
 }
 
-.dark .p-inputnumber-increment-button,
-.dark .p-inputnumber-decrement-button {
-  border: transparent;
-}
-
 .btn.soft {
   @apply border border-lighter text-light hover:prim;
 }
