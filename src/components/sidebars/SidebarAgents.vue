@@ -25,7 +25,7 @@ async function loadAgents() {
     const data = await api.get<Record<string, any>>("/agents");
     const ts: Record<string, string> = {};
     for (const [n, t] of Object.entries(data.data)) {
-        //console.log("A", n, t, uistate.value.availableAgents[n])
+        //console.log("A", "n=", n, "t=", t, "uis=" + uistate.value.availableAgents[n])
         if (t?.category) {
             if (!(n in uistate.value.availableAgents)) {
                 uistate.value.availableAgents[n] = t.category.startsWith("internal") ? false : true;
@@ -36,10 +36,8 @@ async function loadAgents() {
             }
         }
     }
-    //console.log("TS", transformTasksData(ts))
     nodes.value = transformTasksData(ts) as Array<SwTreeNode>;
     agents.value = data.data;
-    //console.log("SB", agents.value);
     isReady.value = true;
 }
 

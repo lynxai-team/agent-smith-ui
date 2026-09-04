@@ -1,65 +1,78 @@
 <template>
-    <div class="flex flex-col space-y-3 pb-5 max-w-2xl items-center">
-        <InferenceParamsForm :auto="true"></InferenceParamsForm>
-        <div class="flex flex-row space-x-3 justify-center">
-            <div>
-                <input type="checkbox" v-model="enableThinking" class="ring-0">&nbsp;Enable thinking</input>
-            </div>
-            <div>
-                <input type="checkbox" v-model="preserveThinking" class="ring-0">&nbsp;Preserve thinking</input>
-            </div>
-        </div>
-        <div class="flex flex-row space-x-3">
-            <div>Reasoning
-                effort</div>
-            <input type="text" v-model="reasoningEffort" class="ring-0" placeholder="medium"></input>
-        </div>
-        <div class="w-full flex justify-center">
-            <div class="flex flex-col space-y-2 mt-3">
-                <sw-switch v-model:value="switchPropagateBackend" class="text-sm">Use this backend for all subagents</sw-switch>
-                <sw-switch v-model:value="switchPropagateModel" class="text-sm">Use this model for all subagents</sw-switch>
-                <sw-switch v-model:value="switchPropagateIp" class="text-sm">Use this inference params for all subagents</sw-switch>
-                <div class="flex flex-row space-x-2 pt-2 items-center">
-                    <div class="text-semilight">Backend:</div>&nbsp;
+    <div class="flex flex-row space-x-3">
+        <div>
+            <div class="flex flex-col space-y-3 pb-5 max-w-2xl items-center">
+                <InferenceParamsForm :auto="true"></InferenceParamsForm>
+                <div class="flex flex-row space-x-3 justify-center">
                     <div>
-                        <select v-model="backend" :required="true" class="ring-0 px-3 py-2 border border-lighter"
-                            @change="onSelectBackend()">
-                            <option v-for="b in Object.keys(state.backends)" :selected="uistate.backend == b"
-                                :value="b">
-                                {{ b }}
-                            </option>
-                        </select>
+                        <input type="checkbox" v-model="enableThinking" class="ring-0">&nbsp;Enable thinking</input>
                     </div>
-
+                    <div>
+                        <input type="checkbox" v-model="preserveThinking" class="ring-0">&nbsp;Preserve thinking</input>
+                    </div>
                 </div>
-                <div class="flex flex-wrap gap-2">
-                    <div class="text-semilight">Model:</div>
-                    <div v-if="model.length > 0">
-                        {{ model }}
+                <div class="flex flex-row space-x-3">
+                    <div>Reasoning
+                        effort</div>
+                    <input type="text" v-model="reasoningEffort" class="ring-0" placeholder="medium"></input>
+                </div>
+                <div class="w-full flex justify-center">
+                    <div class="flex flex-col space-y-2 mt-3">
+                        <sw-switch v-model:value="switchPropagateBackend" class="text-sm">Use this backend for all
+                            subagents</sw-switch>
+                        <sw-switch v-model:value="switchPropagateModel" class="text-sm">Use this model for all
+                            subagents</sw-switch>
+                        <sw-switch v-model:value="switchPropagateIp" class="text-sm">Use this inference params for all
+                            subagents</sw-switch>
+                        <div class="flex flex-row space-x-2 pt-2 items-center">
+                            <div class="text-semilight">Backend:</div>&nbsp;
+                            <div>
+                                <select v-model="backend" :required="true"
+                                    class="ring-0 px-3 py-2 border border-lighter" @change="onSelectBackend()">
+                                    <option v-for="b in Object.keys(state.backends)" :selected="uistate.backend == b"
+                                        :value="b">
+                                        {{ b }}
+                                    </option>
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="text-semilight">Model:</div>
+                            <div v-if="model.length > 0">
+                                {{ model }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="flex justify-center" v-if="showModelPicker">
-            <SwListbox v-if="enableBackendModels" :options="Object.values(state.models[backend])" filter optionLabel="id"
-                @update:modelValue="$event?.id ? model = $event.id : model = ''; showModelPicker = false"
-                class="w-56" />
-            <input v-else type="text" v-model="model" />
+        <div>
+            <div class="flex justify-center" v-if="showModelPicker">
+                <SwListbox v-if="enableBackendModels" :options="Object.values(state.models[backend])" filter
+                    optionLabel="id"
+                    @update:modelValue="$event?.id ? model = $event.id : model = ''; showModelPicker = false"
+                    class="w-56" />
+                <input v-else type="text" v-model="model" />
+            </div>
+            <div class="flex flex-wrap gap-2 justify-around">
+                <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
+                <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{
+                    loadedModel.id
+                    }}
+                    {{ humanizeNumber(loadedModel.ctx) }}</button>
+                <button v-for="preset in state.samplingPresets" class="btn soft" @click="applySamplingPreset(preset)">{{
+                    preset.name }}</button>
+            </div>
+            <div class="w-full flex flex-row justify-center pt-3 space-x-2">
+                <button class="btn font-semibold hover:prim py-1 text-sm" :disabled="!isValid"
+                    @click="useAgentSettings()">Use agent settings</button>
+                <button class="btn success py-1 text-sm" :disabled="!isValid" @click="saveAgentsSettings()">Save agent
+                    settings</button>
+            </div>
         </div>
-        <div class="flex flex-wrap gap-2 justify-around">
-            <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
-            <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{ loadedModel.id
-                }}
-                {{ humanizeNumber(loadedModel.ctx) }}</button>
-            <button v-for="preset in state.samplingPresets" class="btn soft" @click="applySamplingPreset(preset)">{{
-                preset.name }}</button>
-        </div>
-        <div class="w-full flex flex-row justify-center pt-3 space-x-2">
-            <button class="btn font-semibold hover:prim py-1 text-sm" :disabled="!isValid"
-                @click="useAgentSettings()">Use agent settings</button>
-            <button class="btn success py-1 text-sm" :disabled="!isValid" @click="saveAgentsSettings()">Save agent
-                settings</button>
-        </div>
+
+
     </div>
 </template>
 <script setup lang="ts">
@@ -96,6 +109,7 @@ function useAgentSettings() {
         throw new Error("no model")
     }
     let bk: string;
+    console.log("B", backend.value)
     if (backend?.value) {
         bk = backend.value
     } else {
@@ -151,6 +165,7 @@ async function saveAgentsSettings() {
         }
     };
     const payload = { name: props.agentSpec.name, settings: st };
+    console.log("SAVE AS", payload);
     const res = await api.post("/agentsettings/update", payload);
     if (!res.ok) {
         msg.error("Error saving agent settings", `${res.status} ${res.text}`)
@@ -213,6 +228,7 @@ const isValid = computed(() => {
 
 async function init() {
     state.agentsSettings = await srv.loadAgentSettings();
+    //console.log("AGS", toRaw(props.agentSpec));
     //console.log("AS", state.agentsSettings[props.agentSpec.name]);
     if (Object.keys(state.agentsSettings).includes(props.agentSpec.name)) {
         const agentSettings = state.agentsSettings[props.agentSpec.name];

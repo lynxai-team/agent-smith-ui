@@ -48,7 +48,6 @@ import AgentIcon from '../../widgets/icons/AgentIcon.vue';
 import TaskIcon from '../../widgets/icons/TaskIcon.vue';
 import WorkflowIcon from '../../widgets/icons/WorkflowIcon.vue';
 import SidebarAgents from './SidebarAgents.vue';
-import SidebarTasks from './SidebarTasks.vue';
 import SidebarWorkflows from './SidebarWorkflows.vue';
 
 const router = useRouter();

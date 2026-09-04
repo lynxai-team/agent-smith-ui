@@ -1,5 +1,7 @@
 import type { InferenceParams } from "@agent-smith/types";
 
+const port = 5184;
+
 const defaultInferenceParams: InferenceParams = {
     temperature: undefined,
     top_k: undefined,
@@ -50,6 +52,7 @@ const themes = new Array<string>(
 );
 
 export {
+    port,
     defaultInferenceParams,
     availablePlugins,
     themes,

@@ -6,7 +6,7 @@ import { reactive, ref, shallowRef, toRaw } from "vue";
 import { type SidebarType, type UiTaskView } from "./interfaces.js";
 import { useUiHistory } from "./services/history.js";
 import { createAwaiter } from "./utils.js";
-import { defaultInferenceParams } from "./conf.js";
+import { defaultInferenceParams, port } from "./conf.js";
 import { useAgentHistory } from "./services/agent-history.js";
 
 const debugInference = ref(true);
@@ -95,7 +95,7 @@ const inferOptions = reactive<{
     propagateInferParams: false,
 });
 const conf = ref<ConfigFile>();
-const srv = useClientFeatures();
+const srv = useClientFeatures({}, port);
 
 async function initState() {
     //state.onReady.then(() => console.log("state ready"))

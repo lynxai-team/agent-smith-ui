@@ -1,9 +1,10 @@
 import { useApi } from 'restmix';
 import { ApiResponse } from "restmix";
 import { msg } from './notify.js';
+import { port } from '../conf.js';
 
 const api = useApi({
-    serverUrl: "http://localhost:5184/api"
+    serverUrl: `http://localhost:${port}/api`
 });
 
 /*api.onResponse(async <T>(res: ApiResponse<T>): Promise<ApiResponse<T>> => {

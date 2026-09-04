@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { runServer, baseRoutes } from '@agent-smith/server';
 import type { Router } from 'vue-router';
+import { port } from '../conf.js';
 
 const appRoutes: Array<(r: Router) => void> = [];
 const __filename = fileURLToPath(import.meta.url);
@@ -31,7 +32,7 @@ async function main() {
     }
     //console.log("B", baseRoutes);
     // @ts-ignore
-    runServer([...baseRoutes, ...appRoutes], staticPath);
+    runServer([...baseRoutes, ...appRoutes], staticPath, port);
 }
 
 (async () => {

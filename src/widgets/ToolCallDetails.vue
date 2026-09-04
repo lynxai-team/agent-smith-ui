@@ -22,11 +22,11 @@
                 <div class="flex grow border-b border-lighter"></div>
             </div>
         </div>
-        <div class="toolcallbg border-r border-lighter">
+        <div class="toolcall bg border-r border-lighter">
             <div v-if="tab == 'call'" class="border-r border-lighter p-3">
                 <template v-if="tool.call?.arguments">
                     <div v-for="[k, v] in Object.entries(tool.call.arguments)" class="flex flex-col space-y-5">
-                        <div>
+                        <div class=" overflow-y-auto">
                             <span class="font-bold mr-2 text-accent">{{ k }}</span>
                             <span v-html="v.replaceAll('\n', '<br />')"></span>
                         </div>
@@ -34,7 +34,8 @@
                 </template>
             </div>
             <div v-else class="p-3">
-                <div v-if="tool?.response !== undefined && tool?.response !== null" v-html="tool?.response.replaceAll('\n', '<br />')"></div>
+                <div v-if="tool?.response !== undefined && tool?.response !== null"
+                    v-html="tool?.response.replaceAll('\n', '<br />')" class="overflow-y-auto"></div>
                 <div v-else-if="!(tool?.type == 'agent')">Tool call in progress ...</div>
             </div>
         </div>

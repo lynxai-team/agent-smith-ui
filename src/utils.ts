@@ -18,17 +18,21 @@ function createAwaiter<T = boolean>() {
 
 function transformTasksData(data: Record<string, string>): any[] {
     const result: any[] = [];
-    const map = new Map<string, any>();
+    // Group nodes are tracked in dedicated maps with namespaced keys so they can
+    // never be confused with leaf nodes (whose keys are agent/feature names).
+    const roots = new Map<string, any>();
+    const secondLevels = new Map<string, any>();
+    const thirdLevels = new Map<string, any>();
 
     for (const [key, value] of Object.entries(data)) {
         const parts = value.split('/');
         const [first, second, third] = parts;
 
         // Create root level
-        let root = map.get(first);
+        let root = roots.get(first);
         if (!root) {
             root = { key: first, label: humanize(first), children: [] };
-            map.set(first, root);
+            roots.set(first, root);
             result.push(root);
         }
 
@@ -39,24 +43,28 @@ function transformTasksData(data: Record<string, string>): any[] {
         }
 
         // Create second level
-        let secondLevel = root.children.find((c: any) => c.key === second);
+        const secondKey = `${first}/${second}`;
+        let secondLevel = secondLevels.get(secondKey);
         if (!secondLevel) {
-            secondLevel = { key: second, label: humanize(second), children: [] };
+            secondLevel = { key: secondKey, label: humanize(second), children: [] };
+            secondLevels.set(secondKey, secondLevel);
             root.children.push(secondLevel);
         }
 
         // Create third level if exists
+        let parent = secondLevel;
         if (third) {
-            let thirdLevel = secondLevel.children.find((c: any) => c.key === third);
+            const thirdKey = `${secondKey}/${third}`;
+            let thirdLevel = thirdLevels.get(thirdKey);
             if (!thirdLevel) {
-                thirdLevel = { key: third, label: humanize(third), children: [] };
+                thirdLevel = { key: thirdKey, label: humanize(third), children: [] };
+                thirdLevels.set(thirdKey, thirdLevel);
                 secondLevel.children.push(thirdLevel);
             }
-            thirdLevel.children.push({ key, label: humanize(key) });
-        } else {
-            // Direct child of second level
-            secondLevel.children.push({ key, label: humanize(key) });
+            parent = thirdLevel;
         }
+        // Direct child of the deepest group level
+        parent.children.push({ key, label: humanize(key) });
     }
 
     return result;
