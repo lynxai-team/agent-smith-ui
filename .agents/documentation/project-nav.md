@@ -33,8 +33,6 @@
 ├── @agent-smith/server — Backend HTTP/WebSocket server
 ├── @agent-smith/wscli — WebSocket client features
 ├── @agent-smith/types — Shared TypeScript types
-├── primevue (4.5) — UI component library
-├── vue-router (5.2) — Application routing
 ├── @snowind/state — Reactive state management
 ├── @vueuse/core — Vue utilities (useStorage)
 ├── restmix — REST API client
@@ -50,8 +48,8 @@
 ## 4. Packages/Modules
 
 ### src/main.ts — Vue App Bootstrap
-- **Purpose**: Initialize PrimeVue Aura theme, router, toast/confirmation services
-- **Key imports**: `App.vue`, `src/router.ts`, PrimeVue, CSS themes
+- **Purpose**: Create the Vue app, register the router and notification service, mount App component
+- **Key imports**: `App.vue`, `src/router.js`, `src/services/notify.js`
 
 ### src/App.vue — Root Layout
 - **Purpose**: Orchestrate header, sidebar dispatch, router-view, toast/confirmation dialogs
@@ -73,7 +71,7 @@
 ### src/components/ — Core UI Components
 - **Purpose**: Reusable UI components (15 core components)
 - **Key components**: AgentParamsPicker, InferenceParamsForm, SamplingPresets, TaskTools, ViewAgent, TheHeader
-- **Subdirectories**: `sidebars/` (9 components: 7 named sidebars + SidebarsDispatch orchestrator + AgentHistoryNode helper), `navbars/` (2 toolbars), `vibe/toast/` (quick-message toast system), `vibe/notification/` (notification service replacing PrimeVue toast)
+- **Subdirectories**: `sidebars/` (9 components: 7 named sidebars + SidebarsDispatch orchestrator + AgentHistoryNode helper), `navbars/` (2 toolbars), `vibe/toast/` (quick-message toast system), `vibe/notification/` (notification service)
 
 ### src/widgets/ — Reusable Widgets
 - **Purpose**: Small reusable UI elements

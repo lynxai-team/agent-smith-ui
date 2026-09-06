@@ -8,8 +8,6 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 - `@agent-smith/wscli` — WebSocket client features for server communication
 - `@agent-smith/types` — Shared TypeScript types (AgentState, HistoryTurn, etc.)
 - `@agent-smith/app-debate` — Example plugin app (file dependency) demonstrating route extension
-- `primevue` (4.5) — UI component library with Aura theme
-- `@primevue/themes` (4.5) — PrimeVue 4.5 theme system
 - `vue-router` (5.2) — Application routing
 - `@snowind/state` — Reactive state management (User class)
 - `@vueuse/core` — Vue utilities (useStorage for persisted UI preferences)
@@ -25,9 +23,6 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 - `@snowind/header` — Header component
 - `@snowind/plugin` — Plugin system integration
 - `@snowind/switch` — Theme switch component
-- `tailwindcss-primeui` — PrimeUI Tailwind CSS integration
-- `primeicons` — Icon font library
-- `@primeuix/themes` — PrimeVue theme system
 - `@fontsource/roboto` — Roboto font
 - External: `tailwindcss` (4.3), `sass`, `vite` (8)
 
@@ -37,13 +32,13 @@ A Vue 3 web dashboard for managing AI agents, workflows, tasks, and model config
 - App plugins (e.g., `@agent-smith/app-debate`) — Extend routes and components dynamically
 
 ## Entry Point
-- `src/main.ts` — Vue app bootstrap: PrimeVue Aura theme, router, toast/confirmation services, mounts App component
+- `src/main.ts` — Vue app bootstrap: creates app, registers router, mounts App component
 - `src/bin/index.ts` — Node.js server entry (`lmui`): launches HTTP server with base routes, serves static frontend assets
 
 ## Key Files
 | File | Purpose |
 |------|---------|
-| `src/main.ts` | Vue app initialization with PrimeVue Aura theme and services |
+| `src/main.ts` | Vue app initialization, registers router, mounts App |
 | `src/App.vue` | Root layout: header, sidebar dispatch, router-view, toast/confirmation dialogs |
 | `src/state.ts` | Central reactive state: agent state, models, backends, workspaces, UI preferences (persisted via useStorage) |
 | `src/router.ts` | 9 routes: home, config, init, workflow, app, task run/view, agent run/view |

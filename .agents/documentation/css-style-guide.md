@@ -3,7 +3,7 @@
 ## Overview
 
 Agent Smith UI uses **Tailwind CSS 4** (config-free, via the `@tailwindcss/vite` plugin) with custom
-plugins for semantic color utilities and PrimeVue integration. Styling is configured in
+plugins for semantic color utilities. Styling is configured in
 `/workspace/src/styles/global.css` through CSS `@import` directives; there is **no `tailwind.config`
 file** (config was removed during the Tailwind 4 migration).
 
@@ -14,14 +14,12 @@ The styling system combines:
 3. **Snowind CSS** — Utility classes defined manually in `src/styles/snowind.css` (`.btn`, `.slide-*`)
 4. **@snowind/header** — `SwTopbar` responsive header component
 5. **SCSS Themes** — Custom theme files under `src/scss/` with CSS custom properties
-6. **PrimeVue** — UI component library with Aura theme
 
 ### The styling stack (`global.css`)
 
 ```css
 @import "tailwindcss";
 @import "tailwindcss-semantic-colors";   /* semantic color utilities (prim/sec/ter…) */
-@import "tailwindcss-primeui";            /* PrimeVue component integration */
 @import "./snowind.css";                  /* .btn, .slide-x, .slide-y, .slidedown, .slideup */
 ```
 
@@ -299,5 +297,4 @@ user.toggleDarkMode();         // toggle dark mode
 
 - [tailwindcss-semantic-colors README](https://github.com/synw/tailwindcss-semantic-colors) (installed at `node_modules/tailwindcss-semantic-colors/README.md`)
 - [Snowind Documentation](https://synw.github.io/snowind/)
-- [PrimeVue Components](https://primefaces.org/primevue/)
 - `.agents/documentation/code_style_guidelines.md` — UI code style guidelines

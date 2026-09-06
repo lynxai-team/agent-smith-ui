@@ -27,7 +27,7 @@ Agent Smith UI is a Vue 3 web dashboard for managing AI agents, workflows, tasks
 
 | Directory | Purpose |
 |-----------|---------|
-| `src/main.ts` | Vue app bootstrap: PrimeVue Aura theme, router, toast/confirmation services |
+| `src/main.ts` | Vue app bootstrap: creates app, registers router and notification service, mounts App |
 | `src/App.vue` | Root layout: header, sidebar dispatch, router-view, toast/confirmation dialogs |
 | `src/router.ts` | Vue Router config — 9 routes (home, config, init, workflow, app, task run/view, agent run/view) |
 | `src/state.ts` | Central reactive state: agent state, models, backends, workspaces, UI preferences |

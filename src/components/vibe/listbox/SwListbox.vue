@@ -61,7 +61,7 @@ function isSelected(option: any): boolean {
 }
 
 function selectOption(option: any) {
-    // PrimeVue-compatible toggle: selecting the current option clears it.
+    // Selecting the current option clears it.
     emit('update:modelValue', isSelected(option) ? null : option);
 }
 

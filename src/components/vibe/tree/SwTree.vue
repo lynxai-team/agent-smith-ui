@@ -88,7 +88,7 @@ function walk(nodes: SwTreeNode[], depth: number, out: Row[]) {
     for (const node of nodes) {
         const hasChildren = !!node.children?.length;
         if (q.value && !matches(node)) continue;
-        // While filtering, matched branches are force-expanded (PrimeVue lenient mode).
+        // While filtering, matched branches are force-expanded.
         const expanded = q.value ? true : isExpanded(node.key);
         out.push({ node, depth, expanded, hasChildren });
         if (hasChildren && expanded) walk(node.children!, depth + 1, out);
