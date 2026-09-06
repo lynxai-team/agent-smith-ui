@@ -10,8 +10,7 @@
             <DotsIcon width="24" height="24" class="text-semilight flex w-full justify-center"></DotsIcon>
         </button>
         <div v-if="uistate.inferenceSidebarName == 'sampling'">
-            <SidebarInferParams @paramchange="changeInferParam($event)">
-            </SidebarInferParams>
+            <SidebarInferParams></SidebarInferParams>
         </div>
         <div v-else>
             <!-- SidebarHistory @moveto-turn="moveToTurn($event)"></SidebarHistory -->
@@ -27,7 +26,7 @@ import DotsIcon from '../../widgets/icons/DotsIcon.vue';
 import SwPopover from '../vibe/popover/SwPopover.vue';
 import { uistate } from '../../state.js';
 
-const emit = defineEmits(["goto-turn", "paramchange"]);
+const emit = defineEmits(["goto-turn"]);
 
 const sidebars = ["sampling", "history"]
 const sidebarDialog = ref();
@@ -43,9 +42,5 @@ function setSidebar(s: string) {
 function moveToTurn(i: number) {
     //console.log("Move to", i);
     emit('goto-turn', i)
-}
-
-function changeInferParam(n: any) {
-    emit('paramchange', n)
 }
 </script>

@@ -161,8 +161,7 @@
     </div>
     <div id="sidebar-task2" name="sidebar1" class="z-30 flex flex-col h-full 
     border border-l border-r-0 border-y-0 border-lighter" :class="inferenceSidebarWidth">
-      <SidebarRightDispatch :inference-params="inferOptions.params" @paramchange="updateInferParams($event)"
-        @goto-turn="jumpToTurn($event)" />
+      <SidebarRightDispatch @goto-turn="jumpToTurn($event)" />
     </div>
   </div>
 </template>
@@ -484,12 +483,6 @@ function useAgentSettings(data: {
   state.currentModel = state.backends[data.backend]?.type == "openai" ? { id: data.model, ctx: 8192, status: "", hasVision: false } :
     state.models[data.backend][data.model];
   modelsPopover.value.toggle();
-}
-
-function updateInferParams(evt: InferenceParams) {
-  const ip = toRaw(evt);
-  //console.log("Update IP", ip);
-  inferOptions.params = ip;
 }
 
 function confirmDelHistory() {

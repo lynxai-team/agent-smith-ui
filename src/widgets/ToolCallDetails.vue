@@ -25,8 +25,9 @@
         <div class="toolcall bg border-r border-lighter">
             <div v-if="tab == 'call'" class="border-r border-lighter p-3">
                 <template v-if="tool.call?.arguments">
-                    <div v-for="[k, v] in Object.entries(tool.call.arguments)" class="flex flex-col space-y-5">
-                        <div class=" overflow-y-auto">
+                    <div v-for="[k, v] in Object.entries(tool.call.arguments)"
+                        class="flex flex-col space-y-5 overflow-y-auto">
+                        <div>
                             <span class="font-bold mr-2 text-accent">{{ k }}</span>
                             <span v-html="v.replaceAll('\n', '<br />')"></span>
                         </div>
