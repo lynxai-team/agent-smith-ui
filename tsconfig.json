@@ -15,6 +15,7 @@
       "dom"
     ],
     "types": [
+      "node",
       "vite/client"
     ],
     "paths": {
