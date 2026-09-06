@@ -79,7 +79,7 @@ import SwListbox from './vibe/listbox/SwListbox.vue';
 import SwPopover from '../components/vibe/popover/SwPopover.vue';
 import { computed, reactive, ref, toRaw } from 'vue';
 import { api } from '../services/api.js';
-import { confirmDanger, msg } from '../services/notify.js';
+import { confirm, msg } from '../services/notify.js';
 import { humanize, humanizeNumber } from '../services/str.js';
 import { state, uistate } from '../state.js';
 import CopyIcon from '../widgets/icons/CopyIcon.vue';
@@ -148,7 +148,7 @@ async function addSamplingPreset() {
 }
 
 async function deletePreset(name: string) {
-    confirmDanger(`Delete ${name} model preset?`, "The preset will be permanently deleted", async () => {
+    confirm(`Delete ${name} model preset?`, "The preset will be permanently deleted", async () => {
         const n = encodeURIComponent(name);
         const res = await api.del(`/models/preset/delete/${n}`);
         if (!res.ok) {

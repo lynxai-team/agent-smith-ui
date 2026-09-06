@@ -174,7 +174,7 @@ import MarkdownRender, { CodeBlockNode, enableMermaid, setCustomComponents } fro
 import { computed, onBeforeMount, onBeforeUnmount, nextTick, reactive, ref, toRaw, watch } from 'vue';
 import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
-import { confirmDanger, msg } from '../services/notify.js';
+import { confirm, msg } from '../services/notify.js';
 import { agentHistoryManager, debugInference, inferOptions, onModelsReady, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
 import AutoTextarea from '../widgets/AutoTextarea.vue';
 //import ToolCallNode from '../components/ToolCallNode.vue';
@@ -486,7 +486,7 @@ function useAgentSettings(data: {
 }
 
 function confirmDelHistory() {
-  confirmDanger("Start a new conversation?", "Remove this conversation history and start a new one",
+  confirm("Start a new conversation?", "Remove this conversation history and start a new one",
     async () => {
       taskEvents.resetStream();
       state.history = [];
@@ -498,7 +498,7 @@ function confirmDelHistory() {
 }
 
 function confirmRestartAtTurn(i: number) {
-  confirmDanger(`Restart at turn ${i}?`, `This will reset conversation history to turn ${i}`,
+  confirm(`Restart at turn ${i}?`, `This will reset conversation history to turn ${i}`,
     async () => {
       taskEvents.resetStream();
       restartAtTurn(i)

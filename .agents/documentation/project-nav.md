@@ -73,7 +73,7 @@
 ### src/components/ — Core UI Components
 - **Purpose**: Reusable UI components (15 core components)
 - **Key components**: AgentParamsPicker, InferenceParamsForm, SamplingPresets, TaskTools, ViewAgent, TheHeader
-- **Subdirectories**: `sidebars/` (9 components: 7 named sidebars + SidebarsDispatch orchestrator + AgentHistoryNode helper), `navbars/` (2 toolbars), `vibe/toast/` (toast system)
+- **Subdirectories**: `sidebars/` (9 components: 7 named sidebars + SidebarsDispatch orchestrator + AgentHistoryNode helper), `navbars/` (2 toolbars), `vibe/toast/` (quick-message toast system), `vibe/notification/` (notification service replacing PrimeVue toast)
 
 ### src/widgets/ — Reusable Widgets
 - **Purpose**: Small reusable UI elements

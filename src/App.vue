@@ -9,16 +9,7 @@
     </template>
     <router-view v-else class="container mx-auto w-full h-full"></router-view>
     <SwNotification />
-    <ConfirmDialog>
-      <template #message="slotProps">
-        <div class="flex flex-row items-center p-4">
-          <!-- div>
-          <named-icon :icon="`${slotProps.message.icon}`" class="text-3xl"></named-icon>
-        </div -->
-          <div class="pl-2">{{ slotProps.message.message }}</div>
-        </div>
-      </template>
-    </ConfirmDialog>
+    <SwConfirmDialog />
     <SwToast :toasts="toasts" />
   </div>
 </template>
@@ -26,9 +17,8 @@
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
 import TheHeader from "@/components/TheHeader.vue";
-import ConfirmDialog from "primevue/confirmdialog";
+import SwConfirmDialog from './components/vibe/confirm/SwConfirmDialog.vue';
 import SwNotification from './components/vibe/notification/SwNotification.vue';
-import { initNotifyService, msg } from "@/services/notify.js";
 import { initState, state } from './state.js';
 // @ts-ignore
 import "@fontsource/roboto";
@@ -45,7 +35,6 @@ onBeforeMount(() => {
       router.push("/init")
     }
   });
-  initNotifyService();
 });
 </script>
 
@@ -106,14 +95,6 @@ onBeforeMount(() => {
 
 .h-main {
   height: calc(100% - 4rem);
-}
-
-.p-confirmdialog-accept-button {
-  @apply success border-success;
-}
-
-.p-confirmdialog-reject-button {
-  @apply border-danger danger p-3;
 }
 
 .btn.soft {

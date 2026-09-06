@@ -1,17 +1,7 @@
-import { useConfirm } from "primevue/useconfirm";
-import { ConfirmationOptions } from 'primevue/confirmationoptions';
+import { requireConfirmation } from '@/components/vibe/confirm/composable.js';
 import type { NotificationMsg } from '../interfaces.js';
 import { addNotification } from '@/components/vibe/notification/composable.js';
 import type { NotificationSeverity } from '@/components/vibe/notification/composable.js';
-
-let confirm: {
-  require: (option: ConfirmationOptions) => void;
-  close: () => void;
-}
-
-function initNotifyService() {
-  confirm = useConfirm();
-}
 
 function _msg(severity: NotificationSeverity, title: string, body: string, lifeTime = 3000): void {
   addNotification({ severity, title, detail: body, life: lifeTime });
@@ -33,42 +23,13 @@ function error(title: string, body: string, lifeTime = 8000): void {
   _msg('error', title, body, lifeTime);
 };
 
-function _confirmation(
+function confirm(
   title: string,
   body: string,
   onAccept: () => Promise<void>,
-  icon: string = "",
-  onReject: () => Promise<void>,
-  type: "success" | "danger",
+  onReject: () => Promise<void> = async () => { },
 ) {
-  confirm.require({
-    message: body,
-    header: title,
-    icon: icon,
-    acceptClass: `${type}btn`,
-    accept: onAccept,
-    reject: onReject,
-  });
-}
-
-function confirmSuccess(
-  title: string,
-  body: string,
-  onAccept: () => Promise<void>,
-  icon: string = "",
-  onReject: () => Promise<void> = async () => { }
-) {
-  _confirmation(title, body, onAccept, icon, onReject, "success")
-}
-
-function confirmDanger(
-  title: string,
-  body: string,
-  onAccept: () => Promise<void>,
-  icon: string = "",
-  onReject: () => Promise<void> = async () => { }
-) {
-  _confirmation(title, body, onAccept, icon, onReject, "danger")
+  requireConfirmation({ title, message: body, accept: onAccept, reject: onReject });
 }
 
 const msg: NotificationMsg = {
@@ -78,4 +39,4 @@ const msg: NotificationMsg = {
   error,
 }
 
-export { initNotifyService, confirmSuccess, confirmDanger, msg }
+export { confirm, msg }
