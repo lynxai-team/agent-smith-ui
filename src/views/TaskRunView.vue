@@ -260,7 +260,7 @@ async function exec() {
   nUserInteraction.value++;
   const p = prompt.value;
   const opts: AgentInferenceOptions & Record<string, any> = toRaw(inferOptions);
-  console.log("OPTS", opts);
+  //console.log("OPTS", opts);
   prompt.value = "";
   let pr = p;
   if (uistate.value.saveLastPrompt) {
