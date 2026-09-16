@@ -67,7 +67,17 @@ function transformTasksData(data: Record<string, string>): any[] {
         parent.children.push({ key, label: humanize(key) });
     }
 
+    sortNodes(result);
     return result;
+}
+
+function sortNodes(nodes: any[]): void {
+    nodes.sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: "base" }) || a.key.localeCompare(b.key));
+    for (const node of nodes) {
+        if (node.children?.length) {
+            sortNodes(node.children);
+        }
+    }
 }
 
 export {

@@ -29,14 +29,14 @@
                         class="flex flex-col space-y-5 overflow-y-auto">
                         <div>
                             <span class="font-bold mr-2 text-accent">{{ k }}</span>
-                            <span v-html="v.replaceAll('\n', '<br />')"></span>
+                            <span v-html="v.toString().replaceAll('\n', '<br />')"></span>
                         </div>
                     </div>
                 </template>
             </div>
             <div v-else class="p-3">
                 <div v-if="tool?.response !== undefined && tool?.response !== null"
-                    v-html="tool?.response.replaceAll('\n', '<br />')" class="overflow-y-auto"></div>
+                    v-html="tool?.response.toString().replaceAll('\n', '<br />')" class="overflow-y-auto"></div>
                 <div v-else-if="!(tool?.type == 'agent')">Tool call in progress ...</div>
             </div>
         </div>

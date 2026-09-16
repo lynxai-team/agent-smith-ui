@@ -260,6 +260,7 @@ async function exec() {
   nUserInteraction.value++;
   const p = prompt.value;
   const opts: AgentInferenceOptions & Record<string, any> = toRaw(inferOptions);
+  console.log("OPTS", opts);
   prompt.value = "";
   let pr = p;
   if (uistate.value.saveLastPrompt) {
@@ -454,7 +455,7 @@ function restartAtTurn(n: number) {
   const at = state.uihistory[n - 1].agentTurn + 1;
   //console.log("Restart 3 n", n - 1, "at", at);
   if (at > 0) {
-    state.history = state.history.slice(0, at + 1);
+    state.history = state.history.slice(0, at + 2);
   } else {
     state.history = [state.history[0]];
   }

@@ -16,7 +16,8 @@
                         <ArgumentIcon width="24" height="24"></ArgumentIcon>
                     </div>
                     <div>{{ v }}:</div>
-                    <div class="text-semilight">{{ k.slice(0, 60) }}{{ k.length > 59 ? '(...)' : '' }}</div>
+                    <div class="text-semilight">{{ k.toString().slice(0, 60) }}{{ k.toString().length > 59 ? '(...)' :
+                        '' }}</div>
                 </div>
             </div>
         </div>
