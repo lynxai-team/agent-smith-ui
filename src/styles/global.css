@@ -1,3 +1,4 @@
 @import "tailwindcss";
 @import "tailwindcss-semantic-colors";
 @import "./snowind.css";
+@import 'markstream-vue/index.css' layer(components);

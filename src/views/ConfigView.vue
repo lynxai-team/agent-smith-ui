@@ -1,5 +1,5 @@
 <template>
-    <div class="container mx-auto flex flex-col space-y-5 p-3 h-full pb-24 w-main">
+    <div class="container mx-auto flex flex-col space-y-5 p-3 h-full pb-24 w-main overflow-y-auto">
         <div class="flex flex-row mr-3">
             <button class="btn p-1 border border-lighter"
                 :class="view == 'settings' ? ['text-semilight', 'border-b-0'] : 'text-light'"

@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row h-main">
-    <div id="main-output" class="flex flex-col grow h-full overflow-y-auto ">
+    <div id="main-output" class="flex flex-col grow h-full">
       <div v-if="question?.length == 0 && isReady">
         <ViewAgent :agent="srv.agentSpec.value"></ViewAgent>
       </div>
@@ -82,7 +82,7 @@
           </template>
           <template v-else>
             <MarkdownRender v-if="uistate.viewMode == 'markdown'" :nodes="nodes" custom-id="main" :is-strict="true"
-              class="pl-3 mdr" />
+              class="pl-3 mdr" :custom-html-tags="customHtmlTags" />
             <div v-else-if="uistate.viewMode == 'text'" v-html="stream.replaceAll('\n', '<br />')" class="pl-3"></div>
             <div v-else class="pl-3">
               <pre>{{ stream }}</pre>
@@ -168,39 +168,35 @@
 
 <script setup lang="ts">
 import type { AgentInferenceOptions, InferenceParams } from '@agent-smith/types';
-// @ts-ignore
-import type { ParsedNode } from 'markstream-vue';
-import MarkdownRender, { CodeBlockNode, enableMermaid, setCustomComponents } from 'markstream-vue';
-import { computed, onBeforeMount, onBeforeUnmount, nextTick, reactive, ref, toRaw, watch } from 'vue';
-import ThinkingContent from '../components/ThinkingContent.vue';
-import ThinkingNode from '../components/ThinkingNode.vue';
-import { confirm, msg } from '../services/notify.js';
-import { agentHistoryManager, debugInference, inferOptions, onModelsReady, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
-import AutoTextarea from '../widgets/AutoTextarea.vue';
-//import ToolCallNode from '../components/ToolCallNode.vue';
-import 'markstream-vue/index.css';
-//import "../assets/markstream.css";
 import { ToolCallSpec, UiHistoryTurn } from '@agent-smith/types';
 import { useClientFeatures } from '@agent-smith/wscli';
+import type { ParsedNode } from 'markstream-vue';
+import MarkdownRender, { enableMermaid } from 'markstream-vue';
+import { computed, nextTick, onBeforeMount, onBeforeUnmount, reactive, ref, toRaw, watch } from 'vue';
 import AgentParamsPicker from '../components/AgentParamsPicker.vue';
 import FormatedToolCallInProgress from '../components/FormatedToolCallInProgress.vue';
 import PromptNavbarLeft from '../components/navbars/PromptNavbarLeft.vue';
 import PromptProcessingProgress from '../components/PromptProcessingProgress.vue';
 import SidebarRightDispatch from '../components/sidebars/SidebarRightDispatch.vue';
-import { defaultInferenceParams } from '../conf.js';
-import { useTaskEvents } from '../services/task_events.js';
-import FormatedToolCall from '../widgets/FormatedToolCall.vue';
-import HistoryTurnStatsBar from '../widgets/HistoryTurnStatsBar.vue';
-import RestartIcon from '../widgets/icons/RestartIcon.vue';
-import ToolCallDetails from '../widgets/ToolCallDetails.vue';
-import TurnTitle from '../widgets/TurnTitle.vue';
-import ResetIcon from '../widgets/icons/ResetIcon.vue';
-import StopIcon from '../widgets/icons/StopIcon.vue';
-import SendIcon from '../widgets/icons/SendIcon.vue';
-import ViewAgent from '../components/ViewAgent.vue';
+import ThinkingContent from '../components/ThinkingContent.vue';
+import ThinkingNode from '../components/ThinkingNode.vue';
 import SwIftaLabel from '../components/vibe/iftalabel/SwIftaLabel.vue';
 import SwInputText from '../components/vibe/inputtext/SwInputText.vue';
 import SwPopover from '../components/vibe/popover/SwPopover.vue';
+import ViewAgent from '../components/ViewAgent.vue';
+import { defaultInferenceParams } from '../conf.js';
+import { confirm, msg } from '../services/notify.js';
+import { useTaskEvents } from '../services/task_events.js';
+import { agentHistoryManager, debugInference, inferOptions, onModelsReady, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
+import AutoTextarea from '../widgets/AutoTextarea.vue';
+import FormatedToolCall from '../widgets/FormatedToolCall.vue';
+import HistoryTurnStatsBar from '../widgets/HistoryTurnStatsBar.vue';
+import ResetIcon from '../widgets/icons/ResetIcon.vue';
+import RestartIcon from '../widgets/icons/RestartIcon.vue';
+import SendIcon from '../widgets/icons/SendIcon.vue';
+import StopIcon from '../widgets/icons/StopIcon.vue';
+import ToolCallDetails from '../widgets/ToolCallDetails.vue';
+import TurnTitle from '../widgets/TurnTitle.vue';
 
 const props = defineProps({
   name: {
@@ -213,9 +209,8 @@ const props = defineProps({
   }
 });
 
-setCustomComponents({ code_block: CodeBlockNode });
-//setCustomComponents("think", { think: ThinkingNode });
-//setCustomComponents("tool_call", { tool_call: ToolCallNode });
+const customHtmlTags = new Array<string>("chart");
+//setCustomComponents("main", { code_block: CodeBlockNode, html_block: HtmlBlockNode, chart: ChartNode });
 enableMermaid();
 
 const isReady = ref(false);
