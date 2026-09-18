@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-row h-main">
-    <div id="main-output" class="flex flex-col grow h-full">
+    <div id="main-output" class="flex flex-col grow h-full overflow-y-auto">
       <div v-if="question?.length == 0 && isReady">
         <ViewAgent :agent="srv.agentSpec.value"></ViewAgent>
       </div>
@@ -45,9 +45,8 @@
                       <button class="btn success text-sm"
                         @click="turn.state.confirmToolCalls[tool.call.id].resolve(true)">Authorize</button>
                     </div>
-                    <div class="toolcall overflow-y-auto slide-y" :class="turn.state.showToolResponses.includes(tool.call.id) ? [
-                      ['slidedown']
-                    ] : 'slideup'">
+                    <div class="toolcall overflow-y-auto slide-y" :class="turn.state.showToolResponses.includes(tool.call.id) ?
+                      'slidedown' : 'slideup'">
                       <ToolCallDetails :tool="tool" class="mt-2 ml-3"></ToolCallDetails>
                     </div>
                   </div>
@@ -524,7 +523,7 @@ function scrollOutput(nosmooth: boolean = true, delay = 0) {
 }
 
 function toggleViewToolResult(id: string, turn: UiHistoryTurn) {
-  //console.log("TOGGLE TOOL RESULT VIEW", id in turn.state.confirmToolCalls);
+  //console.log("TOGGLE TOOL RESULT VIEW", id, toRaw(turn.state.showToolResponses));
   if (id in turn.state.confirmToolCalls) {
     return
   }
@@ -592,9 +591,6 @@ watch(props, () => {
 <style lang="sass" scoped>
 .opened.sw-sidebar
   width: 20rem
-
-.toolcall.slidedown
-  max-height: 400px;
 
 .paragraph-node
   margin: 0 !important

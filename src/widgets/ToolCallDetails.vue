@@ -1,5 +1,5 @@
 <template>
-    <div class="border border-lighter rounded-md border-t-0 border-r-0">
+    <div class="border border-lighter rounded-md border-t-0 border-r-0 background">
         <div class="flex flex-col h-full">
             <div class="flex flex-row">
                 <div class="toolcallbg p-2 border-r border-t border-lighter cursor-pointer"
@@ -44,7 +44,7 @@
 </template>
 <script setup lang="ts">
 import type { ToolTurn } from '@agent-smith/types';
-import { ref, watchEffect } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import LoadingSpinner from './LoadingSpinner.vue';
 
 const props = defineProps({
@@ -55,6 +55,7 @@ const props = defineProps({
 });
 
 const tab = ref<"call" | "response">(props.tool?.response !== undefined && props.tool?.response !== null ? "response" : "call");
+onMounted(() => console.log("M", props.tool))
 
 watchEffect(() => {
     if (props.tool?.response !== undefined && props.tool?.response !== null) {
