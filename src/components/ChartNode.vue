@@ -23,7 +23,7 @@ const props = defineProps<{
     isDark?: boolean
 }>()
 
-let id: string = "";
+const id = ref("");
 const isValid = ref(false);
 const isChartRendered = ref(false);
 const nChars = ref(0);
@@ -59,14 +59,14 @@ watchEffect(() => {
     if (isChartRendered.value === true) {
         return
     }
+    isValid.value = true;
     nextTick(() => {
         //console.log("Display chart", id);
-        //console.log(props.node);
-        new Chart(id, content as ChartConfiguration);
-        isValid.value = true;
+        //console.log(props.node);        
+        new Chart(id.value, content as ChartConfiguration);
         isChartRendered.value = true
     })
 });
 
-onBeforeMount(() => id = crypto.randomUUID());
+onBeforeMount(() => id.value = crypto.randomUUID());
 </script>
