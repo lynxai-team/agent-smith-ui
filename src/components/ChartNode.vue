@@ -1,32 +1,47 @@
 <template>
     <div class="max-h-150">
-        <canvas :id="id" v-if="isValid"></canvas>
+        <canvas :id="id" v-if="isValid">
+        </canvas>
+        <div v-else-if="node" class="text-semilight">
+            Creating chart, emiting {{ nChars }} characters...
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { type ParsedNode } from 'markstream-vue'
 import Chart, { type ChartConfiguration } from 'chart.js/auto';
-import { nextTick, ref, watchEffect } from 'vue';
+import { nextTick, onBeforeMount, ref, watchEffect } from 'vue';
 
-const props = defineProps({
-    node: {
-        type: Object as () => ParsedNode,
-    },
-});
+const props = defineProps<{
+    node?: {
+        type: 'chart'
+        raw?: string,
+        content?: string
+        loading?: boolean
+    }
+    customId?: string
+    isDark?: boolean
+}>()
 
-const id = crypto.randomUUID();
+let id: string = "";
 const isValid = ref(false);
+const isChartRendered = ref(false);
+const nChars = ref(0);
 
 watchEffect(() => {
+    //console.log("NODE", props.node);
     if (!props?.node) {
         return
     }
+    nChars.value = props?.node?.content?.length ?? 0;
+    //console.log("NODE", props.node);
     if (props.node?.loading === true) {
         return
     }
-    if (!props.node.raw.endsWith("</chart>")) {
-        return
+    if (props.node?.raw !== undefined) {
+        if (!props.node.raw.endsWith("</chart>")) {
+            return
+        }
     }
     //console.log("NODE", props.node);
     //@ts-ignore
@@ -41,11 +56,17 @@ watchEffect(() => {
     } catch (err) {
         console.error("ERR", err);
     }
-    //@ts-ignore
-    //console.log("CONTENT", content);
-    //console.log("EL", id);
-    isValid.value = true;
-    nextTick(() => new Chart(id, content as ChartConfiguration))
+    if (isChartRendered.value === true) {
+        return
+    }
+    nextTick(() => {
+        //console.log("Display chart", id);
+        //console.log(props.node);
+        new Chart(id, content as ChartConfiguration);
+        isValid.value = true;
+        isChartRendered.value = true
+    })
+});
 
-})
+onBeforeMount(() => id = crypto.randomUUID());
 </script>

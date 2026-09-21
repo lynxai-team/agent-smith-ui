@@ -9,7 +9,7 @@ import { msg } from "./notify.js";
 
 let isDebug = false;
 let parseScheduled = false;
-const PARSE_INTERVAL_MS = 50; // ~20 parses/sec
+const PARSE_INTERVAL_MS = 100;
 
 const useTaskEvents = (
     stream: Ref<string>,
@@ -154,9 +154,9 @@ const useTaskEvents = (
         }
         //state.history[state.history.length - 1].tools = [t];
         const tcip = toolCallsState.tcs.findIndex(a => a.id == tc.id);
-        if (tcip === -1) {
-            throw new Error(`tool call in progress ${tc} not found`)
-        }
+        /*if (tcip === -1) {
+            throw new Error(`onToolCall: tool call in progress ${JSON.stringify(tc, null, 2)} not found`)
+        }*/
         toolCallsState.tcs.splice(tcip, 1);
         if (type == "agent" || tc.name == "run-agent") {
             //console.log("SET CA onToolCall", tc.name, currentAgent.value, "=>", from);
@@ -211,7 +211,8 @@ const useTaskEvents = (
         }
         const tcip = toolCallsState.tcs.findIndex(a => a.id == tc.id);
         if (tcip === -1) {
-            throw new Error(`tool call in progress ${tc} not found`)
+            //console.log("TCIP", toolCallsState.tcs);
+            throw new Error(`onToolConfirmUsage: tool call in progress ${JSON.stringify(tc, null, 2)} not found`)
         }
         toolCallsState.tcs.splice(tcip, 1);
         const { awaiter, unblock } = createAwaiter<boolean>();
@@ -231,8 +232,10 @@ const useTaskEvents = (
         //turn.tools.push(t)
         //console.log("TT", JSON.stringify(toRaw(turn), null, 2));
         turn.state.confirmToolCalls[tc.id] = { resolve: unblock, reject: () => true };
-        //console.log("CTC", turn.state.confirmToolCalls);
         const res = await awaiter;
+        //console.log("CTC", turn.state.confirmToolCalls[tc.id]);
+        //console.log("RES", res);
+        delete turn.state.confirmToolCalls[tc.id];
         turn.state.showToolResponses = []
         return res
         //console.log("CONFIRM TOOL", tc); return confirm(`Use tool \n${JSON.stringify(tc)} ?`)
@@ -285,8 +288,8 @@ const useTaskEvents = (
 
     const onToolCallToken = (t: string, from: string) => {
         //console.log("TCT", t)
-        stream.value += t;
-        scrollOutput();
+        //stream.value += t;
+        //scrollOutput();
     }
 
     const onPromptProcessingProgress = (progress: PromptProcessingInProgressStats, from: string) => {

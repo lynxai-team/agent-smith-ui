@@ -25,8 +25,7 @@
         <div class="toolcall bg border-r border-lighter">
             <div v-if="tab == 'call'" class="border-r border-lighter p-3">
                 <template v-if="tool.call?.arguments">
-                    <div v-for="[k, v] in Object.entries(tool.call.arguments)"
-                        class="flex flex-col space-y-5 overflow-y-auto">
+                    <div v-for="[k, v] in Object.entries(tool.call.arguments)" class="flex flex-col space-y-5">
                         <div>
                             <span class="font-bold mr-2 text-accent">{{ k }}</span>
                             <span v-html="v.toString().replaceAll('\n', '<br />')"></span>
@@ -34,9 +33,9 @@
                     </div>
                 </template>
             </div>
-            <div v-else class="p-3">
+            <div v-else class="p-3 overflow-y-auto">
                 <div v-if="tool?.response !== undefined && tool?.response !== null"
-                    v-html="tool?.response.toString().replaceAll('\n', '<br />')" class="overflow-y-auto"></div>
+                    v-html="tool?.response.toString().replaceAll('\n', '<br />')"></div>
                 <div v-else-if="!(tool?.type == 'agent')">Tool call in progress ...</div>
             </div>
         </div>
@@ -44,7 +43,7 @@
 </template>
 <script setup lang="ts">
 import type { ToolTurn } from '@agent-smith/types';
-import { onMounted, ref, watchEffect } from 'vue';
+import { ref, watchEffect } from 'vue';
 import LoadingSpinner from './LoadingSpinner.vue';
 
 const props = defineProps({
@@ -55,7 +54,6 @@ const props = defineProps({
 });
 
 const tab = ref<"call" | "response">(props.tool?.response !== undefined && props.tool?.response !== null ? "response" : "call");
-onMounted(() => console.log("M", props.tool))
 
 watchEffect(() => {
     if (props.tool?.response !== undefined && props.tool?.response !== null) {

@@ -80,8 +80,9 @@
             </ThinkingNode>
           </template>
           <template v-else>
-            <MarkdownRender v-if="uistate.viewMode == 'markdown'" :nodes="nodes" custom-id="main" :is-strict="true"
-              class="pl-3 mdr" :custom-html-tags="customHtmlTags" />
+            <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="stream" custom-id="main" class="pl-3 mdr"
+              :final="true" :batch-rendering="true" :defer-nodes-until-visible="true" :max-live-nodes="320"
+              :live-node-buffer="60" />
             <div v-else-if="uistate.viewMode == 'text'" v-html="stream.replaceAll('\n', '<br />')" class="pl-3"></div>
             <div v-else class="pl-3">
               <pre>{{ stream }}</pre>
@@ -443,21 +444,17 @@ function restartAtTurn(n: number) {
     nUserInteraction.value = 0;
     return
   }
-  prompt.value = state.uihistory[n].user ?? "";
-  //console.log("Restart 2 n", n, "/", state.uihistory.length, state.uihistory[n - 1]);
-  state.uihistory = state.uihistory.slice(0, n);
-  const at = state.uihistory[n - 1].agentTurn + 1;
-  //console.log("Restart 3 n", n - 1, "at", at);
+  prompt.value = state.uihistory[n - 1].user ?? "";
+  const at = state.uihistory[n - 1].agentTurn;
+  state.uihistory = state.uihistory.slice(0, n - 1);
+  console.log("Restart n", n - 1, "at", at);
   if (at > 0) {
-    state.history = state.history.slice(0, at + 2);
+    state.history = state.history.slice(0, n - 1);
   } else {
     state.history = [state.history[0]];
   }
-  //console.log("H", toRaw(state.history));
   confirmRestart.value = null;
   nUserInteraction.value = n;
-  //console.log("SH1", state.history);
-  //history.reset();
 }
 
 function useAgentSettings(data: {

@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="overflow-y-auto max-h-min">
-                <MarkdownRender v-if="agent?.template?.system" :content="agent.template.system" class="mdr" />
+                <div v-if="agent?.template?.system" v-html="agent.template.system.replaceAll('\n', '<br />')"></div>
             </div>
         </div>
     </div>

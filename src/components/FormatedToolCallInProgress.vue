@@ -8,8 +8,7 @@
             <div>=></div>
             <div class="font-semibold text-success">{{ toolCallSpec.name }}</div>
         </div>
-        <div v-if="showToolCallProgress" v-html="parseStream()">
-        </div>
+        <!-- div v-if="showToolCallProgress" v-html="parseStream()" -->
     </div>
 </template>
 
