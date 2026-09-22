@@ -6,8 +6,9 @@ import ChartNode from './components/ChartNode.vue';
 
 const app = createApp(App);
 
-app.use(router).use(VueRendererMarkdown, {
+app.use(router).use(VueRendererMarkdown
+    /*, {
     components: {
         code_block: CodeBlockNode, html_block: HtmlBlockNode, chart: ChartNode,
-    },
-}).component('MarkdownRender', MarkdownRender).mount('#app');
+}}*/
+).component('MarkdownRender', MarkdownRender).mount('#app');

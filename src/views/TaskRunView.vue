@@ -27,7 +27,8 @@
                   <ThinkingContent :content="turn.think" :from="turn.from"></ThinkingContent>
                 </div>
                 <div v-if="turn?.assistant" class="px-3 pb-3 flex flex-col space-y-3">
-                  <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="turn.assistant" class="mdr" />
+                  <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="turn.assistant" class="mdr"
+                    custom-id="assistant" :custom-html-tags="customHtmlTags" />
                   <div v-else-if="uistate.viewMode == 'text'" v-html="turn.assistant.replaceAll('\n', '<br />')"></div>
                   <div v-else>
                     <pre>{{ turn.assistant }}</pre>
@@ -80,9 +81,9 @@
             </ThinkingNode>
           </template>
           <template v-else>
-            <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="stream" custom-id="main" class="pl-3 mdr"
-              :final="true" :batch-rendering="true" :defer-nodes-until-visible="true" :max-live-nodes="320"
-              :live-node-buffer="60" />
+            <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="stream" custom-id="main"
+              :custom-html-tags="customHtmlTags" class="pl-3 mdr" :final="true" :batch-rendering="true"
+              :defer-nodes-until-visible="true" :max-live-nodes="320" :live-node-buffer="60" />
             <div v-else-if="uistate.viewMode == 'text'" v-html="stream.replaceAll('\n', '<br />')" class="pl-3"></div>
             <div v-else class="pl-3">
               <pre>{{ stream }}</pre>
@@ -171,7 +172,7 @@ import type { AgentInferenceOptions, InferenceParams } from '@agent-smith/types'
 import { ToolCallSpec, UiHistoryTurn } from '@agent-smith/types';
 import { useClientFeatures } from '@agent-smith/wscli';
 import type { ParsedNode } from 'markstream-vue';
-import MarkdownRender, { enableMermaid } from 'markstream-vue';
+import MarkdownRender, { CodeBlockNode, enableMermaid, HtmlBlockNode, setCustomComponents } from 'markstream-vue';
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, reactive, ref, toRaw, watch } from 'vue';
 import AgentParamsPicker from '../components/AgentParamsPicker.vue';
 import FormatedToolCallInProgress from '../components/FormatedToolCallInProgress.vue';
@@ -197,6 +198,7 @@ import SendIcon from '../widgets/icons/SendIcon.vue';
 import StopIcon from '../widgets/icons/StopIcon.vue';
 import ToolCallDetails from '../widgets/ToolCallDetails.vue';
 import TurnTitle from '../widgets/TurnTitle.vue';
+import ChartNode from '../components/ChartNode.vue';
 
 const props = defineProps({
   name: {
@@ -210,7 +212,12 @@ const props = defineProps({
 });
 
 const customHtmlTags = new Array<string>("chart");
-//setCustomComponents("main", { code_block: CodeBlockNode, html_block: HtmlBlockNode, chart: ChartNode });
+setCustomComponents("main", {
+  code_block: CodeBlockNode, html_block: HtmlBlockNode, chart: ChartNode
+});
+setCustomComponents("assistant", {
+  code_block: CodeBlockNode, html_block: HtmlBlockNode, chart: ChartNode
+});
 enableMermaid();
 
 const isReady = ref(false);

@@ -28,6 +28,7 @@ const useTaskEvents = (
     let buffer = "";
     let isStreaming = ref(false);
     const md = getMarkdown(undefined, { customHtmlTags: ["chart"] });
+    const tmd = getMarkdown();
     //const perf = useInferencePerfTimer();
     const debug = isDebug;
     //let callerAgents = new Array<string>();
@@ -90,9 +91,9 @@ const useTaskEvents = (
             parseScheduled = true;
             setTimeout(() => {
                 // @ts-ignore
-                thinkingNodes.value = parseMarkdownToStructure(buffer, md, {
+                thinkingNodes.value = parseMarkdownToStructure(buffer, tmd, {
                     final: true,
-                    //requireClosingStrong: true,
+                    requireClosingStrong: true,
                 });
                 parseScheduled = false;
                 nextTick(() => scrollOutput());
@@ -116,7 +117,7 @@ const useTaskEvents = (
         agentHistoryManager.newTurn("think", from, {
             think: stream.value,
         });
-        //state.history.push({ think: stream.value });
+        //console.log({ think: stream.value });
         buffer = "";
         stream.value = "";
         //console.log("END T")
@@ -129,7 +130,7 @@ const useTaskEvents = (
             parseScheduled = true;
             setTimeout(() => {
                 // @ts-ignore
-                nodes.value = parseMarkdownToStructure(buffer, md, { final: true });
+                nodes.value = parseMarkdownToStructure(buffer, md, { final: true, requireClosingStrong: true, });
                 parseScheduled = false;
                 nextTick(() => scrollOutput())
             }, PARSE_INTERVAL_MS);

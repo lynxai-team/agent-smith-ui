@@ -29,6 +29,9 @@ const isChartRendered = ref(false);
 const nChars = ref(0);
 
 watchEffect(() => {
+    if (isChartRendered.value === true) {
+        return
+    }
     //console.log("NODE", props.node);
     if (!props?.node) {
         return
@@ -55,8 +58,7 @@ watchEffect(() => {
 
     } catch (err) {
         console.error("ERR", err);
-    }
-    if (isChartRendered.value === true) {
+        console.log("DATA", props.node.content)
         return
     }
     isValid.value = true;

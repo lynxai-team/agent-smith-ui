@@ -25,7 +25,8 @@
             <div class="text-semilight w-max">{{ from }}&nbsp;thinking</div>
         </button>
         <div v-if="uistate.autoOpenThink" class="text-semilight">
-            <MarkdownRender :content="content" class="mdr" style="padding:0 !important;margin:0 !important;" />
+            <MarkdownRender :customHtmlTags="[]" :content="content" class="mdr"
+                style="padding:0 !important;margin:0 !important;" />
         </div>
     </div>
     <!-- /div -->

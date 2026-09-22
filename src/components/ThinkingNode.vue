@@ -1,7 +1,4 @@
 <template>
-    <!--div>
-        TN=
-        <pre>|{{ node.content == "" }}|{{ node.content }}|</pre -->
     <div class="flex flex-col">
         <div class=" btn flex flex-row space-x-3 items-center w-min text-sm" @click="toggleThinking()">
             <div class="text-light">
@@ -24,7 +21,8 @@
             <div class="text-semilight w-max">{{ from }}&nbsp;thinking</div>
         </div>
         <div v-if="showThinking" class="text-semilight">
-            <MarkdownRender class="mdr" :nodes="nodes" :is-strict="true" :batch-rendering="true" />
+            <MarkdownRender :custom-html-tags="[]" class="mdr" :nodes="nodes" :is-strict="true"
+                :batch-rendering="true" />
         </div>
     </div>
     <!--/div-->
