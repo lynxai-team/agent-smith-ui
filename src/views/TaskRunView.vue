@@ -28,7 +28,7 @@
                 </div>
                 <div v-if="turn?.assistant" class="px-3 pb-3 flex flex-col space-y-3">
                   <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="turn.assistant" class="mdr"
-                    custom-id="assistant" :custom-html-tags="customHtmlTags" />
+                    :typewriter="true" custom-id="assistant" :custom-html-tags="customHtmlTags" />
                   <div v-else-if="uistate.viewMode == 'text'" v-html="turn.assistant.replaceAll('\n', '<br />')"></div>
                   <div v-else>
                     <pre>{{ turn.assistant }}</pre>
@@ -81,7 +81,7 @@
             </ThinkingNode>
           </template>
           <template v-else>
-            <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="stream" custom-id="main"
+            <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="stream" custom-id="main" :typewriter="true"
               :custom-html-tags="customHtmlTags" class="pl-3 mdr" :final="true" :batch-rendering="true"
               :defer-nodes-until-visible="true" :max-live-nodes="320" :live-node-buffer="60" />
             <div v-else-if="uistate.viewMode == 'text'" v-html="stream.replaceAll('\n', '<br />')" class="pl-3"></div>
@@ -199,6 +199,7 @@ import StopIcon from '../widgets/icons/StopIcon.vue';
 import ToolCallDetails from '../widgets/ToolCallDetails.vue';
 import TurnTitle from '../widgets/TurnTitle.vue';
 import ChartNode from '../components/ChartNode.vue';
+import EditorLinkNode from '../components/EditorLinkNode.vue';
 
 const props = defineProps({
   name: {
@@ -211,12 +212,12 @@ const props = defineProps({
   }
 });
 
-const customHtmlTags = new Array<string>("chart");
+const customHtmlTags = new Array<string>("chart", "editor");
 setCustomComponents("main", {
-  code_block: CodeBlockNode, html_block: HtmlBlockNode, chart: ChartNode
+  code_block: CodeBlockNode, html_block: HtmlBlockNode, chart: ChartNode, editor: EditorLinkNode,
 });
 setCustomComponents("assistant", {
-  code_block: CodeBlockNode, html_block: HtmlBlockNode, chart: ChartNode
+  code_block: CodeBlockNode, html_block: HtmlBlockNode, chart: ChartNode, editor: EditorLinkNode,
 });
 enableMermaid();
 
@@ -344,7 +345,7 @@ async function exec() {
     }*/
     if (opts.params.chat_template_kwargs?.enable_thinking) {
       opts.reasoning = {
-        "effort": "high",
+        "effort": "xhigh",
       }
     }
     delete opts.params.chat_template_kwargs
@@ -366,6 +367,7 @@ async function loadTask() {
   inferOptions.propagateBackend = false;
   inferOptions.propagateModel = false;
   inferOptions.propagateInferParams = false;
+  inferOptions.useAgentSettings = false;
   //console.log("Load task", props.name);
   await srv.load(props.name, props.isAgent);
   //console.log("AS", toRaw(srv.agentSpec.value));
@@ -390,6 +392,9 @@ async function loadTask() {
         }
         if (v?.propagateInferParams) {
           inferOptions.propagateInferParams = v.propagateInferParams
+        }
+        if (v?.useAgentSettings) {
+          inferOptions.useAgentSettings = v.useAgentSettings
         }
       } else {
         inferOptions.params[k] = v

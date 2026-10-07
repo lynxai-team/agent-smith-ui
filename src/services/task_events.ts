@@ -8,7 +8,7 @@ import { createAwaiter } from "../utils.js";
 import { msg } from "./notify.js";
 
 let isDebug = false;
-let parseScheduled = false;
+let parseScheduled = true;
 const PARSE_INTERVAL_MS = 100;
 
 const useTaskEvents = (
@@ -27,7 +27,7 @@ const useTaskEvents = (
     //let prevToken = "";
     let buffer = "";
     let isStreaming = ref(false);
-    const md = getMarkdown(undefined, { customHtmlTags: ["chart"] });
+    //const md = getMarkdown(undefined, { customHtmlTags: ["chart"] });
     const tmd = getMarkdown();
     //const perf = useInferencePerfTimer();
     const debug = isDebug;
@@ -87,18 +87,7 @@ const useTaskEvents = (
     const onThinkingToken: AgentInferenceOptions["onThinkingToken"] = (t: string, from: string) => {
         buffer += t;
         stream.value += t;
-        if (!parseScheduled) {
-            parseScheduled = true;
-            setTimeout(() => {
-                // @ts-ignore
-                thinkingNodes.value = parseMarkdownToStructure(buffer, tmd, {
-                    final: true,
-                    requireClosingStrong: true,
-                });
-                parseScheduled = false;
-                nextTick(() => scrollOutput());
-            }, PARSE_INTERVAL_MS);
-        }
+        _parseStream(true);
     }
 
     const onStartThinking: AgentInferenceOptions["onStartThinking"] = (from: string) => {
@@ -126,15 +115,7 @@ const useTaskEvents = (
     const onToken: AgentInferenceOptions["onToken"] = (chunk: string, from: string) => {
         buffer += chunk;
         stream.value += chunk;
-        if (!parseScheduled) {
-            parseScheduled = true;
-            setTimeout(() => {
-                // @ts-ignore
-                nodes.value = parseMarkdownToStructure(buffer, md, { final: true, requireClosingStrong: true, });
-                parseScheduled = false;
-                nextTick(() => scrollOutput())
-            }, PARSE_INTERVAL_MS);
-        }
+        _parseStream();
     }
 
     const onToolCall: AgentInferenceOptions["onToolCall"] = (tc: ToolCallSpec, type: string, from: string) => {
@@ -182,12 +163,12 @@ const useTaskEvents = (
         if (debug) {
             console.log("END TOOL CALL", tc.name, type, from, ":", tr);
         }
-        if (type == "agent" || tc.name == "run-agent") {
+        /*if (type == "agent" || tc.name == "run-agent") {
             //history.newTurn("assistant", from, { assistant: tr });
             /*const ca = callerAgents.pop();
             if (!ca) {
                 throw new Error(`onToolCallEnd: ${from}, caller agent not found: callerAgents: ${callerAgents}`)
-            }*/
+            }/
             uihistoryManager.addToolResponseToCurrentTurn(tc, tr, from);
             //console.log("SET CA onToolCallEnd", tc.name, currentAgent.value, "=>", ca);
             //currentAgent.value = ca;
@@ -199,7 +180,7 @@ const useTaskEvents = (
                 call: { id: tc.id, name: tc.name, arguments: tc.arguments },
                 response: tr,
             };
-        }
+        }*/
         agentHistoryManager.addToolResponseToCurrentTurn(tc, tr, from);
         stream.value = "";
         buffer = "";
@@ -346,6 +327,30 @@ const useTaskEvents = (
             time_humanized: "",
             tps: 0
         };
+    }
+
+    const _parseStream = (isThinking = false) => {
+        if (parseScheduled === true) {
+            parseScheduled = false;
+            setTimeout(() => {
+                if (isThinking) {
+                    // @ts-ignore
+                    thinkingNodes.value = parseMarkdownToStructure(buffer, tmd, {
+                        //final: true,
+                        //requireClosingStrong: true,
+                    });
+                } else {
+                    // @ts-ignore
+                    nodes.value = parseMarkdownToStructure(buffer, tmd, {
+                        //final: true,
+                        //requireClosingStrong: true,
+                    });
+                }
+                //console.log("SCR OUT");
+                scrollOutput();
+                parseScheduled = true;
+            }, PARSE_INTERVAL_MS);
+        }
     }
 
     return {

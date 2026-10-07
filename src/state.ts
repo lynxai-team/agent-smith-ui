@@ -86,6 +86,7 @@ const inferOptions = reactive<{
     propagateModel: boolean,
     propagateBackend: boolean,
     propagateInferParams: boolean;
+    useAgentSettings: boolean;
 }>({
     params: defaultInferenceParams,
     model: "",
@@ -93,6 +94,7 @@ const inferOptions = reactive<{
     propagateModel: false,
     propagateBackend: false,
     propagateInferParams: false,
+    useAgentSettings: false,
 });
 const conf = ref<ConfigFile>();
 const srv = useClientFeatures({}, port);

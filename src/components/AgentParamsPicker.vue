@@ -20,11 +20,17 @@
                     </div>
                     <div class="w-full flex justify-center">
                         <div class="flex flex-col space-y-2 mt-3">
-                            <sw-switch v-model:value="switchPropagateBackend" class="text-sm">Use this backend for all
+                            <sw-switch v-model:value="switchUseAgentsSettings" class="text-sm"
+                                @update:value="setUseAgentSettings($event)">Use subagents
+                                settings</sw-switch>
+                            <sw-switch v-model:value="switchPropagateBackend" class="text-sm"
+                                @update:value="setPropagate($event)">Use this backend for all
                                 subagents</sw-switch>
-                            <sw-switch v-model:value="switchPropagateModel" class="text-sm">Use this model for all
+                            <sw-switch v-model:value="switchPropagateModel" class="text-sm"
+                                @update:value="setPropagate($event)">Use this model for all
                                 subagents</sw-switch>
-                            <sw-switch v-model:value="switchPropagateIp" class="text-sm">Use this inference params for
+                            <sw-switch v-model:value="switchPropagateIp" class="text-sm"
+                                @update:value="setPropagate($event)">Use this inference params for
                                 all
                                 subagents</sw-switch>
                             <div class="flex flex-row space-x-2 pt-2 items-center">
@@ -62,7 +68,7 @@
                     <button class="btn soft" @click="showModelPicker = !showModelPicker">Pick a model</button>
                     <button v-if="loadedModel" class="btn soft" @click="pickLoadedModel()">Pick loaded model: {{
                         loadedModel.id
-                        }}
+                    }}
                         {{ humanizeNumber(loadedModel.ctx) }}</button>
                     <button v-for="preset in state.samplingPresets" class="btn soft"
                         @click="applySamplingPreset(preset)">{{
@@ -101,6 +107,7 @@ const loadedModel = ref<ModelInfo | null>(null);
 const switchPropagateModel = ref(false);
 const switchPropagateBackend = ref(false);
 const switchPropagateIp = ref(false);
+const switchUseAgentsSettings = ref(false);
 const enableThinking = ref(false);
 const preserveThinking = ref(false);
 const reasoningEffort = ref("");
@@ -108,6 +115,21 @@ const model = ref<string>("");
 const backend = ref<string>(uistate.value.backend);
 const enableBackendModels = ref(state.backends[backend.value]?.type !== 'openai');
 const showModelPicker = ref(false);
+
+function setUseAgentSettings(e: any) {
+    //console.log("AS", e, switchUseAgentsSettings.value)
+    if (e === true) {
+        switchPropagateBackend.value = false;
+        switchPropagateIp.value = false;
+        switchPropagateModel.value = false;
+    }
+}
+
+function setPropagate(e: any) {
+    if (e === true) {
+        switchUseAgentsSettings.value = false
+    }
+}
 
 function useAgentSettings() {
     if (!model.value) {
@@ -131,6 +153,7 @@ function useAgentSettings() {
         propagateModel: boolean,
         propagateBackend: boolean,
         propagateInferParams: boolean;
+        useAgentSettings: boolean;
     } = {
         model: model.value,
         backend: bk,
@@ -138,6 +161,7 @@ function useAgentSettings() {
         propagateModel: switchPropagateModel.value,
         propagateBackend: switchPropagateBackend.value,
         propagateInferParams: switchPropagateIp.value,
+        useAgentSettings: switchUseAgentsSettings.value,
     }
     emit("end", data)
 }
@@ -167,6 +191,7 @@ async function saveAgentsSettings() {
             propagateBackend: switchPropagateBackend.value,
             propagateModel: switchPropagateModel.value,
             propagateInferParams: switchPropagateIp.value,
+            useAgentSettings: switchUseAgentsSettings.value,
         }
     };
     const payload = { name: props.agentSpec.name, settings: st };
@@ -266,6 +291,9 @@ async function init() {
                 }
                 if ("propagateInferParams" in pv) {
                     switchPropagateIp.value = pv["propagateInferParams"]
+                }
+                if ("useAgentSettings" in pv) {
+                    switchUseAgentsSettings.value = pv["useAgentSettings"]
                 }
             }
             else {
