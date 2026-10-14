@@ -150,7 +150,7 @@
                 <StopIcon width="24" height="24"></StopIcon>
               </button>
               <button class="btn flex justify-end p-3" @click="exec()"
-                :class="prompt.length == 0 ? 'text-semilight' : ''">
+                :class="prompt?.length == 0 ? 'text-semilight' : ''">
                 <SendIcon width="24" height="24"></SendIcon>
               </button>
             </div>
@@ -268,7 +268,7 @@ async function exec() {
   prompt.value = "";
   let pr = p;
   if (uistate.value.saveLastPrompt) {
-    uistate.value.lastPrompt = p
+    uistate.value.lastPrompt = p ?? "";
   }
   //state.history = state.uihistory;
   if (nUserInteraction.value < 2) {
@@ -428,7 +428,7 @@ async function loadTask() {
   });
   setCurrentFeature(props.name, "agent");
   if (uistate.value.saveLastPrompt) {
-    prompt.value = uistate.value.lastPrompt
+    prompt.value = uistate.value?.lastPrompt ?? "";
   }
   isReady.value = true;
 };
@@ -554,9 +554,9 @@ function load() {
 
 function setMainHeight() {
   // @ts-ignore
-  //const offsetHeight = document.getElementById('prompt-input').offsetHeight
-  //const maino = document.getElementById('main-output')!;
-  //maino.style.height = `calc(100% - ${offsetHeight}px)`;
+  const offsetHeight = document.getElementById('prompt-input').offsetHeight
+  const maino = document.getElementById('main-output')!;
+  maino.style.height = `calc(100% - ${offsetHeight}px)`;
 }
 
 function jumpToTurn(i: number) {
