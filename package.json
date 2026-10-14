@@ -26,7 +26,7 @@
     "@vueuse/core": "^15.0.0",
     "chart.js": "^4.5.1",
     "highlight.js": "^11.12.0",
-    "markstream-vue": "^2.0.19",
+    "markstream-vue": "^2.0.8",
     "mermaid": "^12.2.0",
     "modprompt": "^0.14.3",
     "restmix": "^0.6.1",
