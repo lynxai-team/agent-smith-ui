@@ -1,10 +1,10 @@
 <template>
   <div class="flex flex-row h-main">
-    <div id="main-output" class="flex flex-col grow h-full overflow-y-auto">
+    <div class="flex flex-col grow h-full overflow-y-auto">
       <div v-if="question?.length == 0 && isReady">
         <ViewAgent :agent="srv.agentSpec.value"></ViewAgent>
       </div>
-      <div class="flex flex-col grow overflow-y-auto p-3">
+      <div id="main-output" class="flex flex-col grow overflow-y-auto p-3">
         <template v-if="state.uihistory.length > 0">
           <div v-for="(turn, i) in state.uihistory" class="flex flex-col">
             <div class="flex flex-row" v-if="canViewHistoryTurn(turn)">
