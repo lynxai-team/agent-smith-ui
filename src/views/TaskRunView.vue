@@ -83,7 +83,8 @@
           <template v-else>
             <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="stream" custom-id="main" :typewriter="true"
               :custom-html-tags="customHtmlTags" class="pl-3 mdr" :final="true" :batch-rendering="true"
-              :defer-nodes-until-visible="true" :max-live-nodes="320" :live-node-buffer="60" />
+              :defer-nodes-until-visible="true" :max-live-nodes="320" :live-node-buffer="60" smooth-streaming="auto"
+              fade />
             <div v-else-if="uistate.viewMode == 'text'" v-html="stream.replaceAll('\n', '<br />')" class="pl-3"></div>
             <div v-else class="pl-3">
               <pre>{{ stream }}</pre>
@@ -172,7 +173,7 @@ import type { AgentInferenceOptions, InferenceParams } from '@agent-smith/types'
 import { ToolCallSpec, UiHistoryTurn } from '@agent-smith/types';
 import { useClientFeatures } from '@agent-smith/wscli';
 import type { ParsedNode } from 'markstream-vue';
-import MarkdownRender, { CodeBlockNode, enableMermaid, HtmlBlockNode, setCustomComponents } from 'markstream-vue';
+import MarkdownRender, { CodeBlockNode, createMermaidWorkerFromCDN, enableMermaid, HtmlBlockNode, setCustomComponents, setMermaidWorker } from 'markstream-vue';
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, reactive, ref, toRaw, watch } from 'vue';
 import AgentParamsPicker from '../components/AgentParamsPicker.vue';
 import FormatedToolCallInProgress from '../components/FormatedToolCallInProgress.vue';
