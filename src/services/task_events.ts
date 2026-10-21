@@ -1,6 +1,6 @@
 import type { AgentInferenceOptions, ClientFeaturesOptions, HistoryTurn, PromptProcessingInProgressStats, ToolCallSpec, ToolTurn } from "@agent-smith/types";
 import { getMarkdown, parseMarkdownToStructure } from "markstream-vue";
-import { nextTick, ref, type Reactive, type Ref } from "vue";
+import { markRaw, nextTick, ref, type Reactive, type Ref } from "vue";
 import type { ParsedNode } from "yaml";
 import { uihistoryManager, state, uistate, agentHistoryManager } from "../state.js";
 import type { UiToolTurn } from "../interfaces.js";
@@ -252,7 +252,7 @@ const useTaskEvents = (
         };
         //console.log("TURN END H", hts)
         if (from == state.currentFeature.name) {
-            state.history = hts;
+            state.history.push(markRaw(hts[hts.length - 1]));
         }
         const ht = hts[hts.length - 1];
         if (ht?.stats && !(from == "server")) {
@@ -335,17 +335,18 @@ const useTaskEvents = (
             setTimeout(() => {
                 if (isThinking) {
                     // @ts-ignore
-                    thinkingNodes.value = parseMarkdownToStructure(buffer, tmd, {
+                    thinkingNodes.value.push(parseMarkdownToStructure(buffer, tmd, {
                         //final: true,
                         //requireClosingStrong: true,
-                    });
+                    }));
                 } else {
                     // @ts-ignore
-                    nodes.value = parseMarkdownToStructure(buffer, tmd, {
+                    nodes.value.push(parseMarkdownToStructure(buffer, tmd, {
                         //final: true,
                         //requireClosingStrong: true,
-                    });
+                    }));
                 }
+                buffer = "";
                 //console.log("SCR OUT");
                 scrollOutput();
                 parseScheduled = true;
