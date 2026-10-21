@@ -1,7 +1,5 @@
 import type { HistoryTurn, InferenceStats, PromptProcessingInProgressStats, ToolCallSpec, ToolTurn, UiHistoryTurn, UiHistoryTurnType } from "@agent-smith/types";
 import { state } from "../state.js";
-import { toRaw } from "vue";
-
 const useUiHistory = () => {
     const callerTurns: Record<string, number> = {};
     const newTurn = (_type: UiHistoryTurnType, from: string, n: number, ht?: HistoryTurn) => {
@@ -47,7 +45,7 @@ const useUiHistory = () => {
     }
 
     const _currentTurn = (): UiHistoryTurn => {
-        return toRaw(state.uihistory[state.uihistory.length - 1]);
+        return state.uihistory[state.uihistory.length - 1];
     }
 
     const addStatsToCurrentTurn = (s: InferenceStats) => {
