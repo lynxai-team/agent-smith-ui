@@ -21,7 +21,7 @@
             <div class="text-semilight w-max">{{ from }}&nbsp;thinking</div>
         </div>
         <div v-if="showThinking" class="text-semilight">
-            <MarkdownRender :custom-html-tags="[]" class="mdr" :nodes="nodes" :is-strict="true"
+            <MarkdownRender :custom-html-tags="[]" class="mdr" :content="content" :is-strict="true"
                 :batch-rendering="true" />
         </div>
     </div>
@@ -34,8 +34,8 @@ import { ref } from 'vue';
 import { uistate } from '../state.js';
 
 const props = defineProps({
-    nodes: {
-        type: Object as () => Array<ParsedNode>,
+    content: {
+        type: String,
         required: true,
     },
     from: {

@@ -25,7 +25,7 @@ const useTaskEvents = (
     isStreaming: Ref<boolean>,
 } => {
     //let prevToken = "";
-    let buffer = "";
+    //let buffer = "";
     let isStreaming = ref(false);
     //const md = getMarkdown(undefined, { customHtmlTags: ["chart"] });
     const tmd = getMarkdown();
@@ -85,9 +85,9 @@ const useTaskEvents = (
     }
 
     const onThinkingToken: AgentInferenceOptions["onThinkingToken"] = (t: string, from: string) => {
-        buffer += t;
+        //buffer += t;
         stream.value += t;
-        _parseStream(true);
+        //_parseStream(true);
     }
 
     const onStartThinking: AgentInferenceOptions["onStartThinking"] = (from: string) => {
@@ -107,15 +107,15 @@ const useTaskEvents = (
             think: stream.value,
         });
         //console.log({ think: stream.value });
-        buffer = "";
+        //buffer = "";
         stream.value = "";
         //console.log("END T")
     }
 
     const onToken: AgentInferenceOptions["onToken"] = (chunk: string, from: string) => {
-        buffer += chunk;
+        //buffer += chunk;
         stream.value += chunk;
-        _parseStream();
+        //_parseStream();
     }
 
     const onToolCall: AgentInferenceOptions["onToolCall"] = (tc: ToolCallSpec, type: string, from: string) => {
@@ -183,7 +183,7 @@ const useTaskEvents = (
         }*/
         agentHistoryManager.addToolResponseToCurrentTurn(tc, tr, from);
         stream.value = "";
-        buffer = "";
+        //buffer = "";
         scrollOutput(true, 50);
     };
 
@@ -308,7 +308,7 @@ const useTaskEvents = (
 
     const resetStream = () => {
         isStreaming.value = false;
-        buffer = "";
+        //buffer = "";
         nodes.value = [];
         thinkingNodes.value = [];
         stream.value = "";
@@ -329,7 +329,7 @@ const useTaskEvents = (
         };
     }
 
-    const _parseStream = (isThinking = false) => {
+    /*const _parseStream = (isThinking = false) => {
         if (parseScheduled === true) {
             parseScheduled = false;
             setTimeout(() => {
@@ -352,7 +352,7 @@ const useTaskEvents = (
                 parseScheduled = true;
             }, PARSE_INTERVAL_MS);
         }
-    }
+    }*/
 
     return {
         events: {

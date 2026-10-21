@@ -77,7 +77,7 @@
             class="pt-3">
           </TurnTitle>
           <template v-if="hasThinking">
-            <ThinkingNode :nodes="thinkingNodes" custom-id="think" :is-strict="true" :from="currentAgent" class="pl-3">
+            <ThinkingNode :content="stream" custom-id="think" :is-strict="true" :from="currentAgent" class="pl-3">
             </ThinkingNode>
           </template>
           <template v-else>
