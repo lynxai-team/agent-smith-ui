@@ -6,64 +6,13 @@
       </div>
       <div id="main-output" class="flex flex-col grow overflow-y-auto p-3">
         <template v-if="state.uihistory.length > 0">
-          <div v-for="(turn, i) in state.uihistory" class="flex flex-col">
-            <div class="flex flex-row" v-if="canViewHistoryTurn(turn)">
-              <a :id="`turn-${i}`"></a>
-              <div class="grow">
-                <TurnTitle name="user" v-if="i == 0"></TurnTitle>
-                <TurnTitle :name="turn.from" v-else-if="((state.uihistory[i - 1].from != turn.from) && (uistate.historyViewMode == 'plain'))
-                  || i == 1" class="pt-3">
-                </TurnTitle>
-                <div v-if="turn?.user" class="p-3">
-                  <!-- MarkdownRender :content="turn.user" v-if="uistate.viewMode == 'markdown'" / -->
-                  <div class="text-semilight" v-html="turn.user.replaceAll('\n', '<br />')"></div>
-                </div>
-                <div v-if="turn?.prefillStats" class="pl-3">
-                  <PromptProcessingProgress v-if="turn.prefillStats.total > 0"
-                    :prompt-processing-stats="turn.prefillStats">
-                  </PromptProcessingProgress>
-                </div>
-                <div v-if="turn?.think" class="pb-2 px-2">
-                  <ThinkingContent :content="turn.think" :from="turn.from"></ThinkingContent>
-                </div>
-                <div v-if="turn?.assistant" class="px-3 pb-3 flex flex-col space-y-3">
-                  <MarkdownRender v-if="uistate.viewMode == 'markdown'" :content="turn.assistant" class="mdr"
-                    :typewriter="true" custom-id="assistant" :custom-html-tags="customHtmlTags" />
-                  <div v-else-if="uistate.viewMode == 'text'" v-html="turn.assistant.replaceAll('\n', '<br />')"></div>
-                  <div v-else>
-                    <pre>{{ turn.assistant }}</pre>
-                  </div>
-                </div>
-                <div v-if="turn?.tools" class="flex flex-col">
-                  <div v-for="tool in turn.tools" class="flex flex-col px-3">
-                    <FormatedToolCall :tool="tool" :turn="turn" class="cursor-pointer"
-                      :class="i == (turn.tools.length - 1) ? 'mb-1' : 'mb-3'"
-                      @click="toggleViewToolResult(tool.call.id, turn)">
-                    </FormatedToolCall>
-                    <div v-if="tool.call.id in turn.state.confirmToolCalls" class="flex flex-row space-x-2">
-                      <button class="btn danger text-sm"
-                        @click="turn.state.confirmToolCalls[tool.call.id].resolve(false)">Deny</button>
-                      <button class="btn success text-sm"
-                        @click="turn.state.confirmToolCalls[tool.call.id].resolve(true)">Authorize</button>
-                    </div>
-                    <div class="toolcall overflow-y-auto slide-y" :class="turn.state.showToolResponses.includes(tool.call.id) ?
-                      'slidedown' : 'slideup'">
-                      <ToolCallDetails :tool="tool" class="mt-2 ml-3"></ToolCallDetails>
-                    </div>
-                  </div>
-                </div>
-                <div v-if="turn?.stats" class="px-3 my-2">
-                  <HistoryTurnStatsBar :stats="turn.stats"></HistoryTurnStatsBar>
-                </div>
-              </div>
-              <button class="btn flex flex-row items-center text-light hover:lighter pl-3"
-                :disabled="taskEvents.isStreaming.value || toolCallsState.tcs.length > 0"
-                @click="confirmRestartAtTurn(i + 1)">
-                <RestartIcon width="24" height="24"></RestartIcon>
-                <div>{{ i + 1 }}</div>
-              </button>
-            </div>
-          </div>
+          <TurnView v-for="(turn, i) in state.uihistory" :key="i"
+            :turn="turn" :index="i"
+            :prev-from="i > 0 ? state.uihistory[i - 1].from : ''"
+            :top-level-agent="topLevelAgent"
+            :is-busy="isBusy"
+            :custom-html-tags="customHtmlTags"
+            @restart="confirmRestartAtTurn($event)" />
         </template>
         <div v-if="state.isLoadingModel" class="pl-6 text-semilight">
           Loading {{ state.currentModel.id }} model ...
@@ -180,7 +129,6 @@ import FormatedToolCallInProgress from '../components/FormatedToolCallInProgress
 import PromptNavbarLeft from '../components/navbars/PromptNavbarLeft.vue';
 import PromptProcessingProgress from '../components/PromptProcessingProgress.vue';
 import SidebarRightDispatch from '../components/sidebars/SidebarRightDispatch.vue';
-import ThinkingContent from '../components/ThinkingContent.vue';
 import ThinkingNode from '../components/ThinkingNode.vue';
 import SwIftaLabel from '../components/vibe/iftalabel/SwIftaLabel.vue';
 import SwInputText from '../components/vibe/inputtext/SwInputText.vue';
@@ -191,14 +139,11 @@ import { confirm, msg } from '../services/notify.js';
 import { useTaskEvents } from '../services/task_events.js';
 import { agentHistoryManager, debugInference, inferOptions, onModelsReady, resetCurrentFeature, setCurrentFeature, state, uihistoryManager, uistate } from '../state.js';
 import AutoTextarea from '../widgets/AutoTextarea.vue';
-import FormatedToolCall from '../widgets/FormatedToolCall.vue';
-import HistoryTurnStatsBar from '../widgets/HistoryTurnStatsBar.vue';
 import ResetIcon from '../widgets/icons/ResetIcon.vue';
-import RestartIcon from '../widgets/icons/RestartIcon.vue';
 import SendIcon from '../widgets/icons/SendIcon.vue';
 import StopIcon from '../widgets/icons/StopIcon.vue';
-import ToolCallDetails from '../widgets/ToolCallDetails.vue';
 import TurnTitle from '../widgets/TurnTitle.vue';
+import TurnView from '../widgets/TurnView.vue';
 import ChartNode from '../components/ChartNode.vue';
 import EditorLinkNode from '../components/EditorLinkNode.vue';
 
@@ -433,18 +378,6 @@ async function loadTask() {
   isReady.value = true;
 };
 
-function canViewHistoryTurn(turn: UiHistoryTurn) {
-  if (["user", topLevelAgent].includes(turn.from)) {
-    return true
-  }
-  if (uistate.value.historyViewMode == "plain") {
-    return true
-  }
-  if (turn.from != topLevelAgent) {
-    return false
-  }
-}
-
 function restartAtTurn(n: number) {
   //console.log("Restart at", n);
   taskEvents.resetStream();
@@ -532,18 +465,6 @@ function scrollOutput(nosmooth: boolean = true, delay = 0) {
   }
 }
 
-function toggleViewToolResult(id: string, turn: UiHistoryTurn) {
-  //console.log("TOGGLE TOOL RESULT VIEW", id, toRaw(turn.state.showToolResponses));
-  if (id in turn.state.confirmToolCalls) {
-    return
-  }
-  if (turn.state.showToolResponses.includes(id)) {
-    turn.state.showToolResponses = turn.state.showToolResponses.filter(r => r != id)
-  } else {
-    turn.state.showToolResponses.push(id)
-  }
-}
-
 function load() {
   if (state.isReady) {
     loadTask()
@@ -566,6 +487,8 @@ function jumpToTurn(i: number) {
   const el = document.getElementById(a)!;
   el.scrollIntoView(o)
 }
+
+const isBusy = computed(() => taskEvents.isStreaming.value || state.isProcessingPrompt);
 
 const inferenceSidebarWidth = computed(() => {
   if (uistate.value.inferenceSidebar == 'full') {
