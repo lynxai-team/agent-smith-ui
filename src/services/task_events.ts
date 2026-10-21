@@ -28,7 +28,7 @@ const useTaskEvents = (
     //let buffer = "";
     let isStreaming = ref(false);
     //const md = getMarkdown(undefined, { customHtmlTags: ["chart"] });
-    const tmd = getMarkdown();
+    //const tmd = getMarkdown();
     //const perf = useInferencePerfTimer();
     const debug = isDebug;
     //let callerAgents = new Array<string>();
@@ -67,7 +67,7 @@ const useTaskEvents = (
         if (debug) { console.log("TCIP", from, tcs) }
         toolCallsState.tcs = tcs;
         toolCallsState.from = from;
-        scrollOutput(true, 25);
+        _updateScrolling();
     }
 
     const onToolsTurnStart: AgentInferenceOptions["onToolsTurnStart"] = (tcs: Array<ToolCallSpec>, from: string) => {
@@ -87,7 +87,7 @@ const useTaskEvents = (
     const onThinkingToken: AgentInferenceOptions["onThinkingToken"] = (t: string, from: string) => {
         //buffer += t;
         stream.value += t;
-        //_parseStream(true);
+        _updateScrolling();
     }
 
     const onStartThinking: AgentInferenceOptions["onStartThinking"] = (from: string) => {
@@ -115,7 +115,7 @@ const useTaskEvents = (
     const onToken: AgentInferenceOptions["onToken"] = (chunk: string, from: string) => {
         //buffer += chunk;
         stream.value += chunk;
-        //_parseStream();
+        _updateScrolling();
     }
 
     const onToolCall: AgentInferenceOptions["onToolCall"] = (tc: ToolCallSpec, type: string, from: string) => {
@@ -184,7 +184,7 @@ const useTaskEvents = (
         agentHistoryManager.addToolResponseToCurrentTurn(tc, tr, from);
         stream.value = "";
         //buffer = "";
-        scrollOutput(true, 50);
+        _updateScrolling();
     };
 
     const onConfirmToolUsage: AgentInferenceOptions["onConfirmToolUsage"] = async (tc: ToolCallSpec) => {
@@ -242,7 +242,7 @@ const useTaskEvents = (
     const onThink: AgentInferenceOptions["onThink"] = (txt: string, from: string) => {
         if (debug) { console.log("ON THINK", from, txt); }
         nextTick(async () => { stream.value = ""; });
-        scrollOutput(true, 100)
+        _updateScrolling();
     };
 
     const onTurnEnd: AgentInferenceOptions["onTurnEnd"] = (hts: Array<HistoryTurn>, from: string) => {
@@ -260,7 +260,7 @@ const useTaskEvents = (
             agentHistoryManager.addStatsToCurrentTurn(ht.stats, from);
         }
         resetStream();
-        scrollOutput(true, 100);
+        _updateScrolling();
     }
 
     /*const onEndEmit: AgentInferenceOptions["onEndEmit"] = (res: InferenceResult, from: string) => {
@@ -297,7 +297,7 @@ const useTaskEvents = (
             state.isProcessingPrompt = true;
             state.promptProcessingProgress = progress;
         }
-        scrollOutput(true, 50);
+        _updateScrolling();
     }
 
     const onError: AgentInferenceOptions["onError"] = (err: any, from: string) => {
@@ -328,6 +328,16 @@ const useTaskEvents = (
             tps: 0
         };
     }
+
+    const _updateScrolling = () => {
+        if (parseScheduled === true) {
+            parseScheduled = false;
+            setTimeout(() => {
+                scrollOutput();
+                parseScheduled = true;
+            }, PARSE_INTERVAL_MS);
+        }
+    };
 
     /*const _parseStream = (isThinking = false) => {
         if (parseScheduled === true) {
